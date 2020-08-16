@@ -27,12 +27,12 @@ AIU.buffs =
     },
     ["Rune"] =    --Check if present
     {
-        {"Augment", {270058}}
+        {"Augment", {270058, 317065}}
     },
     ["RaidBuff"] =    --Check ALL
     {
         {"Intellect", {1459, 264766}},
-        {"Stamina", {21562, 264769}},
+        {"Stamina", {21562, 264764}},
         {"Attack Power", {6673, 264767}},
     }
 }
