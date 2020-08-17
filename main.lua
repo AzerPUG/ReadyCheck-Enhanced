@@ -230,9 +230,11 @@ function addonMain:CheckConsumables(inputFrame)
     end
 
     inputFrame:SetSize(400, 150)
-    inputFrame:SetPoint("TOP")
+    inputFrame:SetPoint("TOP", 0, 20)
     -- local parent = inputFrame:GetParent()
     -- parent:SetPoint("TOP")
+
+    -- Try ingame:  /print GetMouseFocus():GetName()    to see name of readycheck buttons.
 
     local buffs, i = { }, 1;
     local buff, icon, _, _, _, expirationTimer, _, _, _, spellID = UnitBuff("player", i);
@@ -259,8 +261,9 @@ function addonMain:CheckConsumables(inputFrame)
         buff, icon, _, _, _, expirationTimer, _, _, _, spellID = UnitBuff("player", i);
     end
 
+    local questionMarkIcon = "\124T134400:12\124t"
     if currentFlask == nil then
-        currentFlaskText = colorRed .. "NO FLASK!" .. colorEnd
+        currentFlaskText = colorRed .. questionMarkIcon .. "NO FLASK!" .. colorEnd
     else
         if currentFlask[3] <= 10 then
             currentFlaskText = colorYellow .. currentFlask[3] .. " minutes.".. colorEnd
@@ -271,7 +274,7 @@ function addonMain:CheckConsumables(inputFrame)
     end
 
     if currentFood == nil then
-        currentFoodText = colorRed .. "NO FOOD!" .. colorEnd          
+        currentFoodText = colorRed .. questionMarkIcon .. "NO FOOD!" .. colorEnd          
     else
         if currentFood[3] <= 10 then
             currentFoodText = colorYellow .. currentFood[3] .. " minutes.".. colorEnd
@@ -282,7 +285,7 @@ function addonMain:CheckConsumables(inputFrame)
     end
 
     if currentRune == nil then
-        currentRuneText = colorRed .. "NO RUNE!" .. colorEnd          
+        currentRuneText = colorRed .. questionMarkIcon .. "NO RUNE!" .. colorEnd          
     else
         if currentRune[3] <= 10 then
             currentRuneText = colorYellow .. currentRune[3] .. " minutes.".. colorEnd
@@ -293,7 +296,7 @@ function addonMain:CheckConsumables(inputFrame)
     end
     
     if currentInt == nil then
-        currentIntText = colorRed .. "NO INT!" .. colorEnd          
+        currentIntText = colorRed .. questionMarkIcon .. "NO INTELLECT!" .. colorEnd          
     else
         if currentInt[3] <= 10 then
             currentIntText = colorYellow .. currentInt[3] .. " minutes.".. colorEnd
@@ -304,7 +307,7 @@ function addonMain:CheckConsumables(inputFrame)
     end
     
     if currentSta == nil then
-        currentStaText = colorRed .. "NO STAMINA!" .. colorEnd          
+        currentStaText = colorRed .. questionMarkIcon .. "NO STAMINA!" .. colorEnd          
     else
         if currentSta[3] <= 10 then
             currentStaText = colorYellow .. currentSta[3] .. " minutes.".. colorEnd
@@ -315,7 +318,7 @@ function addonMain:CheckConsumables(inputFrame)
     end
     
     if currentAtk == nil then
-        currentAtkText = colorRed .. "NO ATTACK POWER!" .. colorEnd          
+        currentAtkText = colorRed .. questionMarkIcon .. "NO ATTACK POWER!" .. colorEnd          
     else
         if currentAtk[3] <= 10 then
             currentAtkText = colorYellow .. currentAtk[3] .. " minutes.".. colorEnd
@@ -338,7 +341,12 @@ function addonMain:OnEvent(self, event, arg1, ...)
     if event == "READY_CHECK" then
         local player = arg1
         if (player ~= UnitName("player")) then
-            ReadyCheckFrame:SetSize(400, 250)
+            ReadyCheckFrame:SetSize(300, 150)
+            local point, relativeTo, relativePoint, x, y = ReadyCheckFrameNoButton:GetPoint()
+            ReadyCheckFrameNoButton:SetPoint(point, relativeTo, relativePoint, x, y - 35)
+            point, relativeTo, relativePoint, x, y = ReadyCheckFrameYesButton:GetPoint()
+            ReadyCheckFrameYesButton:SetPoint(point, relativeTo, relativePoint, x, y - 35)
+
             addonMain:CheckConsumables(ReadyCheckFrameText)
         end
         -- else
