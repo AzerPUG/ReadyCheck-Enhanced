@@ -222,11 +222,14 @@ function addonMain:CheckConsumables(inputFrame)
     local collorGreen = "\124cFF00FF00"
     local colorEnd = "\124r"
 
-    if readyCheckDefaultText == nil then
-        readyCheckDefaultText = inputFrame:GetText()
+    --Strip first line of the current readycheck text, which says: X has initiated ready check.
+    readyCheckDefaultText = inputFrame:GetText()
+    local endOfLine, _ = string.find(readyCheckDefaultText, "\n")
+    if endOfLine ~= nil then
+        readyCheckDefaultText = string.sub(readyCheckDefaultText, 1, endOfLine -1 )
     end
+
     inputFrame:SetSize(400, 150)
-    --inputFrame:SetText(readyCheckDefaultText .. "\n" .. "Tex and Wire are AMAZING!")
     inputFrame:SetPoint("TOP")
     -- local parent = inputFrame:GetParent()
     -- parent:SetPoint("TOP")
@@ -264,7 +267,7 @@ function addonMain:CheckConsumables(inputFrame)
         elseif currentFlask[3] > 10 then
             currentFlaskText = collorGreen .. currentFlask[3] .. " minutes.".. colorEnd
         end
-        currentFlaskText = "\124T" .. currentFlask[4] .. ":16\124t " .. currentFlaskText
+        currentFlaskText = "\124T" .. currentFlask[4] .. ":12\124t " .. currentFlaskText
     end
 
     if currentFood == nil then
@@ -275,7 +278,7 @@ function addonMain:CheckConsumables(inputFrame)
         elseif currentFood[3] > 10 then
             currentFoodText = collorGreen .. currentFood[3] .. " minutes.".. colorEnd
         end
-        currentFoodText = "\124T" .. currentFood[4] .. ":16\124t " .. currentFoodText
+        currentFoodText = "\124T" .. currentFood[4] .. ":12\124t " .. currentFoodText
     end
 
     if currentRune == nil then
@@ -286,7 +289,7 @@ function addonMain:CheckConsumables(inputFrame)
         elseif currentRune[3] > 10 then
             currentRuneText = collorGreen .. currentRune[3] .. " minutes.".. colorEnd
         end
-        currentRuneText = "\124T" .. currentRune[4] .. ":16\124t " .. currentRuneText
+        currentRuneText = "\124T" .. currentRune[4] .. ":12\124t " .. currentRuneText
     end
     
     if currentInt == nil then
@@ -297,7 +300,7 @@ function addonMain:CheckConsumables(inputFrame)
         elseif currentInt[3] > 10 then
             currentIntText = collorGreen .. currentInt[3] .. " minutes.".. colorEnd
         end
-        currentIntText = "\124T" .. currentInt[4] .. ":16\124t " .. currentIntText
+        currentIntText = "\124T" .. currentInt[4] .. ":12\124t " .. currentIntText
     end
     
     if currentSta == nil then
@@ -308,7 +311,7 @@ function addonMain:CheckConsumables(inputFrame)
         elseif currentSta[3] > 10 then
             currentStaText = collorGreen .. currentSta[3] .. " minutes.".. colorEnd
         end
-        currentStaText = "\124T" .. currentSta[4] .. ":16\124t " .. currentStaText
+        currentStaText = "\124T" .. currentSta[4] .. ":12\124t " .. currentStaText
     end
     
     if currentAtk == nil then
@@ -319,10 +322,10 @@ function addonMain:CheckConsumables(inputFrame)
         elseif currentAtk[3] > 10 then
             currentAtkText = collorGreen .. currentAtk[3] .. " minutes.".. colorEnd
         end
-        currentAtkText = "\124T" .. currentAtk[4] .. ":16\124t " .. currentAtkText
+        currentAtkText = "\124T" .. currentAtk[4] .. ":12\124t " .. currentAtkText
     end
 
-    inputFrame:SetText(readyCheckDefaultText .. "\n" .. currentFlaskText .. "\n" .. currentFoodText .. "\n" .. currentRuneText .. "\n" .. currentIntText .. "\n" .. currentStaText .. "\n" .. currentAtkText  )       -- TEST THIS LINE BEF9RE CONTINUING!
+    inputFrame:SetText(readyCheckDefaultText .. "\n\n" .. currentFlaskText .. "\n" .. currentFoodText .. "\n" .. currentRuneText .. "\n" .. currentIntText .. "\n" .. currentStaText .. "\n" .. currentAtkText  )       -- TEST THIS LINE BEF9RE CONTINUING!
     -- addonMain:createReadyCheckItemFrame(inputFrame, currentInt, 20, -50)
     -- addonMain:createReadyCheckItemFrame(inputFrame, currentSta, 120, -50)
     -- addonMain:createReadyCheckItemFrame(inputFrame, currentAtk, 220, -50)
