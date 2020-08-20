@@ -1,148 +1,32 @@
-    -- local OptionsSubPanelChecklist = CreateFrame("FRAME", "AZP-IU-OptionsSubPanelChecklist")
-    -- OptionsSubPanelChecklist.name = "Checklist"
-    -- OptionsSubPanelChecklist.parent = "AzerPUG InstanceUtility"
-
-    -- InterfaceOptions_AddCategory(OptionsSubPanelChecklist);
-
 local GlobalAddonName, AIU = ...
 
--- local UpdateInterval = 1.0
--- local UpdateSecondCounter = 0
--- local zone = GetZoneText()
--- local zoneID = C_Map.GetBestMapForUnit("player")
--- local announceChannel = nil
--- local zoneShardID = nil
 local addonChannelName = "AZP-IT-AC"
--- local OptionsCorePanel
 local OptionsSubPanelReadyCheck
 local itemCheckListFrame
 local addonLoaded = false
 local itemData = AIU.itemData
 local initialConfig = AIU.initialConfig
 
-local addonVersion = "v0.2"
+AZPIUReadyCheckVersion = "v0.3"
 local dash = " - "
-local name = "Instance Utility"             --Change all, where it should be, to Instance Utility a space!
+local name = "InstanceUtility" .. dash .. "ReadyCheck"
 local nameFull = ("AzerPUG " .. name)
-local nameShort = "AIU"
-local promo = (nameFull .. dash ..  addonVersion)
+local nameShort = "AIU-RC"
+local promo = (nameFull .. dash ..  AZPIUReadyCheckVersion)
 local readyCheckDefaultText = nil
 
-
-
-
 local addonMain = LibStub("AceAddon-3.0"):NewAddon("InstanceUtility-ReadyCheck", "AceConsole-3.0")
--- local InstanceUtilityLDB = LibStub("LibDataBroker-1.1"):NewDataObject("InstanceUtility", {
--- 	type = "data source",
--- 	text = "InstanceUtility",
--- 	icon = "Interface\\Icons\\Inv_darkmoon_eye",
--- 	OnClick = function() addonMain:ShowHideFrame() end
--- })
--- local icon = LibStub("LibDBIcon-1.0")
-
--- function addonMain:ShowHideFrame()
---     if InstanceUtilityAddonFrame:IsShown() then
---         InstanceUtilityAddonFrame:Hide()
---     elseif not InstanceUtilityAddonFrame:IsShown() then
---         InstanceUtilityAddonFrame:Show()
---     end
--- end
-
--- function addonMain:OnInitialize()
--- 	self.db = LibStub("AceDB-3.0"):New("InstanceUtilityLDB", {
--- 		profile = {
--- 			minimap = {
--- 				hide = false,
--- 			},
--- 		},
--- 	})
--- 	icon:Register("InstanceUtility", InstanceUtilityLDB, self.db.profile.minimap)
--- 	self:RegisterChatCommand("InstanceUtility icon", "MiniMapIconToggle")
--- end
-
--- -- function addonMain:MiniMapIconToggle()
--- -- 	self.db.profile.minimap.hide = not self.db.profile.minimap.hide
--- -- 	if self.db.profile.minimap.hide then
--- -- 		icon:Hide("InstanceUtility")
--- -- 	else
--- -- 		icon:Show("InstanceUtility")
--- -- 	end
--- -- end
 
 function addonMain:OnLoad(self)
     local IUReadyCheckFrame = CreateFrame("FRAME", "IUReadyCheckFrame", UIParent)
     IUReadyCheckFrame:RegisterEvent("READY_CHECK")
     IUReadyCheckFrame:RegisterEvent("UNIT_AURA")
     IUReadyCheckFrame:SetScript("OnEvent", function(...) addonMain:OnEvent(...) end)
-    -- InstanceUtilityAddonFrame:SetPoint("CENTER", 0, 0)
-    -- InstanceUtilityAddonFrame.texture = InstanceUtilityAddonFrame:CreateTexture()
-    -- InstanceUtilityAddonFrame.texture:SetAllPoints(true)
-    -- InstanceUtilityAddonFrame:EnableMouse(true)
-    -- InstanceUtilityAddonFrame:SetMovable(true)
-    -- --InstanceUtilityAddonFrame:SetScript("OnUpdate", function(...) addonMain:OnUpdate(...) end)
-    -- InstanceUtilityAddonFrame:SetScript("OnEvent", function(...) addonMain:OnEvent(...) end)
-    -- InstanceUtilityAddonFrame:RegisterForDrag("LeftButton")
-    -- InstanceUtilityAddonFrame:SetScript("OnDragStart", InstanceUtilityAddonFrame.StartMoving)
-    -- InstanceUtilityAddonFrame:SetScript("OnDragStop", InstanceUtilityAddonFrame.StopMovingOrSizing)
-    -- InstanceUtilityAddonFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
-    -- InstanceUtilityAddonFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-    -- InstanceUtilityAddonFrame:RegisterEvent("PLAYER_LOGIN")
-    -- InstanceUtilityAddonFrame:RegisterEvent("ADDON_LOADED")
-    -- --InstanceUtilityAddonFrame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
-    -- --InstanceUtilityAddonFrame:RegisterEvent("PLAYER_TARGET_CHANGED")
-    -- --InstanceUtilityAddonFrame.TimeSinceLastUpdate = 0
-    -- --InstanceUtilityAddonFrame.MinuteCounter = 0
-    -- InstanceUtilityAddonFrame:SetSize(400, 250)
-    -- InstanceUtilityAddonFrame.texture:SetColorTexture(0.5, 0.5, 0.5, 0.5)
-
-    -- local AddonTitle = InstanceUtilityAddonFrame:CreateFontString("AddonTitle", "ARTWORK", "GameFontNormal")
-    -- AddonTitle:SetText(nameFull)
-    -- AddonTitle:SetHeight("10")
-    -- AddonTitle:SetPoint("TOP", "InstanceUtilityAddonFrame", -100, -3)
-
-    -- TempTestButton1 = CreateFrame("Button", "TempTestButton1", InstanceUtilityAddonFrame, "UIPanelButtonTemplate")
-    -- TempTestButton1.contentText = TempTestButton1:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
-    -- TempTestButton1.contentText:SetText("Check Items!")
-    -- TempTestButton1:SetWidth("100")
-    -- TempTestButton1:SetHeight("25")
-    -- TempTestButton1.contentText:SetWidth("100")
-    -- TempTestButton1.contentText:SetHeight("15")
-    -- TempTestButton1:SetPoint("TOP", 125, -25)
-    -- TempTestButton1.contentText:SetPoint("CENTER", 0, -1)
-    -- TempTestButton1:SetScript("OnClick", function() addonMain:checkListButtonClicked() end )
-
-    -- ReloadButton = CreateFrame("Button", "ReloadButton", InstanceUtilityAddonFrame, "UIPanelButtonTemplate")
-    -- ReloadButton.contentText = ReloadButton:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
-    -- ReloadButton.contentText:SetText("Reload!")
-    -- ReloadButton:SetWidth("100")
-    -- ReloadButton:SetHeight("25")
-    -- ReloadButton.contentText:SetWidth("100")
-    -- ReloadButton.contentText:SetHeight("15")
-    -- ReloadButton:SetPoint("TOP", 125, -50)
-    -- ReloadButton.contentText:SetPoint("CENTER", 0, -1)
-    -- ReloadButton:SetScript("OnClick", function() ReloadUI(); end )
 
     OptionsSubPanelReadyCheck = CreateFrame("FRAME", "AZP-IU-OptionsSubPanelReadyCheck")
     OptionsSubPanelReadyCheck.name = "ReadyCheck"
     OptionsSubPanelReadyCheck.parent = OptionsSubPanelReadyCheck
     InterfaceOptions_AddCategory(OptionsSubPanelReadyCheck);
-
-    -- OpenSettingsButton = CreateFrame("Button", "OpenSettingsButton", InstanceUtilityAddonFrame, "UIPanelButtonTemplate")
-    -- OpenSettingsButton.contentText = OpenSettingsButton:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
-    -- OpenSettingsButton.contentText:SetText("Open Options!")
-    -- OpenSettingsButton:SetWidth("100")
-    -- OpenSettingsButton:SetHeight("25")
-    -- OpenSettingsButton.contentText:SetWidth("100")
-    -- OpenSettingsButton.contentText:SetHeight("15")
-    -- OpenSettingsButton:SetPoint("TOP", 125, -75)
-    -- OpenSettingsButton.contentText:SetPoint("CENTER", 0, -1)
-    -- OpenSettingsButton:SetScript("OnClick", function() InterfaceOptionsFrame_OpenToCategory(OptionsSubPanelReadyCheck); InterfaceOptionsFrame_OpenToCategory(OptionsSubPanelReadyCheck); end )
-
-    -- local OptionsCoreHeader = OptionsCorePanel:CreateFontString("OptionsCoreHeader", "ARTWORK", "GameFontNormalHuge")
-    -- OptionsCoreHeader:SetText(promo)
-    -- OptionsCoreHeader:SetWidth(OptionsCorePanel:GetWidth())
-    -- OptionsCoreHeader:SetHeight(OptionsCorePanel:GetHeight())
-    -- OptionsCoreHeader:SetPoint("TOP", 0, -10)
 
     local OptionsSubChecklistHeader = OptionsSubPanelReadyCheck:CreateFontString("OptionsSubChecklistHeader", "ARTWORK", "GameFontNormalHuge")
     OptionsSubChecklistHeader:SetText(promo)
@@ -157,15 +41,6 @@ function addonMain:OnLoad(self)
     OptionsSubChecklistSubHeader:SetPoint("TOP", 0, -40)
 end
 
-
-
--- function addonMain:initializeConfig()
---     if AIUCheckedData == nil then
---         AIUCheckedData = initialConfig
---     end
---     addonMain:initConfigSection()
--- end
-
 function addonMain:checkIfBuffInTable(buff, table)
     for _,category in ipairs(table) do
         if tContains(category[2], buff) then
@@ -173,41 +48,6 @@ function addonMain:checkIfBuffInTable(buff, table)
         end
     end
     return nil
-end
-
-function addonMain:createReadyCheckItemFrame(inputFrame, buff, x ,y)
-    if buff == nil then
-        buff = {"", 0, 0, 134400} --question mark
-    end
-
-    -- local testText = ReadyCheckFrameText:GetText()
-    -- testText = testText .. "test123"
-    -- ReadyCheckFrameText:SetText(testText)
-
-    ReadyCheckFrame.contentText = ReadyCheckFrame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-    ReadyCheckFrame.contentText:SetPoint("LEFT", 0, 0)
-    ReadyCheckFrame.contentText:SetText("Test123")
-
-    local itemFrame = CreateFrame("Frame", "itemFrame", ReadyCheckFrame)
-    itemFrame:SetWidth(200, 100)
-    itemFrame:SetPoint("TOPLEFT", x , y)
-
-    local itemIconLabel = CreateFrame("Frame", "itemIconLabel", itemFrame)
-    itemIconLabel:SetSize(15, 15)
-    itemIconLabel:SetPoint("TOPLEFT", 0, 0)
-    itemIconLabel.texture = itemIconLabel:CreateTexture(nil, "BACKGROUND")
-    itemIconLabel.texture:SetPoint("LEFT", 0, 0)
-    itemIconLabel.texture:SetTexture(buff[4])
-    itemIconLabel.texture:SetSize(15, 15)
-
-    local buffDurationLabel = CreateFrame("Frame", "buffDurationLabel", itemFrame)
-    buffDurationLabel:SetSize(80, 10)
-    buffDurationLabel:SetPoint("TOPLEFT", 20, -2)
-    buffDurationLabel.contentText = buffDurationLabel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-    buffDurationLabel.contentText:SetPoint("LEFT", 0, 0)
-    buffDurationLabel.contentText:SetText(buff[3])
-
-    return itemFrame
 end
 
 function addonMain:CheckConsumables(inputFrame)
@@ -231,16 +71,11 @@ function addonMain:CheckConsumables(inputFrame)
 
     inputFrame:SetSize(400, 150)
     inputFrame:SetPoint("TOP", 0, 20)
-    -- local parent = inputFrame:GetParent()
-    -- parent:SetPoint("TOP")
-
-    -- Try ingame:  /print GetMouseFocus():GetName()    to see name of readycheck buttons.
 
     local buffs, i = { }, 1;
     local buff, icon, _, _, _, expirationTimer, _, _, _, spellID = UnitBuff("player", i);
 
     local curTime = GetTime()
-    
 
     while buff do
         expirationTimer = floor((expirationTimer - curTime) / 60)
@@ -274,7 +109,7 @@ function addonMain:CheckConsumables(inputFrame)
     end
 
     if currentFood == nil then
-        currentFoodText = colorRed .. questionMarkIcon .. "NO FOOD!" .. colorEnd          
+        currentFoodText = colorRed .. questionMarkIcon .. "NO FOOD!" .. colorEnd
     else
         if currentFood[3] <= 10 then
             currentFoodText = colorYellow .. currentFood[3] .. " minutes.".. colorEnd
@@ -285,7 +120,7 @@ function addonMain:CheckConsumables(inputFrame)
     end
 
     if currentRune == nil then
-        currentRuneText = colorRed .. questionMarkIcon .. "NO RUNE!" .. colorEnd          
+        currentRuneText = colorRed .. questionMarkIcon .. "NO RUNE!" .. colorEnd
     else
         if currentRune[3] <= 10 then
             currentRuneText = colorYellow .. currentRune[3] .. " minutes.".. colorEnd
@@ -294,9 +129,9 @@ function addonMain:CheckConsumables(inputFrame)
         end
         currentRuneText = "\124T" .. currentRune[4] .. ":12\124t " .. currentRuneText
     end
-    
+
     if currentInt == nil then
-        currentIntText = colorRed .. questionMarkIcon .. "NO INTELLECT!" .. colorEnd          
+        currentIntText = colorRed .. questionMarkIcon .. "NO INTELLECT!" .. colorEnd
     else
         if currentInt[3] <= 10 then
             currentIntText = colorYellow .. currentInt[3] .. " minutes.".. colorEnd
@@ -305,9 +140,9 @@ function addonMain:CheckConsumables(inputFrame)
         end
         currentIntText = "\124T" .. currentInt[4] .. ":12\124t " .. currentIntText
     end
-    
+
     if currentSta == nil then
-        currentStaText = colorRed .. questionMarkIcon .. "NO STAMINA!" .. colorEnd          
+        currentStaText = colorRed .. questionMarkIcon .. "NO STAMINA!" .. colorEnd
     else
         if currentSta[3] <= 10 then
             currentStaText = colorYellow .. currentSta[3] .. " minutes.".. colorEnd
@@ -316,9 +151,9 @@ function addonMain:CheckConsumables(inputFrame)
         end
         currentStaText = "\124T" .. currentSta[4] .. ":12\124t " .. currentStaText
     end
-    
+
     if currentAtk == nil then
-        currentAtkText = colorRed .. questionMarkIcon .. "NO ATTACK POWER!" .. colorEnd          
+        currentAtkText = colorRed .. questionMarkIcon .. "NO ATTACK POWER!" .. colorEnd
     else
         if currentAtk[3] <= 10 then
             currentAtkText = colorYellow .. currentAtk[3] .. " minutes.".. colorEnd
@@ -328,13 +163,7 @@ function addonMain:CheckConsumables(inputFrame)
         currentAtkText = "\124T" .. currentAtk[4] .. ":12\124t " .. currentAtkText
     end
 
-    inputFrame:SetText(readyCheckDefaultText .. "\n\n" .. currentFlaskText .. "\n" .. currentFoodText .. "\n" .. currentRuneText .. "\n" .. currentIntText .. "\n" .. currentStaText .. "\n" .. currentAtkText  )       -- TEST THIS LINE BEF9RE CONTINUING!
-    -- addonMain:createReadyCheckItemFrame(inputFrame, currentInt, 20, -50)
-    -- addonMain:createReadyCheckItemFrame(inputFrame, currentSta, 120, -50)
-    -- addonMain:createReadyCheckItemFrame(inputFrame, currentAtk, 220, -50)
-    -- addonMain:createReadyCheckItemFrame(inputFrame, currentFlask, 20, -100)
-    -- addonMain:createReadyCheckItemFrame(inputFrame, currentFood, 120, -100)
-    -- addonMain:createReadyCheckItemFrame(inputFrame, currentRune, 220, -100)
+    inputFrame:SetText(readyCheckDefaultText .. "\n\n" .. currentFlaskText .. "\n" .. currentFoodText .. "\n" .. currentRuneText .. "\n" .. currentIntText .. "\n" .. currentStaText .. "\n" .. currentAtkText)
 end
 
 function addonMain:OnEvent(self, event, arg1, ...)
@@ -349,22 +178,15 @@ function addonMain:OnEvent(self, event, arg1, ...)
 
             addonMain:CheckConsumables(ReadyCheckFrameText)
         end
-        -- else
-            -- local tempReadyCheckFrame = CreateFrame("FRAME", "tempReadyCheckFrame", UIParent , ReadyCheckFrame)
-            -- tempReadyCheckFrame:SetSize(400, 250)
-            -- -- local tempReadyCheckFrameText = tempReadyCheckFrame:CreateFontString("tempReadyCheckFrameText", "ARTWORK", "GameFontNormalHuge")
-            -- -- tempReadyCheckFrameText:SetText("Bla")
-            -- -- tempReadyCheckFrame.contentText = tempReadyCheckFrameText
 
     elseif event == "UNIT_AURA" then
         local player = arg1
         if (player ~= UnitName("player")) and ReadyCheckFrame:IsShown() then
             addonMain:CheckConsumables(ReadyCheckFrameText)
         end
-        -- addonMain:CheckConsumables(tempReadyCheckFrame)
     end
     -- if event == "PLAYER_ENTERING_WORLD" then
-    -- elseif event == "PLAYER_LOGIN" then 
+    -- elseif event == "PLAYER_LOGIN" then
     -- elseif event == "COMBAT_LOG_EVENT_UNFILTERED" then
     -- elseif event == "ADDON_LOADED" then
     --     if addonLoaded == false then
@@ -374,10 +196,10 @@ function addonMain:OnEvent(self, event, arg1, ...)
     -- end
 end
 
-function addonMain:DelayedExecution(delayTime, delayedFunction)     -- Move to helperFunctions.
+function addonMain:DelayedExecution(delayTime, delayedFunction)
 	local frame = CreateFrame("Frame")
 	frame.start_time = GetServerTime()
-	frame:SetScript("OnUpdate", 
+	frame:SetScript("OnUpdate",
 		function(self)
 			if GetServerTime() - self.start_time > delayTime then
 				delayedFunction()

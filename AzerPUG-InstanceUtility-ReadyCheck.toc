@@ -1,14 +1,10 @@
 ## Interface: 80300
-## Title: AzerPUG Instance Utility ReadyCheck
-## Author: Tex#2935, Ravencrest-EU (Leader of AzerPUG)
+## Title: |cFF00FFFFAzerPUG|r |cFFFF00FFInstance Utility|r |cFFFFFF00ReadyCheck|r
+## Author: Tex & AzerPUG Gaming Community (www.azerpug.com/discord)
 ## Dependencies: AzerPUG-InstanceUtility-Core 
 ## Notes: Utility for Instances (Raids and Dungeons)!
 ## Version: BFA 8.3.7 (For actual addon version, check main.lua)
 ## SavedVariablesPerCharacter: AIUCheckedData
-# LibDBIcon-1.0/embeds.xml
-# LibDBIcon-1.0/LibStub\LibStub.lua
-# LibDBIcon-1.0/CallbackHandler-1.0\CallbackHandler-1.0.lua
-# LibDBIcon-1.0/LibDataBroker-1.1\LibDataBroker-1.1.lua
-# LibDBIcon-1.0/LibDBIcon-1.0\LibDBIcon-1.0.lua
+
 dataTables.lua
 main.lua
