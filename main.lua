@@ -36,6 +36,14 @@ function addonMain:OnLoad(self)
     OptionsSubReadyCheckSubHeader:SetWidth(OptionsSubPanelReadyCheck:GetWidth())
     OptionsSubReadyCheckSubHeader:SetHeight(OptionsSubPanelReadyCheck:GetHeight() - 10)
     OptionsSubReadyCheckSubHeader:SetPoint("TOP", 0, -40)
+
+    addonMain:DelayedExecution(5, function()
+        local pointY, relativeToY, relativePointY, xY, yY = ReadyCheckFrameYesButton:GetPoint()
+        local pointN, relativeToN, relativePointN, xN, yN = ReadyCheckFrameNoButton:GetPoint()
+        ReadyCheckFrame:SetSize(300, 150)
+        ReadyCheckFrameYesButton:SetPoint(pointY, relativeToY, relativePointY, xY, yY - 35)
+        ReadyCheckFrameNoButton:SetPoint(pointN, relativeToN, relativePointN, xN, yN - 35)
+    end)
 end
 
 function VersionControl:ReadyCheck()
@@ -171,30 +179,14 @@ function addonMain:OnEvent(self, event, arg1, ...)
     if event == "READY_CHECK" then
         local player = arg1
         if (player ~= UnitName("player")) then
-            ReadyCheckFrame:SetSize(300, 150)
-            local point, relativeTo, relativePoint, x, y = ReadyCheckFrameNoButton:GetPoint()
-            ReadyCheckFrameNoButton:SetPoint(point, relativeTo, relativePoint, x, y - 35)
-            point, relativeTo, relativePoint, x, y = ReadyCheckFrameYesButton:GetPoint()
-            ReadyCheckFrameYesButton:SetPoint(point, relativeTo, relativePoint, x, y - 35)
-
             addonMain:CheckConsumables(ReadyCheckFrameText)
         end
-
     elseif event == "UNIT_AURA" then
         local player = arg1
         if (player ~= UnitName("player")) and ReadyCheckFrame:IsShown() then
             addonMain:CheckConsumables(ReadyCheckFrameText)
         end
     end
-    -- if event == "PLAYER_ENTERING_WORLD" then
-    -- elseif event == "PLAYER_LOGIN" then
-    -- elseif event == "COMBAT_LOG_EVENT_UNFILTERED" then
-    -- elseif event == "ADDON_LOADED" then
-    --     if addonLoaded == false then
-    --         addonMain:DelayedExecution(5, function() addonMain:initializeConfig() end)
-    --         addonLoaded = true
-    --     end
-    -- end
 end
 
 function addonMain:DelayedExecution(delayTime, delayedFunction)
