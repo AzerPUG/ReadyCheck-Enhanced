@@ -1,13 +1,12 @@
 local GlobalAddonName, AIU = ...
 
 local addonChannelName = "AZP-IT-AC"
-local OptionsSubPanelReadyCheck
 local itemCheckListFrame
 local addonLoaded = false
 local itemData = AIU.itemData
 local initialConfig = AIU.initialConfig
 
-AZPIUReadyCheckVersion = "v0.3"
+local AZPIUReadyCheckVersion = 0.2
 local dash = " - "
 local name = "InstanceUtility" .. dash .. "ReadyCheck"
 local nameFull = ("AzerPUG " .. name)
@@ -23,22 +22,32 @@ function addonMain:OnLoad(self)
     IUReadyCheckFrame:RegisterEvent("UNIT_AURA")
     IUReadyCheckFrame:SetScript("OnEvent", function(...) addonMain:OnEvent(...) end)
 
-    OptionsSubPanelReadyCheck = CreateFrame("FRAME", "AZP-IU-OptionsSubPanelReadyCheck")
-    OptionsSubPanelReadyCheck.name = "ReadyCheck"
-    OptionsSubPanelReadyCheck.parent = OptionsSubPanelReadyCheck
-    InterfaceOptions_AddCategory(OptionsSubPanelReadyCheck);
+    OptionsSubPanelReadyCheckPlaceholderText:Hide()
+    OptionsSubPanelReadyCheckPlaceholderText:SetParent(nil)
 
-    local OptionsSubChecklistHeader = OptionsSubPanelReadyCheck:CreateFontString("OptionsSubChecklistHeader", "ARTWORK", "GameFontNormalHuge")
-    OptionsSubChecklistHeader:SetText(promo)
-    OptionsSubChecklistHeader:SetWidth(OptionsSubPanelReadyCheck:GetWidth())
-    OptionsSubChecklistHeader:SetHeight(OptionsSubPanelReadyCheck:GetHeight())
-    OptionsSubChecklistHeader:SetPoint("TOP", 0, -10)
+    local OptionsSubReadyCheckHeader = OptionsSubPanelReadyCheck:CreateFontString("OptionsSubReadyCheckHeader", "ARTWORK", "GameFontNormalHuge")
+    OptionsSubReadyCheckHeader:SetText(promo)
+    OptionsSubReadyCheckHeader:SetWidth(OptionsSubPanelReadyCheck:GetWidth())
+    OptionsSubReadyCheckHeader:SetHeight(OptionsSubPanelReadyCheck:GetHeight())
+    OptionsSubReadyCheckHeader:SetPoint("TOP", 0, -10)
 
-    local OptionsSubChecklistSubHeader = OptionsSubPanelReadyCheck:CreateFontString("OptionsSubChecklistSubHeader", "ARTWORK", "GameFontNormalHuge")
-    OptionsSubChecklistSubHeader:SetText("ReadyCheck Options")
-    OptionsSubChecklistSubHeader:SetWidth(OptionsSubPanelReadyCheck:GetWidth())
-    OptionsSubChecklistSubHeader:SetHeight(OptionsSubPanelReadyCheck:GetHeight() - 10)
-    OptionsSubChecklistSubHeader:SetPoint("TOP", 0, -40)
+    local OptionsSubReadyCheckSubHeader = OptionsSubPanelReadyCheck:CreateFontString("OptionsSubReadyCheckSubHeader", "ARTWORK", "GameFontNormalHuge")
+    OptionsSubReadyCheckSubHeader:SetText("ReadyCheck Options")
+    OptionsSubReadyCheckSubHeader:SetWidth(OptionsSubPanelReadyCheck:GetWidth())
+    OptionsSubReadyCheckSubHeader:SetHeight(OptionsSubPanelReadyCheck:GetHeight() - 10)
+    OptionsSubReadyCheckSubHeader:SetPoint("TOP", 0, -40)
+
+    addonMain:DelayedExecution(5, function()
+        local pointY, relativeToY, relativePointY, xY, yY = ReadyCheckFrameYesButton:GetPoint()
+        local pointN, relativeToN, relativePointN, xN, yN = ReadyCheckFrameNoButton:GetPoint()
+        ReadyCheckFrame:SetSize(300, 150)
+        ReadyCheckFrameYesButton:SetPoint(pointY, relativeToY, relativePointY, xY, yY - 35)
+        ReadyCheckFrameNoButton:SetPoint(pointN, relativeToN, relativePointN, xN, yN - 35)
+    end)
+end
+
+function VersionControl:ReadyCheck()
+    return AZPIUReadyCheckVersion
 end
 
 function addonMain:checkIfBuffInTable(buff, table)
@@ -170,30 +179,14 @@ function addonMain:OnEvent(self, event, arg1, ...)
     if event == "READY_CHECK" then
         local player = arg1
         if (player ~= UnitName("player")) then
-            ReadyCheckFrame:SetSize(300, 150)
-            local point, relativeTo, relativePoint, x, y = ReadyCheckFrameNoButton:GetPoint()
-            ReadyCheckFrameNoButton:SetPoint(point, relativeTo, relativePoint, x, y - 35)
-            point, relativeTo, relativePoint, x, y = ReadyCheckFrameYesButton:GetPoint()
-            ReadyCheckFrameYesButton:SetPoint(point, relativeTo, relativePoint, x, y - 35)
-
             addonMain:CheckConsumables(ReadyCheckFrameText)
         end
-
     elseif event == "UNIT_AURA" then
         local player = arg1
         if (player ~= UnitName("player")) and ReadyCheckFrame:IsShown() then
             addonMain:CheckConsumables(ReadyCheckFrameText)
         end
     end
-    -- if event == "PLAYER_ENTERING_WORLD" then
-    -- elseif event == "PLAYER_LOGIN" then
-    -- elseif event == "COMBAT_LOG_EVENT_UNFILTERED" then
-    -- elseif event == "ADDON_LOADED" then
-    --     if addonLoaded == false then
-    --         addonMain:DelayedExecution(5, function() addonMain:initializeConfig() end)
-    --         addonLoaded = true
-    --     end
-    -- end
 end
 
 function addonMain:DelayedExecution(delayTime, delayedFunction)

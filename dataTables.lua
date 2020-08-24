@@ -26,7 +26,7 @@ AIU.buffs =
     },
     ["RaidBuff"] =
     {
-        {"Intellect", {1459, 264766}},
+        {"Intellect", {1459, 264760}},      -- Testing new ID, was 264766
         {"Stamina", {21562, 264764}},
         {"Attack Power", {6673, 264767}},
     }
