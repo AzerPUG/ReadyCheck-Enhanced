@@ -1,41 +1,23 @@
 local GlobalAddonName, AIU = ...
 
-local addonChannelName = "AZP-IT-AC"
-local itemCheckListFrame
-local addonLoaded = false
-local itemData = AIU.itemData
-local initialConfig = AIU.initialConfig
-
-local AZPIUReadyCheckVersion = 0.3
+local AZPIUReadyCheckVersion = 0.4
 local dash = " - "
 local name = "InstanceUtility" .. dash .. "ReadyCheck"
 local nameFull = ("AzerPUG " .. name)
-local nameShort = "AIU-RC"
 local promo = (nameFull .. dash ..  AZPIUReadyCheckVersion)
-local readyCheckDefaultText = nil
-
 local addonMain = LibStub("AceAddon-3.0"):NewAddon("InstanceUtility-ReadyCheck", "AceConsole-3.0")
 
-function addonMain:OnLoad(self)
-    local IUReadyCheckFrame = CreateFrame("FRAME", "IUReadyCheckFrame", UIParent)
-    IUReadyCheckFrame:RegisterEvent("READY_CHECK")
-    IUReadyCheckFrame:RegisterEvent("UNIT_AURA")
-    IUReadyCheckFrame:SetScript("OnEvent", function(...) addonMain:OnEvent(...) end)
+local readyCheckDefaultText = nil
 
-    OptionsSubPanelReadyCheckPlaceholderText:Hide()
-    OptionsSubPanelReadyCheckPlaceholderText:SetParent(nil)
+function VersionControl:ReadyCheckVC()
+    return AZPIUReadyCheckVersion
+end
 
-    local OptionsSubReadyCheckHeader = OptionsSubPanelReadyCheck:CreateFontString("OptionsSubReadyCheckHeader", "ARTWORK", "GameFontNormalHuge")
-    OptionsSubReadyCheckHeader:SetText(promo)
-    OptionsSubReadyCheckHeader:SetWidth(OptionsSubPanelReadyCheck:GetWidth())
-    OptionsSubReadyCheckHeader:SetHeight(OptionsSubPanelReadyCheck:GetHeight())
-    OptionsSubReadyCheckHeader:SetPoint("TOP", 0, -10)
+function OnLoad:ReadyCheckOL(self)
+    addonMain:ChangeOptionsText()
 
-    local OptionsSubReadyCheckSubHeader = OptionsSubPanelReadyCheck:CreateFontString("OptionsSubReadyCheckSubHeader", "ARTWORK", "GameFontNormalHuge")
-    OptionsSubReadyCheckSubHeader:SetText("ReadyCheck Options")
-    OptionsSubReadyCheckSubHeader:SetWidth(OptionsSubPanelReadyCheck:GetWidth())
-    OptionsSubReadyCheckSubHeader:SetHeight(OptionsSubPanelReadyCheck:GetHeight() - 10)
-    OptionsSubReadyCheckSubHeader:SetPoint("TOP", 0, -40)
+    InstanceUtilityAddonFrame:RegisterEvent("READY_CHECK")
+    InstanceUtilityAddonFrame:RegisterEvent("UNIT_AURA")
 
     addonMain:DelayedExecution(5, function()
         local pointY, relativeToY, relativePointY, xY, yY = ReadyCheckFrameYesButton:GetPoint()
@@ -46,8 +28,17 @@ function addonMain:OnLoad(self)
     end)
 end
 
-function VersionControl:ReadyCheck()
-    return AZPIUReadyCheckVersion
+function addonMain:ChangeOptionsText()
+    ReadyCheckSubPanelPHTitle:Hide()
+    ReadyCheckSubPanelPHText:Hide()
+    ReadyCheckSubPanelPHTitle:SetParent(nil)
+    ReadyCheckSubPanelPHText:SetParent(nil)
+
+    local ReadyCheckSubPanelHeader = ReadyCheckSubPanel:CreateFontString("ReadyCheckSubPanelHeader", "ARTWORK", "GameFontNormalHuge")
+    ReadyCheckSubPanelHeader:SetText(promo)
+    ReadyCheckSubPanelHeader:SetWidth(ReadyCheckSubPanel:GetWidth())
+    ReadyCheckSubPanelHeader:SetHeight(ReadyCheckSubPanel:GetHeight())
+    ReadyCheckSubPanelHeader:SetPoint("TOP", 0, -10)
 end
 
 function addonMain:checkIfBuffInTable(buff, table)
@@ -175,7 +166,7 @@ function addonMain:CheckConsumables(inputFrame)
     inputFrame:SetText(readyCheckDefaultText .. "\n\n" .. currentFlaskText .. "\n" .. currentFoodText .. "\n" .. currentRuneText .. "\n" .. currentIntText .. "\n" .. currentStaText .. "\n" .. currentAtkText)
 end
 
-function addonMain:OnEvent(self, event, arg1, ...)
+function OnEvent:ReadyCheckOE(event, ...)
     if event == "READY_CHECK" then
         local player = arg1
         if (player ~= UnitName("player")) then
@@ -203,5 +194,3 @@ function addonMain:DelayedExecution(delayTime, delayedFunction)
 	)
 	frame:Show()
 end
-
-addonMain:OnLoad()
