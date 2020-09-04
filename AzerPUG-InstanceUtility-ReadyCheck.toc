@@ -1,5 +1,5 @@
 ## Interface: 80300
-## Title: |cFF00FFFFAzerPUG|r |cFFFF00FFInstance Utility|r |cFFFFFF00ReadyCheck|r
+## Title: |cFF00FFFFAZP|r |cFFFF00FFIU|r |cFFFFFF00ReadyCheck|r
 ## Author: Tex & AzerPUG Gaming Community (www.azerpug.com/discord)
 ## Dependencies: AzerPUG-InstanceUtility-Core 
 ## Notes: Utility for Instances (Raids and Dungeons)!
