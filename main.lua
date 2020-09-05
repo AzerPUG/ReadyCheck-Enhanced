@@ -1,6 +1,6 @@
 local GlobalAddonName, AIU = ...
 
-local AZPIUReadyCheckVersion = 0.4
+local AZPIUReadyCheckVersion = 0.6
 local dash = " - "
 local name = "InstanceUtility" .. dash .. "ReadyCheck"
 local nameFull = ("AzerPUG " .. name)
@@ -83,7 +83,7 @@ function addonMain:CheckConsumables(inputFrame)
 
     local curTime = GetTime()
 
-    while buff do
+    while buffName do
         expirationTimer = floor((expirationTimer - curTime) / 60)
         i = i + 1;
         if addonMain:checkIfBuffInTable(spellID, AIU.buffs["Flask"]) then
