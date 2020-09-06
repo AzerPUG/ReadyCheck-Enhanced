@@ -61,13 +61,14 @@ function addonMain:CheckConsumables(inputFrame)
     local colorYellow = "\124cFFFFFF00"
     local collorGreen = "\124cFF00FF00"
     local colorEnd = "\124r"
-
-    local BuffsLabel = CreateFrame("Frame", "BuffsLabel", ReadyCheckFrame)
-    BuffsLabel:SetSize(100, 100)
-    BuffsLabel:SetPoint("TOP", 0, -30)
-    BuffsLabel.contentText = BuffsLabel:CreateFontString("BuffsLabel", "ARTWORK", "GameFontNormal")
-    BuffsLabel.contentText:SetPoint("TOP", 0, 0)
-    BuffsLabel.contentText:SetJustifyH("LEFT")
+    if BuffsLabel == nil then
+        local BuffsLabel = CreateFrame("Frame", "BuffsLabel", ReadyCheckFrame)
+        BuffsLabel:SetSize(100, 100)
+        BuffsLabel:SetPoint("TOP", 0, -30)
+        BuffsLabel.contentText = BuffsLabel:CreateFontString("BuffsLabel", "ARTWORK", "GameFontNormal")
+        BuffsLabel.contentText:SetPoint("TOP", 0, 0)
+        BuffsLabel.contentText:SetJustifyH("LEFT")
+    end
 
     readyCheckDefaultText = inputFrame:GetText()
     local endOfLine, _ = string.find(readyCheckDefaultText, "\n")
