@@ -1,6 +1,6 @@
 local GlobalAddonName, AIU = ...
 
-local AZPIUReadyCheckVersion = 0.6
+local AZPIUReadyCheckVersion = 0.8
 local dash = " - "
 local name = "InstanceUtility" .. dash .. "ReadyCheck"
 local nameFull = ("AzerPUG " .. name)
@@ -22,7 +22,7 @@ function AZP.IU.OnLoad:ReadyCheck(self)
     AZP.AddonHelper:DelayedExecution(5, function()
         local pointY, relativeToY, relativePointY, xY, yY = ReadyCheckFrameYesButton:GetPoint()
         local pointN, relativeToN, relativePointN, xN, yN = ReadyCheckFrameNoButton:GetPoint()
-        ReadyCheckFrame:SetSize(300, 150)
+        ReadyCheckFrame:SetSize(300, 165)
         ReadyCheckFrameYesButton:SetPoint(pointY, relativeToY, relativePointY, xY, yY - 35)
         ReadyCheckFrameNoButton:SetPoint(pointN, relativeToN, relativePointN, xN, yN - 35)
     end)
@@ -51,12 +51,15 @@ function addonMain:checkIfBuffInTable(buff, table)
 end
 
 function addonMain:CheckConsumables(inputFrame)
+    local questionMarkIcon = "\124T134400:12\124t"
+    local repairIcon = "\124T132281:12\124t"
     local currentFood, currentFoodText = nil
     local currentFlask, currentFlaskText = nil
     local currentRune, currentRuneText = nil
     local currentInt, currentIntText = nil
     local currentSta, currentStaText = nil
     local currentAtk, currentAtkText = nil
+    local currentDur, currentDurText = nil
     local colorRed = "\124cFFFF0000"
     local colorYellow = "\124cFFFFFF00"
     local collorGreen = "\124cFF00FF00"
@@ -103,7 +106,6 @@ function addonMain:CheckConsumables(inputFrame)
         buffName, icon, expirationTimer, spellID = AZP.AddonHelper:GetBuffNameIconTimerID(i)
     end
 
-    local questionMarkIcon = "\124T134400:12\124t"
     if currentFlask == nil then
         currentFlaskText = colorRed .. questionMarkIcon .. " NO FLASK!" .. colorEnd
     else
@@ -170,8 +172,29 @@ function addonMain:CheckConsumables(inputFrame)
         currentAtkText = "\124T" .. currentAtk[4] .. ":12\124t " .. currentAtkText
     end
 
+    local cur, max = 0, 0
+    for eIndex = 1, 17 do
+        local v1, v2 = GetInventoryItemDurability(eIndex)
+        if v1 == nil or v2 == nill then
+        else
+            cur = cur + v1
+            max = max + v2
+        end
+    end
+
+    currentDur = math.floor(cur/max*100)
+    currentDurText = repairIcon
+    if currentDur < 10 then
+        currentDurText = currentDurText .. colorRed
+    elseif currentDur < 25 then
+        currentDurText = currentDurText .. colorYellow
+    elseif currentDur > 25 then
+        currentDurText = currentDurText .. collorGreen
+    end
+    currentDurText = currentDurText .. currentDur .. "% Durability." .. colorEnd
+
     inputFrame:SetText(readyCheckDefaultText)
-    BuffsLabel.contentText:SetText(currentFlaskText .. "\n" .. currentFoodText .. "\n" .. currentRuneText .. "\n" .. currentIntText .. "\n" .. currentStaText .. "\n" .. currentAtkText)
+    BuffsLabel.contentText:SetText(currentFlaskText .. "\n" .. currentFoodText .. "\n" .. currentRuneText .. "\n" .. currentIntText .. "\n" .. currentStaText .. "\n" .. currentAtkText .. "\n" .. currentDurText)
 end
 
 function AZP.IU.OnEvent:ReadyCheck(event, ...)
