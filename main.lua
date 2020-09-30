@@ -6,6 +6,7 @@ local name = "InstanceUtility" .. dash .. "ReadyCheck"
 local nameFull = ("AzerPUG " .. name)
 local promo = (nameFull .. dash ..  AZPIUReadyCheckVersion)
 local addonMain = LibStub("AceAddon-3.0"):NewAddon("InstanceUtility-ReadyCheck", "AceConsole-3.0")
+local respondedToReadyCheck = false
 
 local readyCheckDefaultText = nil
 
@@ -18,6 +19,8 @@ function AZP.IU.OnLoad:ReadyCheck(self)
 
     InstanceUtilityAddonFrame:RegisterEvent("READY_CHECK")
     InstanceUtilityAddonFrame:RegisterEvent("UNIT_AURA")
+    InstanceUtilityAddonFrame:RegisterEvent("READY_CHECK_CONFIRM")
+    InstanceUtilityAddonFrame:RegisterEvent("READY_CHECK_FINISHED")
 
     AZP.AddonHelper:DelayedExecution(5, function()
         local pointY, relativeToY, relativePointY, xY, yY = ReadyCheckFrameYesButton:GetPoint()
@@ -26,6 +29,27 @@ function AZP.IU.OnLoad:ReadyCheck(self)
         ReadyCheckFrameYesButton:SetPoint(pointY, relativeToY, relativePointY, xY, yY - 35)
         ReadyCheckFrameNoButton:SetPoint(pointN, relativeToN, relativePointN, xN, yN - 35)
     end)
+
+    local AZPReadyNowButton = CreateFrame("Button", "AZPReadyNowButton", UIParent, "UIPanelButtonTemplate")
+    AZPReadyNowButton.contentText = AZPReadyNowButton:CreateFontString(nil, "ARTWORK", "GameFontNormalHuge")
+    AZPReadyNowButton.contentText:SetText("I AM READY NOW!")
+    AZPReadyNowButton:SetWidth("500")
+    AZPReadyNowButton:SetHeight("250")
+    AZPReadyNowButton.contentText:SetWidth("500")
+    AZPReadyNowButton.contentText:SetHeight("250")
+    AZPReadyNowButton:SetPoint("CENTER")
+    AZPReadyNowButton.contentText:SetPoint("CENTER", 0, -1)
+    AZPReadyNowButton:SetScript("OnClick", function() 
+        if IsInRaid() then
+            SendChatMessage("I AM READY NOW!" ,"RAID") 
+        else
+            SendChatMessage("I AM READY NOW!" ,"PARTY") 
+        end
+        
+        AZPReadyNowButton:Hide() 
+    end )
+
+    AZPReadyNowButton:Hide()
 end
 
 function addonMain:ChangeOptionsText()
@@ -197,16 +221,28 @@ function addonMain:CheckConsumables(inputFrame)
     BuffsLabel.contentText:SetText(currentFlaskText .. "\n" .. currentFoodText .. "\n" .. currentRuneText .. "\n" .. currentIntText .. "\n" .. currentStaText .. "\n" .. currentAtkText .. "\n" .. currentDurText)
 end
 
-function AZP.IU.OnEvent:ReadyCheck(event, ...)
+function AZP.IU.OnEvent:ReadyCheck(event, arg1, ...)
     if event == "READY_CHECK" then
         local player = arg1
         if (player ~= UnitName("player")) then
             addonMain:CheckConsumables(ReadyCheckFrameText)
+            respondedToReadyCheck = false
+        else
+            respondedToReadyCheck = true
         end
     elseif event == "UNIT_AURA" then
         local player = arg1
         if (player ~= UnitName("player")) and ReadyCheckFrame:IsShown() then
             addonMain:CheckConsumables(ReadyCheckFrameText)
+        end
+    elseif event == "READY_CHECK_CONFIRM" then
+        local player = arg1
+        if (UnitName(player) == UnitName("player")) then
+            respondedToReadyCheck = true
+        end
+    elseif event == "READY_CHECK_FINISHED" then
+        if not respondedToReadyCheck then
+            AZPReadyNowButton:Show()
         end
     end
 end
