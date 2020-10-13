@@ -1,6 +1,6 @@
 local GlobalAddonName, AIU = ...
 
-local AZPIUReadyCheckVersion = 0.9
+local AZPIUReadyCheckVersion = 10
 local dash = " - "
 local name = "InstanceUtility" .. dash .. "ReadyCheck"
 local nameFull = ("AzerPUG " .. name)
@@ -50,6 +50,32 @@ function AZP.IU.OnLoad:ReadyCheck(self)
     end )
 
     AZPReadyNowButton:Hide()
+end
+
+function AZP.IU.OnEvent:ReadyCheck(event, arg1, ...)
+    if event == "READY_CHECK" then
+        local player = arg1
+        if (player ~= UnitName("player")) then
+            addonMain:CheckConsumables(ReadyCheckFrameText)
+            respondedToReadyCheck = false
+        else
+            respondedToReadyCheck = true
+        end
+    elseif event == "UNIT_AURA" then
+        local player = arg1
+        if (player ~= UnitName("player")) and ReadyCheckFrame:IsShown() then
+            addonMain:CheckConsumables(ReadyCheckFrameText)
+        end
+    elseif event == "READY_CHECK_CONFIRM" then
+        local player = arg1
+        if (UnitName(player) == UnitName("player")) then
+            respondedToReadyCheck = true
+        end
+    elseif event == "READY_CHECK_FINISHED" then
+        if not respondedToReadyCheck then
+            AZPReadyNowButton:Show()
+        end
+    end
 end
 
 function addonMain:ChangeOptionsText()
@@ -219,30 +245,4 @@ function addonMain:CheckConsumables(inputFrame)
 
     inputFrame:SetText(readyCheckDefaultText)
     BuffsLabel.contentText:SetText(currentFlaskText .. "\n" .. currentFoodText .. "\n" .. currentRuneText .. "\n" .. currentIntText .. "\n" .. currentStaText .. "\n" .. currentAtkText .. "\n" .. currentDurText)
-end
-
-function AZP.IU.OnEvent:ReadyCheck(event, arg1, ...)
-    if event == "READY_CHECK" then
-        local player = arg1
-        if (player ~= UnitName("player")) then
-            addonMain:CheckConsumables(ReadyCheckFrameText)
-            respondedToReadyCheck = false
-        else
-            respondedToReadyCheck = true
-        end
-    elseif event == "UNIT_AURA" then
-        local player = arg1
-        if (player ~= UnitName("player")) and ReadyCheckFrame:IsShown() then
-            addonMain:CheckConsumables(ReadyCheckFrameText)
-        end
-    elseif event == "READY_CHECK_CONFIRM" then
-        local player = arg1
-        if (UnitName(player) == UnitName("player")) then
-            respondedToReadyCheck = true
-        end
-    elseif event == "READY_CHECK_FINISHED" then
-        if not respondedToReadyCheck then
-            AZPReadyNowButton:Show()
-        end
-    end
 end
