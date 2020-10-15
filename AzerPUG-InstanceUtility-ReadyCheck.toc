@@ -1,4 +1,4 @@
-## Interface: 80300
+## Interface: 90001
 ## Title: |cFF00FFFFAZP|r |cFFFF00FFIU|r |cFFFFFF00ReadyCheck|r
 ## Author: Tex & AzerPUG Gaming Community (www.azerpug.com/discord)
 ## Dependencies: AzerPUG-InstanceUtility-Core 
