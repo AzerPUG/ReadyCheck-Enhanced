@@ -1,6 +1,6 @@
 local GlobalAddonName, AIU = ...
 
-local AZPIUReadyCheckVersion = 15
+local AZPIUReadyCheckVersion = 16
 local dash = " - "
 local name = "InstanceUtility" .. dash .. "ReadyCheck"
 local nameFull = ("AzerPUG " .. name)
@@ -103,13 +103,13 @@ end
 function addonMain:CheckConsumables(inputFrame)
     local questionMarkIcon = "\124T134400:12\124t"
     local repairIcon = "\124T132281:12\124t"
-    local currentFood, currentFoodText = nil
-    local currentFlask, currentFlaskText = nil
-    local currentRune, currentRuneText = nil
-    local currentInt, currentIntText = nil
-    local currentSta, currentStaText = nil
-    local currentAtk, currentAtkText = nil
-    local currentDur, currentDurText = nil
+    local currentFood, currentFoodText = nil, nil
+    local currentFlask, currentFlaskText = nil, nil
+    local currentRune, currentRuneText = nil, nil
+    local currentInt, currentIntText = nil, nil
+    local currentSta, currentStaText = nil, nil
+    local currentAtk, currentAtkText = nil, nil
+    local currentDur, currentDurText = nil, nil
     local colorRed = "\124cFFFF0000"
     local colorYellow = "\124cFFFFFF00"
     local collorGreen = "\124cFF00FF00"
