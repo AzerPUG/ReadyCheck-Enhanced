@@ -5,7 +5,7 @@ AIU.buffs =
     ["Flask"] =
     {
         {"PrimStat", {307185}},
-        {"Stamina", {0}},
+        {"Stamina", {307187}},
     },
     ["Food"] =
     {
@@ -13,7 +13,7 @@ AIU.buffs =
         {"Haste", {308514}},
         {"Mastery", {308506}},
         {"Critical Strike", {308434}},
-        {"Stamina", {0}},
+        {"Stamina", {327707}},
     },
     ["Rune"] =
     {
