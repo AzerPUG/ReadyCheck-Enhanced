@@ -10,7 +10,7 @@ AIU.buffs =
     ["Food"] =
     {
         {"Versatility", {308514}},
-        {"Haste", {308514}},
+        {"Haste", {308488}},
         {"Mastery", {308506}},
         {"Critical Strike", {308434}},
         {"Stamina", {327707}},
