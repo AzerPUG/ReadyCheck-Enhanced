@@ -24,5 +24,12 @@ AIU.buffs =
         {"Intellect", {1459}},
         {"Stamina", {21562}},
         {"Attack Power", {6673}},
-    }
+    },
+    ["Weapon"] =
+    {
+        {"Embalmer", {6190, 171286}},
+        {"Shadowcore", {6188, 171285}},
+        {"Weighted", {6201, 171439}},
+        {"Sharpened", {6200, 171437}},
+    },
 }

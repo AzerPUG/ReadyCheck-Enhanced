@@ -25,9 +25,9 @@ function AZP.IU.OnLoad:ReadyCheck(self)
     AZP.AddonHelper:DelayedExecution(5, function()
         local pointY, relativeToY, relativePointY, xY, yY = ReadyCheckFrameYesButton:GetPoint()
         local pointN, relativeToN, relativePointN, xN, yN = ReadyCheckFrameNoButton:GetPoint()
-        ReadyCheckFrame:SetSize(300, 165)
-        ReadyCheckFrameYesButton:SetPoint(pointY, relativeToY, relativePointY, xY, yY - 35)
-        ReadyCheckFrameNoButton:SetPoint(pointN, relativeToN, relativePointN, xN, yN - 35)
+        ReadyCheckFrame:SetSize(300, 225)
+        ReadyCheckFrameYesButton:SetPoint(pointY, relativeToY, relativePointY, xY, yY - 75)
+        ReadyCheckFrameNoButton:SetPoint(pointN, relativeToN, relativePointN, xN, yN - 75)
     end)
 
     local AZPReadyNowButton = CreateFrame("Button", "AZPReadyNowButton", UIParent, "UIPanelButtonTemplate")
@@ -101,11 +101,13 @@ function addonMain:checkIfBuffInTable(buff, table)
 end
 
 function addonMain:CheckConsumables(inputFrame)
-    local questionMarkIcon = "\124T134400:12\124t"
-    local repairIcon = "\124T132281:12\124t"
+    local questionMarkIcon = "\124T134400:14\124t"
+    local repairIcon = "\124T132281:14\124t"
     local currentFood, currentFoodText = nil, nil
     local currentFlask, currentFlaskText = nil, nil
     local currentRune, currentRuneText = nil, nil
+    local currentMHWepMod, currentMHWepModText = nil, nil
+    local currentOHWepMod, currentOHWepModText = nil, nil
     local currentInt, currentIntText = nil, nil
     local currentSta, currentStaText = nil, nil
     local currentAtk, currentAtkText = nil, nil
@@ -116,9 +118,9 @@ function addonMain:CheckConsumables(inputFrame)
     local colorEnd = "\124r"
     if BuffsLabel == nil then
         local BuffsLabel = CreateFrame("Frame", "BuffsLabel", ReadyCheckFrame)
-        BuffsLabel:SetSize(100, 100)
+        BuffsLabel:SetSize(100, 150)
         BuffsLabel:SetPoint("TOP", 0, -30)
-        BuffsLabel.contentText = BuffsLabel:CreateFontString("BuffsLabel", "ARTWORK", "GameFontNormal")
+        BuffsLabel.contentText = BuffsLabel:CreateFontString("BuffsLabel", "ARTWORK", "GameFontNormalLarge")
         BuffsLabel.contentText:SetPoint("TOP", 0, 0)
         BuffsLabel.contentText:SetJustifyH("LEFT")
     end
@@ -156,6 +158,45 @@ function addonMain:CheckConsumables(inputFrame)
         buffName, icon, expirationTimer, spellID = AZP.AddonHelper:GetBuffNameIconTimerID(i)
     end
 
+    local hasMainHandEnchant, mainHandExpiration, mainHandCharges, mainHandEnchantID, hasOffHandEnchant, offHandExpiration, offHandCharges, offHandEnchantId = GetWeaponEnchantInfo()
+    local itemLink, itemID = nil, nil
+    itemLink = GetInventoryItemLink("Player", 16)
+    if itemLink ~= nil then
+        if hasMainHandEnchant == true then
+            local itemIDFromSpellID, itemNameFromSpellID = nil, nil
+            for _,category in ipairs(AIU.buffs["Weapon"]) do
+                if tContains(category[2], mainHandEnchantID) then
+                    itemIDFromSpellID = category[2][2]
+                    itemNameFromSpellID = category[1]
+                end
+            end
+
+            local itemIcon = GetItemIcon(itemIDFromSpellID)
+            expirationTimer = floor(mainHandExpiration / 1000 / 60)
+            currentMHWepMod = {itemNameFromSpellID, mainHandEnchantID, expirationTimer, itemIcon}
+        end
+    end
+
+    itemLink = GetInventoryItemLink("Player", 17)
+    if itemLink ~= nil then
+        local _, _, _, _, _, _, v7 = GetItemInfo(itemLink)
+        if v7 ~= "Miscellaneous" then
+            if hasOffHandEnchant == true then
+                local itemIDFromSpellID, itemNameFromSpellID = nil, nil
+                for _,category in ipairs(AIU.buffs["Weapon"]) do
+                    if tContains(category[2], offHandEnchantId) then
+                        itemIDFromSpellID = category[2][2]
+                        itemNameFromSpellID = category[1]
+                    end
+                end
+    
+                local itemIcon = GetItemIcon(itemIDFromSpellID)
+                expirationTimer = floor(offHandExpiration / 1000 / 60)
+                currentMHWepMod = {itemNameFromSpellID, offHandEnchantId, expirationTimer, itemIcon}
+            end
+        end
+    end
+
     if currentFlask == nil then
         currentFlaskText = colorRed .. questionMarkIcon .. " NO FLASK!" .. colorEnd
     else
@@ -164,7 +205,7 @@ function addonMain:CheckConsumables(inputFrame)
         elseif currentFlask[3] > 10 then
             currentFlaskText = collorGreen .. currentFlask[3] .. " minutes.".. colorEnd
         end
-        currentFlaskText = "\124T" .. currentFlask[4] .. ":12\124t " .. currentFlaskText
+        currentFlaskText = "\124T" .. currentFlask[4] .. ":14\124t " .. currentFlaskText
     end
 
     if currentFood == nil then
@@ -175,7 +216,7 @@ function addonMain:CheckConsumables(inputFrame)
         elseif currentFood[3] > 10 then
             currentFoodText = collorGreen .. currentFood[3] .. " minutes.".. colorEnd
         end
-        currentFoodText = "\124T" .. currentFood[4] .. ":12\124t " .. currentFoodText
+        currentFoodText = "\124T" .. currentFood[4] .. ":14\124t " .. currentFoodText
     end
 
     if currentRune == nil then
@@ -186,8 +227,23 @@ function addonMain:CheckConsumables(inputFrame)
         elseif currentRune[3] > 10 then
             currentRuneText = collorGreen .. currentRune[3] .. " minutes.".. colorEnd
         end
-        currentRuneText = "\124T" .. currentRune[4] .. ":12\124t " .. currentRuneText
+        currentRuneText = "\124T" .. currentRune[4] .. ":14\124t " .. currentRuneText
     end
+
+    ----------------------------------------------------------
+
+    if currentMHWepMod == nil then
+        currentMHWepModText = colorRed .. questionMarkIcon .. " NO MH WepMod!" .. colorEnd
+    else
+        if currentMHWepMod[3] <= 10 then
+            currentMHWepModText = colorYellow .. currentMHWepMod[3] .. " minutes.".. colorEnd
+        elseif currentMHWepMod[3] > 10 then
+            currentMHWepModText = collorGreen .. currentMHWepMod[3] .. " minutes.".. colorEnd
+        end
+        currentMHWepModText = "\124T" .. currentMHWepMod[4] .. ":14\124t " .. currentMHWepModText
+    end
+
+    ----------------------------------------------------------
 
     if currentInt == nil then
         currentIntText = colorRed .. questionMarkIcon .. " NO INTELLECT!" .. colorEnd
@@ -197,7 +253,7 @@ function addonMain:CheckConsumables(inputFrame)
         elseif currentInt[3] > 10 then
             currentIntText = collorGreen .. currentInt[3] .. " minutes.".. colorEnd
         end
-        currentIntText = "\124T" .. currentInt[4] .. ":12\124t " .. currentIntText
+        currentIntText = "\124T" .. currentInt[4] .. ":14\124t " .. currentIntText
     end
 
     if currentSta == nil then
@@ -208,7 +264,7 @@ function addonMain:CheckConsumables(inputFrame)
         elseif currentSta[3] > 10 then
             currentStaText = collorGreen .. currentSta[3] .. " minutes.".. colorEnd
         end
-        currentStaText = "\124T" .. currentSta[4] .. ":12\124t " .. currentStaText
+        currentStaText = "\124T" .. currentSta[4] .. ":14\124t " .. currentStaText
     end
 
     if currentAtk == nil then
@@ -219,7 +275,7 @@ function addonMain:CheckConsumables(inputFrame)
         elseif currentAtk[3] > 10 then
             currentAtkText = collorGreen .. currentAtk[3] .. " minutes.".. colorEnd
         end
-        currentAtkText = "\124T" .. currentAtk[4] .. ":12\124t " .. currentAtkText
+        currentAtkText = "\124T" .. currentAtk[4] .. ":14\124t " .. currentAtkText
     end
 
     local cur, max = 0, 0
@@ -244,5 +300,10 @@ function addonMain:CheckConsumables(inputFrame)
     currentDurText = currentDurText .. currentDur .. "% Durability." .. colorEnd
 
     inputFrame:SetText(readyCheckDefaultText)
-    BuffsLabel.contentText:SetText(currentFlaskText .. "\n" .. currentFoodText .. "\n" .. currentRuneText .. "\n" .. currentIntText .. "\n" .. currentStaText .. "\n" .. currentAtkText .. "\n" .. currentDurText)
+    local printText = currentFlaskText .. "\n" .. currentFoodText .. "\n" .. currentRuneText .. "\n" .. currentMHWepModText
+    if currentOHWepModText ~= nil then
+        printText = printText .. "     " .. currentOHWepModText
+    end
+    printText = printText .. "\n"  .. currentIntText .. "\n" .. currentStaText .. "\n" .. currentAtkText .. "\n" .. currentDurText
+    BuffsLabel.contentText:SetText(printText)
 end
