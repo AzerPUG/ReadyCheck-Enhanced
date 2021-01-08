@@ -1,6 +1,6 @@
 local GlobalAddonName, AIU = ...
 
-local AZPIUReadyCheckVersion = 19
+local AZPIUReadyCheckVersion = 20
 local dash = " - "
 local name = "InstanceUtility" .. dash .. "ReadyCheck"
 local nameFull = ("AzerPUG " .. name)
@@ -89,6 +89,15 @@ function addonMain:ChangeOptionsText()
     ReadyCheckSubPanelHeader:SetWidth(ReadyCheckSubPanel:GetWidth())
     ReadyCheckSubPanelHeader:SetHeight(ReadyCheckSubPanel:GetHeight())
     ReadyCheckSubPanelHeader:SetPoint("TOP", 0, -10)
+
+    local ReadyCheckSubPanelText = ReadyCheckSubPanel:CreateFontString("ReadyCheckSubPanelHeader", "ARTWORK", "GameFontNormalLarge")
+    ReadyCheckSubPanelText:SetWidth(ReadyCheckSubPanel:GetWidth())
+    ReadyCheckSubPanelText:SetHeight(ReadyCheckSubPanel:GetHeight())
+    ReadyCheckSubPanelText:SetPoint("TOPLEFT", 0, -50)
+    ReadyCheckSubPanelText:SetText(
+        "AzerPUG-GameUtility-ReadyCheck does not have options yet.\n" ..
+        "For feature requests visit our Discord Server!"
+    )
 end
 
 function addonMain:checkIfBuffInTable(buff, table)
