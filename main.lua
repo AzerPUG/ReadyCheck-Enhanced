@@ -1,6 +1,6 @@
 local GlobalAddonName, AIU = ...
 
-local AZPIUReadyCheckVersion = 20
+local AZPIUReadyCheckVersion = 22
 local dash = " - "
 local name = "InstanceUtility" .. dash .. "ReadyCheck"
 local nameFull = ("AzerPUG " .. name)
@@ -9,6 +9,7 @@ local addonMain = LibStub("AceAddon-3.0"):NewAddon("InstanceUtility-ReadyCheck",
 local respondedToReadyCheck = false
 
 local readyCheckDefaultText = nil
+local ReadyCheckCustomFrame = nil
 
 function AZP.IU.VersionControl:ReadyCheck()
     return AZPIUReadyCheckVersion
@@ -23,11 +24,28 @@ function AZP.IU.OnLoad:ReadyCheck(self)
     InstanceUtilityAddonFrame:RegisterEvent("READY_CHECK_FINISHED")
 
     AZP.AddonHelper:DelayedExecution(5, function()
-        local pointY, relativeToY, relativePointY, xY, yY = ReadyCheckFrameYesButton:GetPoint()
-        local pointN, relativeToN, relativePointN, xN, yN = ReadyCheckFrameNoButton:GetPoint()
-        ReadyCheckFrame:SetSize(300, 225)
-        ReadyCheckFrameYesButton:SetPoint(pointY, relativeToY, relativePointY, xY, yY - 75)
-        ReadyCheckFrameNoButton:SetPoint(pointN, relativeToN, relativePointN, xN, yN - 75)
+        ReadyCheckCustomFrame = CreateFrame("Frame", "ReadyCheckCustomFrame", UIParent, "BackdropTemplate")
+        ReadyCheckCustomFrame:SetSize(300, 225)
+        ReadyCheckCustomFrame:SetPoint("CENTER", 0, 0)
+        ReadyCheckCustomFrame:SetBackdrop({
+            bgFile = "Interface/Tooltips/UI-Tooltip-Background",
+            edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
+            edgeSize = 12,
+            insets = { left = 1, right = 1, top = 1, bottom = 1 },
+        })
+        ReadyCheckCustomFrame:SetBackdropColor(0.25, 0.25, 0.25, 1)
+        ReadyCheckCustomFrame:Hide()
+
+        ReadyCheckFrameYesButton:SetParent(ReadyCheckCustomFrame)
+        ReadyCheckFrameYesButton:ClearAllPoints()
+        ReadyCheckFrameYesButton:SetPoint("BOTTOMLEFT", 25, 10)
+        ReadyCheckFrameNoButton:SetParent(ReadyCheckCustomFrame)
+        ReadyCheckFrameNoButton:ClearAllPoints()
+        ReadyCheckFrameNoButton:SetPoint("BOTTOMRIGHT", -25, 10)
+
+        ReadyCheckCustomFrame.HeaderText = ReadyCheckCustomFrame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+        ReadyCheckCustomFrame.HeaderText:SetSize(ReadyCheckCustomFrame:GetWidth(), 25)
+        ReadyCheckCustomFrame.HeaderText:SetPoint("TOP", 0, 0)
     end)
 
     local AZPReadyNowButton = CreateFrame("Button", "AZPReadyNowButton", UIParent, "UIPanelButtonTemplate")
@@ -45,10 +63,8 @@ function AZP.IU.OnLoad:ReadyCheck(self)
         else
             SendChatMessage("I AM READY NOW!" ,"PARTY") 
         end
-        
-        AZPReadyNowButton:Hide() 
+        AZPReadyNowButton:Hide()
     end )
-
     AZPReadyNowButton:Hide()
 end
 
@@ -56,6 +72,8 @@ function AZP.IU.OnEvent:ReadyCheck(event, arg1, ...)
     if event == "READY_CHECK" then
         local player = arg1
         if (player ~= UnitName("player")) then
+            ReadyCheckFrame:Hide()
+            ReadyCheckCustomFrame:Show()
             addonMain:CheckConsumables(ReadyCheckFrameText)
             respondedToReadyCheck = false
         else
@@ -70,11 +88,13 @@ function AZP.IU.OnEvent:ReadyCheck(event, arg1, ...)
         local player = arg1
         if (UnitName(player) == UnitName("player")) then
             respondedToReadyCheck = true
+            ReadyCheckCustomFrame:Hide()
         end
     elseif event == "READY_CHECK_FINISHED" then
         if not respondedToReadyCheck then
             AZPReadyNowButton:Show()
         end
+        ReadyCheckCustomFrame:Hide()
     end
 end
 
@@ -126,7 +146,7 @@ function addonMain:CheckConsumables(inputFrame)
     local collorGreen = "\124cFF00FF00"
     local colorEnd = "\124r"
     if BuffsLabel == nil then
-        local BuffsLabel = CreateFrame("Frame", "BuffsLabel", ReadyCheckFrame)
+        local BuffsLabel = CreateFrame("Frame", "BuffsLabel", ReadyCheckCustomFrame)
         BuffsLabel:SetSize(100, 150)
         BuffsLabel:SetPoint("TOP", 0, -30)
         BuffsLabel.contentText = BuffsLabel:CreateFontString("BuffsLabel", "ARTWORK", "GameFontNormalLarge")
@@ -198,7 +218,7 @@ function addonMain:CheckConsumables(inputFrame)
                         itemNameFromSpellID = category[1]
                     end
                 end
-    
+
                 local itemIcon = GetItemIcon(itemIDFromSpellID)
                 expirationTimer = floor(offHandExpiration / 1000 / 60)
                 currentMHWepMod = {itemNameFromSpellID, offHandEnchantId, expirationTimer, itemIcon}
@@ -308,7 +328,7 @@ function addonMain:CheckConsumables(inputFrame)
     end
     currentDurText = currentDurText .. currentDur .. "% Durability." .. colorEnd
 
-    inputFrame:SetText(readyCheckDefaultText)
+    ReadyCheckCustomFrame.HeaderText:SetText(readyCheckDefaultText)
     local printText = currentFlaskText .. "\n" .. currentFoodText .. "\n" .. currentRuneText .. "\n" .. currentMHWepModText
     if currentOHWepModText ~= nil then
         printText = printText .. "     " .. currentOHWepModText
