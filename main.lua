@@ -1,6 +1,6 @@
 local GlobalAddonName, AIU = ...
 
-local AZPIUReadyCheckVersion = 22
+local AZPIUReadyCheckVersion = 23
 local dash = " - "
 local name = "InstanceUtility" .. dash .. "ReadyCheck"
 local nameFull = ("AzerPUG " .. name)
@@ -81,7 +81,7 @@ function AZP.IU.OnEvent:ReadyCheck(event, arg1, ...)
         end
     elseif event == "UNIT_AURA" then
         local player = arg1
-        if (player ~= UnitName("player")) and ReadyCheckFrame:IsShown() then
+        if (UnitName(player) == UnitName("player")) and ReadyCheckCustomFrame:IsShown() then
             addonMain:CheckConsumables(ReadyCheckFrameText)
         end
     elseif event == "READY_CHECK_CONFIRM" then
