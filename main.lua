@@ -1,6 +1,6 @@
 local GlobalAddonName, AIU = ...
 
-local AZPIUReadyCheckVersion = 23
+local AZPIUReadyCheckVersion = 24
 local dash = " - "
 local name = "InstanceUtility" .. dash .. "ReadyCheck"
 local nameFull = ("AzerPUG " .. name)
@@ -221,7 +221,7 @@ function addonMain:CheckConsumables(inputFrame)
 
                 local itemIcon = GetItemIcon(itemIDFromSpellID)
                 expirationTimer = floor(offHandExpiration / 1000 / 60)
-                currentMHWepMod = {itemNameFromSpellID, offHandEnchantId, expirationTimer, itemIcon}
+                currentOHWepMod = {itemNameFromSpellID, offHandEnchantId, expirationTimer, itemIcon}
             end
         end
     end
@@ -270,6 +270,17 @@ function addonMain:CheckConsumables(inputFrame)
             currentMHWepModText = collorGreen .. currentMHWepMod[3] .. " minutes.".. colorEnd
         end
         currentMHWepModText = "\124T" .. currentMHWepMod[4] .. ":14\124t " .. currentMHWepModText
+    end
+
+    if currentOHWepMod == nil then
+        currentOHWepModText = colorRed .. questionMarkIcon .. " NO MH WepMod!" .. colorEnd
+    else
+        if currentOHWepMod[3] <= 10 then
+            currentOHWepModText = colorYellow .. currentOHWepMod[3] .. " minutes.".. colorEnd
+        elseif currentOHWepMod[3] > 10 then
+            currentOHWepModText = collorGreen .. currentOHWepMod[3] .. " minutes.".. colorEnd
+        end
+        currentOHWepModText = "\124T" .. currentOHWepMod[4] .. ":14\124t " .. currentOHWepModText
     end
 
     ----------------------------------------------------------
