@@ -1,6 +1,6 @@
 local GlobalAddonName, AIU = ...
 
-local AZPIUReadyCheckVersion = 24
+local AZPIUReadyCheckVersion = 25
 local dash = " - "
 local name = "InstanceUtility" .. dash .. "ReadyCheck"
 local nameFull = ("AzerPUG " .. name)
@@ -23,30 +23,28 @@ function AZP.IU.OnLoad:ReadyCheck(self)
     InstanceUtilityAddonFrame:RegisterEvent("READY_CHECK_CONFIRM")
     InstanceUtilityAddonFrame:RegisterEvent("READY_CHECK_FINISHED")
 
-    AZP.AddonHelper:DelayedExecution(5, function()
-        ReadyCheckCustomFrame = CreateFrame("Frame", "ReadyCheckCustomFrame", UIParent, "BackdropTemplate")
-        ReadyCheckCustomFrame:SetSize(300, 225)
-        ReadyCheckCustomFrame:SetPoint("CENTER", 0, 0)
-        ReadyCheckCustomFrame:SetBackdrop({
-            bgFile = "Interface/Tooltips/UI-Tooltip-Background",
-            edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
-            edgeSize = 12,
-            insets = { left = 1, right = 1, top = 1, bottom = 1 },
-        })
-        ReadyCheckCustomFrame:SetBackdropColor(0.25, 0.25, 0.25, 1)
-        ReadyCheckCustomFrame:Hide()
+    ReadyCheckCustomFrame = CreateFrame("Frame", "ReadyCheckCustomFrame", UIParent, "BackdropTemplate")
+    ReadyCheckCustomFrame:SetSize(300, 225)
+    ReadyCheckCustomFrame:SetPoint("CENTER", 0, 0)
+    ReadyCheckCustomFrame:SetBackdrop({
+        bgFile = "Interface/Tooltips/UI-Tooltip-Background",
+        edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
+        edgeSize = 12,
+        insets = { left = 1, right = 1, top = 1, bottom = 1 },
+    })
+    ReadyCheckCustomFrame:SetBackdropColor(0.25, 0.25, 0.25, 1)
+    ReadyCheckCustomFrame:Hide()
 
-        ReadyCheckFrameYesButton:SetParent(ReadyCheckCustomFrame)
-        ReadyCheckFrameYesButton:ClearAllPoints()
-        ReadyCheckFrameYesButton:SetPoint("BOTTOMLEFT", 25, 10)
-        ReadyCheckFrameNoButton:SetParent(ReadyCheckCustomFrame)
-        ReadyCheckFrameNoButton:ClearAllPoints()
-        ReadyCheckFrameNoButton:SetPoint("BOTTOMRIGHT", -25, 10)
+    ReadyCheckFrameYesButton:SetParent(ReadyCheckCustomFrame)
+    ReadyCheckFrameYesButton:ClearAllPoints()
+    ReadyCheckFrameYesButton:SetPoint("BOTTOMLEFT", 25, 10)
+    ReadyCheckFrameNoButton:SetParent(ReadyCheckCustomFrame)
+    ReadyCheckFrameNoButton:ClearAllPoints()
+    ReadyCheckFrameNoButton:SetPoint("BOTTOMRIGHT", -25, 10)
 
-        ReadyCheckCustomFrame.HeaderText = ReadyCheckCustomFrame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-        ReadyCheckCustomFrame.HeaderText:SetSize(ReadyCheckCustomFrame:GetWidth(), 25)
-        ReadyCheckCustomFrame.HeaderText:SetPoint("TOP", 0, 0)
-    end)
+    ReadyCheckCustomFrame.HeaderText = ReadyCheckCustomFrame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+    ReadyCheckCustomFrame.HeaderText:SetSize(ReadyCheckCustomFrame:GetWidth(), 25)
+    ReadyCheckCustomFrame.HeaderText:SetPoint("TOP", 0, 0)
 
     local AZPReadyNowButton = CreateFrame("Button", "AZPReadyNowButton", UIParent, "UIPanelButtonTemplate")
     AZPReadyNowButton.contentText = AZPReadyNowButton:CreateFontString(nil, "ARTWORK", "GameFontNormalHuge")
@@ -223,7 +221,11 @@ function addonMain:CheckConsumables(inputFrame)
                 expirationTimer = floor(offHandExpiration / 1000 / 60)
                 currentOHWepMod = {itemNameFromSpellID, offHandEnchantId, expirationTimer, itemIcon}
             end
+        else
+            currentOHWepMod = "Unmoddable"
         end
+    else
+        currentOHWepMod = "Unmoddable"
     end
 
     if currentFlask == nil then
@@ -259,8 +261,6 @@ function addonMain:CheckConsumables(inputFrame)
         currentRuneText = "\124T" .. currentRune[4] .. ":14\124t " .. currentRuneText
     end
 
-    ----------------------------------------------------------
-
     if currentMHWepMod == nil then
         currentMHWepModText = colorRed .. questionMarkIcon .. " NO MH WepMod!" .. colorEnd
     else
@@ -272,18 +272,18 @@ function addonMain:CheckConsumables(inputFrame)
         currentMHWepModText = "\124T" .. currentMHWepMod[4] .. ":14\124t " .. currentMHWepModText
     end
 
-    if currentOHWepMod == nil then
-        currentOHWepModText = colorRed .. questionMarkIcon .. " NO MH WepMod!" .. colorEnd
-    else
-        if currentOHWepMod[3] <= 10 then
-            currentOHWepModText = colorYellow .. currentOHWepMod[3] .. " minutes.".. colorEnd
-        elseif currentOHWepMod[3] > 10 then
-            currentOHWepModText = collorGreen .. currentOHWepMod[3] .. " minutes.".. colorEnd
+    if currentOHWepMod ~= "Unmoddable" then
+        if currentOHWepMod == nil then
+            currentOHWepModText = colorRed .. questionMarkIcon .. " NO OH WepMod!" .. colorEnd
+        else
+            if currentOHWepMod[3] <= 10 then
+                currentOHWepModText = colorYellow .. currentOHWepMod[3] .. " minutes.".. colorEnd
+            elseif currentOHWepMod[3] > 10 then
+                currentOHWepModText = collorGreen .. currentOHWepMod[3] .. " minutes.".. colorEnd
+            end
+            currentOHWepModText = "\124T" .. currentOHWepMod[4] .. ":14\124t " .. currentOHWepModText
         end
-        currentOHWepModText = "\124T" .. currentOHWepMod[4] .. ":14\124t " .. currentOHWepModText
     end
-
-    ----------------------------------------------------------
 
     if currentInt == nil then
         currentIntText = colorRed .. questionMarkIcon .. " NO INTELLECT!" .. colorEnd
