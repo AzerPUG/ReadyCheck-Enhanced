@@ -4,7 +4,7 @@ AIU.buffs =
 {
     ["Flask"] =
     {
-        {"PrimStat", {307185}},
+        {"PrimStat", {307185, 307166}},
         {"Stamina", {307187}},
     },
     ["Food"] =

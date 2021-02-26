@@ -1,6 +1,6 @@
 local GlobalAddonName, AIU = ...
 
-local AZPIUReadyCheckVersion = 25
+local AZPIUReadyCheckVersion = 26
 local dash = " - "
 local name = "InstanceUtility" .. dash .. "ReadyCheck"
 local nameFull = ("AzerPUG " .. name)
