@@ -1,6 +1,6 @@
 local GlobalAddonName, AIU = ...
 
-local AZPIUReadyCheckVersion = 26
+local AZPIUReadyCheckVersion = 27
 local dash = " - "
 local name = "InstanceUtility" .. dash .. "ReadyCheck"
 local nameFull = ("AzerPUG " .. name)
@@ -130,11 +130,13 @@ end
 function addonMain:CheckConsumables(inputFrame)
     local questionMarkIcon = "\124T134400:14\124t"
     local repairIcon = "\124T132281:14\124t"
+    local reinforceIcon = "\124T3528447:14\124t"
     local currentFood, currentFoodText = nil, nil
     local currentFlask, currentFlaskText = nil, nil
     local currentRune, currentRuneText = nil, nil
     local currentMHWepMod, currentMHWepModText = nil, nil
     local currentOHWepMod, currentOHWepModText = nil, nil
+    local currentReinforce, currentReinforceText = nil, nil
     local currentInt, currentIntText = nil, nil
     local currentSta, currentStaText = nil, nil
     local currentAtk, currentAtkText = nil, nil
@@ -318,6 +320,35 @@ function addonMain:CheckConsumables(inputFrame)
         currentAtkText = "\124T" .. currentAtk[4] .. ":14\124t " .. currentAtkText
     end
 
+    ------------------------------------------------------------------------------------------
+    local ScanningTooltip = CreateFrame("GameTooltip", "ScanningTooltipText", nil, "GameTooltipTemplate")
+    ScanningTooltip:SetOwner(UIParent, "ANCHOR_NONE")
+    ScanningTooltip:SetInventoryItem("player", 5)
+    local ttname = ScanningTooltip:GetName()
+
+    currentReinforceText = colorRed .. reinforceIcon .. " NO REINFORCEMENT!" .. colorEnd
+
+    for i = 1, ScanningTooltip:NumLines() do
+        local left = _G[ttname .. "TextLeft" .. i]
+        local text = left:GetText()
+        if text and text ~= "" then
+            if text:find("%(+") then
+                --print("REINFORCED FOUND!")
+                --print(text)
+                local currentReinforceCheck = text:sub(text:find("%(+") + 1, text:find("%(+") + 3)
+                if currentReinforceCheck == "+32" then
+                    currentReinforceCheck = text:sub(text:find("%)%s%(") + 3, -2)
+                    --print(currentReinforceCheck)
+                    currentReinforceText = reinforceIcon .. " " .. currentReinforceCheck
+                end
+            end
+        end
+
+        
+    end
+    ScanningTooltip:ClearLines()
+    ------------------------------------------------------------------------------------------
+
     local cur, max = 0, 0
     for eIndex = 1, 17 do
         local v1, v2 = GetInventoryItemDurability(eIndex)
@@ -344,6 +375,6 @@ function addonMain:CheckConsumables(inputFrame)
     if currentOHWepModText ~= nil then
         printText = printText .. "     " .. currentOHWepModText
     end
-    printText = printText .. "\n"  .. currentIntText .. "\n" .. currentStaText .. "\n" .. currentAtkText .. "\n" .. currentDurText
+    printText = printText .. "\n"  .. currentReinforceText .. "\n" .. currentIntText .. "\n" .. currentStaText .. "\n" .. currentAtkText .. "\n" .. currentDurText
     BuffsLabel.contentText:SetText(printText)
 end
