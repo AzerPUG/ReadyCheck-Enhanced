@@ -169,6 +169,7 @@ function addonMain:ArmorKitScan()
                     currentReinforceCheck = text:sub(text:find("%)%s%(") + 3, - 2)
                     
                     local num, unit = string.match(currentReinforceCheck, "(%d+) (%a+)")
+                    num = tonumber(num)
                     local isMinutes = ITEM_ENCHANT_TIME_LEFT_MIN:find(unit) ~= nil
                     local isHours =ITEM_ENCHANT_TIME_LEFT_HOURS:find(unit) ~= nil
                     if isMinutes then
