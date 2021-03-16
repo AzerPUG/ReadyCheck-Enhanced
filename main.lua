@@ -127,10 +127,69 @@ function addonMain:checkIfBuffInTable(buff, table)
     return nil
 end
 
-function addonMain:CheckConsumables(inputFrame)
+function addonMain:CheckConsumableTimer(consumable, missingText)
     local questionMarkIcon = "\124T134400:14\124t"
+    local colorRed = "\124cFFFF0000"
+    local colorYellow = "\124cFFFFFF00"
+    local collorGreen = "\124cFF00FF00"
+    local colorEnd = "\124r"
+
+
+    if consumable == nil then
+        return colorRed .. questionMarkIcon .. missingText .. colorEnd
+    else
+        local timeText
+        if consumable[3] <= 10 then
+            timeText = colorYellow .. consumable[3] .. " minutes.".. colorEnd
+        elseif consumable[3] > 60 then
+            local hours = math.floor(consumable[3] / 60)
+            timeText = collorGreen .. hours.. " hours.".. colorEnd
+        elseif consumable[3] > 10 then
+            timeText = collorGreen .. consumable[3] .. " minutes.".. colorEnd
+        end
+        return "\124T" .. consumable[4] .. ":14\124t " .. timeText
+    end
+end
+
+function addonMain:ArmorKitScan()
+    local ScanningTooltip = CreateFrame("GameTooltip", "ScanningTooltipText", nil, "GameTooltipTemplate")
+    ScanningTooltip:SetOwner(UIParent, "ANCHOR_NONE")
+    ScanningTooltip:SetInventoryItem("player", 5)
+    local ttname = ScanningTooltip:GetName()
+    
+    for i = 1, ScanningTooltip:NumLines() do
+        local left = _G[ttname .. "TextLeft" .. i]
+        local text = left:GetText()
+        if text and text ~= "" then
+            if text:find("%(+") then
+                --print("REINFORCED FOUND!")
+                --print(text)
+                local currentReinforceCheck = text:sub(text:find("%(+") + 1, text:find("%(+") + 3)
+                if currentReinforceCheck == "+32" then
+                    currentReinforceCheck = text:sub(text:find("%)%s%(") + 3, - 2)
+                    
+                    local num, unit = string.match(currentReinforceCheck, "(%d+) (%a+)")
+                    local isMinutes = ITEM_ENCHANT_TIME_LEFT_MIN:find(unit) ~= nil
+                    local isHours =ITEM_ENCHANT_TIME_LEFT_HOURS:find(unit) ~= nil
+                    if isMinutes then
+                        return num
+                    end
+                    if isHours then
+                        return num * 60
+                    end
+                end
+            end
+        end
+    end
+    ScanningTooltip:ClearLines()
+    
+    return nil
+end
+
+function addonMain:CheckConsumables(inputFrame)
+    local questionMarkIcon = "\124T134400:14\124t "
     local repairIcon = "\124T132281:14\124t"
-    local reinforceIcon = "\124T3528447:14\124t"
+    local reinforceIcon = "3528447"
     local currentFood, currentFoodText = nil, nil
     local currentFlask, currentFlaskText = nil, nil
     local currentRune, currentRuneText = nil, nil
@@ -187,6 +246,8 @@ function addonMain:CheckConsumables(inputFrame)
         buffName, icon, expirationTimer, spellID = AZP.AddonHelper:GetBuffNameIconTimerID(i)
     end
 
+    currentReinforce = {"Reinforce", 0, addonMain:ArmorKitScan(), reinforceIcon}
+
     local hasMainHandEnchant, mainHandExpiration, mainHandCharges, mainHandEnchantID, hasOffHandEnchant, offHandExpiration, offHandCharges, offHandEnchantId = GetWeaponEnchantInfo()
     local itemLink, itemID = nil, nil
     itemLink = GetInventoryItemLink("Player", 16)
@@ -230,124 +291,18 @@ function addonMain:CheckConsumables(inputFrame)
         currentOHWepMod = "Unmoddable"
     end
 
-    if currentFlask == nil then
-        currentFlaskText = colorRed .. questionMarkIcon .. " NO FLASK!" .. colorEnd
-    else
-        if currentFlask[3] <= 10 then
-            currentFlaskText = colorYellow .. currentFlask[3] .. " minutes.".. colorEnd
-        elseif currentFlask[3] > 10 then
-            currentFlaskText = collorGreen .. currentFlask[3] .. " minutes.".. colorEnd
-        end
-        currentFlaskText = "\124T" .. currentFlask[4] .. ":14\124t " .. currentFlaskText
-    end
-
-    if currentFood == nil then
-        currentFoodText = colorRed .. questionMarkIcon .. " NO FOOD!" .. colorEnd
-    else
-        if currentFood[3] <= 10 then
-            currentFoodText = colorYellow .. currentFood[3] .. " minutes.".. colorEnd
-        elseif currentFood[3] > 10 then
-            currentFoodText = collorGreen .. currentFood[3] .. " minutes.".. colorEnd
-        end
-        currentFoodText = "\124T" .. currentFood[4] .. ":14\124t " .. currentFoodText
-    end
-
-    if currentRune == nil then
-        currentRuneText = colorRed .. questionMarkIcon .. " NO RUNE!" .. colorEnd
-    else
-        if currentRune[3] <= 10 then
-            currentRuneText = colorYellow .. currentRune[3] .. " minutes.".. colorEnd
-        elseif currentRune[3] > 10 then
-            currentRuneText = collorGreen .. currentRune[3] .. " minutes.".. colorEnd
-        end
-        currentRuneText = "\124T" .. currentRune[4] .. ":14\124t " .. currentRuneText
-    end
-
-    if currentMHWepMod == nil then
-        currentMHWepModText = colorRed .. questionMarkIcon .. " NO MH WepMod!" .. colorEnd
-    else
-        if currentMHWepMod[3] <= 10 then
-            currentMHWepModText = colorYellow .. currentMHWepMod[3] .. " minutes.".. colorEnd
-        elseif currentMHWepMod[3] > 10 then
-            currentMHWepModText = collorGreen .. currentMHWepMod[3] .. " minutes.".. colorEnd
-        end
-        currentMHWepModText = "\124T" .. currentMHWepMod[4] .. ":14\124t " .. currentMHWepModText
-    end
-
+    currentFlaskText = addonMain:CheckConsumableTimer(currentFlask, "NO FLASK!")
+    currentFoodText = addonMain:CheckConsumableTimer(currentFood, "NO FOOD!")
+    currentRuneText = addonMain:CheckConsumableTimer(currentRune, "NO RUNE!")
+    currentMHWepModText = addonMain:CheckConsumableTimer(currentMHWepMod, "NO MH WepMod!")
     if currentOHWepMod ~= "Unmoddable" then
-        if currentOHWepMod == nil then
-            currentOHWepModText = colorRed .. questionMarkIcon .. " NO OH WepMod!" .. colorEnd
-        else
-            if currentOHWepMod[3] <= 10 then
-                currentOHWepModText = colorYellow .. currentOHWepMod[3] .. " minutes.".. colorEnd
-            elseif currentOHWepMod[3] > 10 then
-                currentOHWepModText = collorGreen .. currentOHWepMod[3] .. " minutes.".. colorEnd
-            end
-            currentOHWepModText = "\124T" .. currentOHWepMod[4] .. ":14\124t " .. currentOHWepModText
-        end
+        currentOHWepModText = addonMain:CheckConsumableTimer(currentOHWepMod, "NO OH WepMod!")
     end
 
-    if currentInt == nil then
-        currentIntText = colorRed .. questionMarkIcon .. " NO INTELLECT!" .. colorEnd
-    else
-        if currentInt[3] <= 10 then
-            currentIntText = colorYellow .. currentInt[3] .. " minutes.".. colorEnd
-        elseif currentInt[3] > 10 then
-            currentIntText = collorGreen .. currentInt[3] .. " minutes.".. colorEnd
-        end
-        currentIntText = "\124T" .. currentInt[4] .. ":14\124t " .. currentIntText
-    end
-
-    if currentSta == nil then
-        currentStaText = colorRed .. questionMarkIcon .. " NO STAMINA!" .. colorEnd
-    else
-        if currentSta[3] <= 10 then
-            currentStaText = colorYellow .. currentSta[3] .. " minutes.".. colorEnd
-        elseif currentSta[3] > 10 then
-            currentStaText = collorGreen .. currentSta[3] .. " minutes.".. colorEnd
-        end
-        currentStaText = "\124T" .. currentSta[4] .. ":14\124t " .. currentStaText
-    end
-
-    if currentAtk == nil then
-        currentAtkText = colorRed .. questionMarkIcon .. " NO ATTACK POWER!" .. colorEnd
-    else
-        if currentAtk[3] <= 10 then
-            currentAtkText = colorYellow .. currentAtk[3] .. " minutes.".. colorEnd
-        elseif currentAtk[3] > 10 then
-            currentAtkText = collorGreen .. currentAtk[3] .. " minutes.".. colorEnd
-        end
-        currentAtkText = "\124T" .. currentAtk[4] .. ":14\124t " .. currentAtkText
-    end
-
-    ------------------------------------------------------------------------------------------
-    local ScanningTooltip = CreateFrame("GameTooltip", "ScanningTooltipText", nil, "GameTooltipTemplate")
-    ScanningTooltip:SetOwner(UIParent, "ANCHOR_NONE")
-    ScanningTooltip:SetInventoryItem("player", 5)
-    local ttname = ScanningTooltip:GetName()
-
-    currentReinforceText = colorRed .. reinforceIcon .. " NO REINFORCEMENT!" .. colorEnd
-
-    for i = 1, ScanningTooltip:NumLines() do
-        local left = _G[ttname .. "TextLeft" .. i]
-        local text = left:GetText()
-        if text and text ~= "" then
-            if text:find("%(+") then
-                --print("REINFORCED FOUND!")
-                --print(text)
-                local currentReinforceCheck = text:sub(text:find("%(+") + 1, text:find("%(+") + 3)
-                if currentReinforceCheck == "+32" then
-                    currentReinforceCheck = text:sub(text:find("%)%s%(") + 3, -2)
-                    --print(currentReinforceCheck)
-                    currentReinforceText = reinforceIcon .. " " .. currentReinforceCheck
-                end
-            end
-        end
-
-        
-    end
-    ScanningTooltip:ClearLines()
-    ------------------------------------------------------------------------------------------
+    currentIntText = addonMain:CheckConsumableTimer(currentInt, "NO INTELLECT!")
+    currentStaText = addonMain:CheckConsumableTimer(currentSta, "NO STAMINA!")
+    currentAtkText = addonMain:CheckConsumableTimer(currentAtk, "NO ATTACK POWER!")
+    currentReinforceText = addonMain:CheckConsumableTimer(currentReinforce, "NO REINFORCEMENT!")
 
     local cur, max = 0, 0
     for eIndex = 1, 17 do
