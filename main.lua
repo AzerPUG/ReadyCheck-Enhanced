@@ -246,8 +246,10 @@ function addonMain:CheckConsumables(inputFrame)
         buffName, icon, expirationTimer, spellID = AZP.AddonHelper:GetBuffNameIconTimerID(i)
     end
 
-    currentReinforce = {"Reinforce", 0, addonMain:ArmorKitScan(), reinforceIcon}
-
+    local reinforceTime =  addonMain:ArmorKitScan()
+    if reinforceTime ~= nil then
+        currentReinforce = {"Reinforce", 0, addonMain:ArmorKitScan(), reinforceIcon}
+    end
     local hasMainHandEnchant, mainHandExpiration, mainHandCharges, mainHandEnchantID, hasOffHandEnchant, offHandExpiration, offHandCharges, offHandEnchantId = GetWeaponEnchantInfo()
     local itemLink, itemID = nil, nil
     itemLink = GetInventoryItemLink("Player", 16)
