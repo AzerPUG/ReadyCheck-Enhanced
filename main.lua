@@ -9,10 +9,19 @@ local addonMain = LibStub("AceAddon-3.0"):NewAddon("InstanceUtility-ReadyCheck",
 local respondedToReadyCheck = false
 
 local readyCheckDefaultText = nil
-local ReadyCheckCustomFrame = nil
 
 function AZP.IU.VersionControl:ReadyCheck()
     return AZPIUReadyCheckVersion
+end
+
+function addonMain:SetBackDrop(OnFrame)
+    OnFrame:SetBackdrop({
+        bgFile = "Interface/Tooltips/UI-Tooltip-Background",
+        edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
+        edgeSize = 12,
+        insets = { left = 1, right = 1, top = 1, bottom = 1 },
+    })
+    OnFrame:SetBackdropColor(0.25, 0.25, 0.25, 1)
 end
 
 function AZP.IU.OnLoad:ReadyCheck(self)
@@ -23,16 +32,11 @@ function AZP.IU.OnLoad:ReadyCheck(self)
     InstanceUtilityAddonFrame:RegisterEvent("READY_CHECK_CONFIRM")
     InstanceUtilityAddonFrame:RegisterEvent("READY_CHECK_FINISHED")
 
-    ReadyCheckCustomFrame = CreateFrame("Frame", "ReadyCheckCustomFrame", UIParent, "BackdropTemplate")
-    ReadyCheckCustomFrame:SetSize(300, 225)
-    ReadyCheckCustomFrame:SetPoint("CENTER", 0, 0)
-    ReadyCheckCustomFrame:SetBackdrop({
-        bgFile = "Interface/Tooltips/UI-Tooltip-Background",
-        edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
-        edgeSize = 12,
-        insets = { left = 1, right = 1, top = 1, bottom = 1 },
-    })
-    ReadyCheckCustomFrame:SetBackdropColor(0.25, 0.25, 0.25, 1)
+    addonMain:SetBackDrop(ReadyCheckCustomFrame)
+    addonMain:SetBackDrop(ReadyCheckConsumables)
+    addonMain:SetBackDrop(ReadyCheckRaidBuff)
+    addonMain:SetBackDrop(ReadyCheckGearBuff)
+    addonMain:SetBackDrop(ReadyCheckGearInfo)
     ReadyCheckCustomFrame:Hide()
 
     ReadyCheckFrameYesButton:SetParent(ReadyCheckCustomFrame)
@@ -188,6 +192,7 @@ function addonMain:ArmorKitScan()
 end
 
 function addonMain:CheckConsumables(inputFrame)
+
     local questionMarkIcon = "\124T134400:14\124t "
     local repairIcon = "\124T132281:14\124t"
     local reinforceIcon = "3528447"
@@ -205,14 +210,6 @@ function addonMain:CheckConsumables(inputFrame)
     local colorYellow = "\124cFFFFFF00"
     local collorGreen = "\124cFF00FF00"
     local colorEnd = "\124r"
-    if BuffsLabel == nil then
-        local BuffsLabel = CreateFrame("Frame", "BuffsLabel", ReadyCheckCustomFrame)
-        BuffsLabel:SetSize(100, 150)
-        BuffsLabel:SetPoint("TOP", 0, -30)
-        BuffsLabel.contentText = BuffsLabel:CreateFontString("BuffsLabel", "ARTWORK", "GameFontNormalLarge")
-        BuffsLabel.contentText:SetPoint("TOP", 0, 0)
-        BuffsLabel.contentText:SetJustifyH("LEFT")
-    end
 
     readyCheckDefaultText = inputFrame:GetText()
     local endOfLine, _ = string.find(readyCheckDefaultText, "\n")
@@ -329,10 +326,17 @@ function addonMain:CheckConsumables(inputFrame)
     currentDurText = currentDurText .. currentDur .. "% Durability." .. colorEnd
 
     ReadyCheckCustomFrame.HeaderText:SetText(readyCheckDefaultText)
+    ReadyCheckConsumablesText:SetText( currentFlaskText .. "\n" .. currentFoodText .. "\n" .. currentRuneText)
+    ReadyCheckRaidBuffText:SetText(currentIntText .. "\n" .. currentStaText .. "\n" .. currentAtkText)
+    local currentWepModText = currentMHWepModText
+    if currentOHWepModText ~= nil then
+        currentWepModText = currentWepModText ..  "\n" .. currentOHWepModText
+    end
+    ReadyCheckGearBuffsText:SetText(currentWepModText ..  "\n" .. currentReinforceText )
+    ReadyCheckGearInfoText:SetText(currentDurText)
     local printText = currentFlaskText .. "\n" .. currentFoodText .. "\n" .. currentRuneText .. "\n" .. currentMHWepModText
     if currentOHWepModText ~= nil then
         printText = printText .. "     " .. currentOHWepModText
     end
     printText = printText .. "\n"  .. currentReinforceText .. "\n" .. currentIntText .. "\n" .. currentStaText .. "\n" .. currentAtkText .. "\n" .. currentDurText
-    BuffsLabel.contentText:SetText(printText)
 end

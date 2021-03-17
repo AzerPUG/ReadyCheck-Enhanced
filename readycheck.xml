@@ -1,0 +1,108 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+    <Frame name="ReadyCheckCustomFrame" inherits="BackdropTemplate" parent="UIParent">
+        <Anchors>
+            <Anchor point="CENTER" />
+        </Anchors>
+        <Size x="400" y="225"/>
+        <Frames>
+            <Frame name="ReadyCheckConsumables" inherits="BackdropTemplate">
+                <Size x="180" y="80"/>
+                <Anchors>
+                    <Anchor point="TOPLEFT" y="-30" x="5"/>
+                </Anchors>
+                <Layers>
+                    <Layer>
+                        <FontString text="Consumables" inherits="GameFontNormal">
+                            <Size x="180" y="15"/>
+                            <Anchors>
+                                <Anchor point="TOPLEFT"/>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                    <Layer>
+                        <FontString name="ReadyCheckConsumablesText" inherits="GameFontNormalLarge" justifyH="LEFT">
+                            <Size x="180" y="65"/>
+                            <Anchors>
+                                <Anchor point="TOPLEFT" y="-15"/>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+            </Frame>
+            <Frame name="ReadyCheckRaidBuff" inherits="BackdropTemplate">
+                <Size x="180" y="80"/>
+                <Anchors>
+                    <Anchor point="TOPRIGHT" y="-30" x="-5"/>
+                </Anchors>
+                <Layers>
+                    <Layer>
+                        <FontString text="Raid Buff" inherits="GameFontNormal">
+                            <Size x="180" y="15"/>
+                            <Anchors>
+                                <Anchor point="TOPLEFT"/>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                    <Layer>
+                        <FontString name="ReadyCheckRaidBuffText" inherits="GameFontNormalLarge" justifyH="LEFT">
+                            <Size x="180" y="65"/>
+                            <Anchors>
+                                <Anchor point="TOPLEFT" y="-15"/>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+            </Frame>
+            <Frame name="ReadyCheckGearBuff" inherits="BackdropTemplate">
+                <Size x="180" y="80"/>
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="ReadyCheckConsumables" relativePoint="BOTTOMLEFT" />
+                </Anchors>
+                <Layers>
+                    <Layer>
+                        <FontString text="Gear Buffs" inherits="GameFontNormal">
+                            <Size x="180" y="15"/>
+                            <Anchors>
+                                <Anchor point="TOPLEFT"/>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                    <Layer>
+                        <FontString name="ReadyCheckGearBuffsText" inherits="GameFontNormalLarge" justifyH="LEFT">
+                            <Size x="180" y="65"/>
+                            <Anchors>
+                                <Anchor point="TOPLEFT" y="-15"/>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+            </Frame>
+            <Frame name="ReadyCheckGearInfo" inherits="BackdropTemplate">
+                <Size x="180" y="80"/>
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="ReadyCheckRaidBuff" relativePoint="BOTTOMRIGHT" />
+                </Anchors>
+                <Layers>
+                    <Layer>
+                        <FontString text="Gear Information" inherits="GameFontNormal">
+                            <Size x="180" y="15"/>
+                            <Anchors>
+                                <Anchor point="TOPLEFT"/>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                    <Layer>
+                        <FontString name="ReadyCheckGearInfoText" inherits="GameFontNormalLarge" justifyH="LEFT">
+                            <Size x="180" y="65"/>
+                            <Anchors>
+                                <Anchor point="TOPLEFT" y="-15"/>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+            </Frame>
+        </Frames>
+    </Frame>
+</Ui>
