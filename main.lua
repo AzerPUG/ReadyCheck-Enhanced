@@ -1,6 +1,6 @@
 local GlobalAddonName, AIU = ...
 
-local AZPIUReadyCheckVersion = 28
+local AZPIUReadyCheckVersion = 29
 local dash = " - "
 local name = "InstanceUtility" .. dash .. "ReadyCheck"
 local nameFull = ("AzerPUG " .. name)
@@ -156,18 +156,15 @@ function addonMain:ArmorKitScan()
     ScanningTooltip:SetOwner(UIParent, "ANCHOR_NONE")
     ScanningTooltip:SetInventoryItem("player", 5)
     local ttname = ScanningTooltip:GetName()
-    
+
     for i = 1, ScanningTooltip:NumLines() do
         local left = _G[ttname .. "TextLeft" .. i]
         local text = left:GetText()
         if text and text ~= "" then
             if text:find("%(+") then
-                --print("REINFORCED FOUND!")
-                --print(text)
                 local currentReinforceCheck = text:sub(text:find("%(+") + 1, text:find("%(+") + 3)
                 if currentReinforceCheck == "+32" then
                     currentReinforceCheck = text:sub(text:find("%)%s%(") + 3, - 2)
-                    
                     local num, unit = string.match(currentReinforceCheck, "(%d+) (%a+)")
                     num = tonumber(num)
                     local isMinutes = ITEM_ENCHANT_TIME_LEFT_MIN:find(unit) ~= nil
@@ -183,7 +180,6 @@ function addonMain:ArmorKitScan()
         end
     end
     ScanningTooltip:ClearLines()
-    
     return nil
 end
 
