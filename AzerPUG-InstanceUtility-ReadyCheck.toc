@@ -1,7 +1,7 @@
 ## Interface: 90005
 ## Title: |cFF00FFFFAZP|r |cFFFF00FFIU|r |cFFFFFF00ReadyCheck|r
 ## Author: Tex & AzerPUG Gaming Community (www.azerpug.com/discord)
-## Dependencies: AzerPUG-InstanceUtility-Core 
+## OptionalDeps: AzerPUG's Core
 ## Notes: Utility for Instances (Raids and Dungeons)!
 ## Version: SL 9.0.5 (For actual addon version, check main.lua)
 ## SavedVariablesPerCharacter: AIUCheckedData
