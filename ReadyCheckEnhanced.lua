@@ -8,21 +8,20 @@ AZP.VersionControl.ReadyCheckEnhanced = 29
 if AZP.ReadyCheckEnhanced == nil then AZP.ReadyCheckEnhanced = {} end
 
 local dash = " - "
-local name = "InstanceUtility" .. dash .. "ReadyCheck"
+local name = "ReadyCheck Enhanced"
 local nameFull = ("AzerPUG " .. name)
 local promo = (nameFull .. dash ..  AZPIUReadyCheckVersion)
-local addonMain = LibStub("AceAddon-3.0"):NewAddon("InstanceUtility-ReadyCheck", "AceConsole-3.0")
 local respondedToReadyCheck = false
 
 local readyCheckDefaultText = nil
 local ReadyCheckCustomFrame = nil
 
-function AZP.IU.VersionControl:ReadyCheck()
+function AZP.VersionControl:ReadyCheckEnhanced()
     return AZPIUReadyCheckVersion
 end
 
-function AZP.IU.OnLoad:ReadyCheck(self)
-    addonMain:ChangeOptionsText()
+function AZP.OnLoad:ReadyCheckEnhanced(self)
+    AZP.ReadyCheckEnhanced:ChangeOptionsText()
 
     InstanceUtilityAddonFrame:RegisterEvent("READY_CHECK")
     InstanceUtilityAddonFrame:RegisterEvent("UNIT_AURA")
@@ -72,13 +71,13 @@ function AZP.IU.OnLoad:ReadyCheck(self)
     AZPReadyNowButton:Hide()
 end
 
-function AZP.IU.OnEvent:ReadyCheck(event, arg1, ...)
+function AZP.OnEvent:ReadyCheckEnhanced(event, arg1, ...)
     if event == "READY_CHECK" then
         local player = arg1
         if (player ~= UnitName("player")) then
             ReadyCheckFrame:Hide()
             ReadyCheckCustomFrame:Show()
-            addonMain:CheckConsumables(ReadyCheckFrameText)
+            AZP.ReadyCheckEnhanced:CheckConsumables(ReadyCheckFrameText)
             respondedToReadyCheck = false
         else
             respondedToReadyCheck = true
@@ -86,7 +85,7 @@ function AZP.IU.OnEvent:ReadyCheck(event, arg1, ...)
     elseif event == "UNIT_AURA" then
         local player = arg1
         if (UnitName(player) == UnitName("player")) and ReadyCheckCustomFrame:IsShown() then
-            addonMain:CheckConsumables(ReadyCheckFrameText)
+            AZP.ReadyCheckEnhanced:CheckConsumables(ReadyCheckFrameText)
         end
     elseif event == "READY_CHECK_CONFIRM" then
         local player = arg1
@@ -102,7 +101,7 @@ function AZP.IU.OnEvent:ReadyCheck(event, arg1, ...)
     end
 end
 
-function addonMain:ChangeOptionsText()
+function AZP.ReadyCheckEnhanced:ChangeOptionsText()
     ReadyCheckSubPanelPHTitle:Hide()
     ReadyCheckSubPanelPHText:Hide()
     ReadyCheckSubPanelPHTitle:SetParent(nil)
@@ -119,12 +118,12 @@ function addonMain:ChangeOptionsText()
     ReadyCheckSubPanelText:SetHeight(ReadyCheckSubPanel:GetHeight())
     ReadyCheckSubPanelText:SetPoint("TOPLEFT", 0, -50)
     ReadyCheckSubPanelText:SetText(
-        "AzerPUG-GameUtility-ReadyCheck does not have options yet.\n" ..
+        "AzerPUG-GameUtility-ReadyCheckEnhanced does not have options yet.\n" ..
         "For feature requests visit our Discord Server!"
     )
 end
 
-function addonMain:checkIfBuffInTable(buff, table)
+function AZP.ReadyCheckEnhanced:checkIfBuffInTable(buff, table)
     for _,category in ipairs(table) do
         if tContains(category[2], buff) then
             return category[1]
@@ -133,7 +132,7 @@ function addonMain:checkIfBuffInTable(buff, table)
     return nil
 end
 
-function addonMain:CheckConsumableTimer(consumable, missingText)
+function AZP.ReadyCheckEnhanced:CheckConsumableTimer(consumable, missingText)
     local questionMarkIcon = "\124T134400:14\124t"
     local colorRed = "\124cFFFF0000"
     local colorYellow = "\124cFFFFFF00"
@@ -157,7 +156,7 @@ function addonMain:CheckConsumableTimer(consumable, missingText)
     end
 end
 
-function addonMain:ArmorKitScan()
+function AZP.ReadyCheckEnhanced:ArmorKitScan()
     local ScanningTooltip = CreateFrame("GameTooltip", "ScanningTooltipText", nil, "GameTooltipTemplate")
     ScanningTooltip:SetOwner(UIParent, "ANCHOR_NONE")
     ScanningTooltip:SetInventoryItem("player", 5)
@@ -189,7 +188,7 @@ function addonMain:ArmorKitScan()
     return nil
 end
 
-function addonMain:CheckConsumables(inputFrame)
+function AZP.ReadyCheckEnhanced:CheckConsumables(inputFrame)
     local questionMarkIcon = "\124T134400:14\124t "
     local repairIcon = "\124T132281:14\124t"
     local reinforceIcon = "3528447"
@@ -233,25 +232,25 @@ function addonMain:CheckConsumables(inputFrame)
     while buffName do
         expirationTimer = floor((expirationTimer - curTime) / 60)
         i = i + 1;
-        if addonMain:checkIfBuffInTable(spellID, AIU.buffs["Flask"]) then
+        if AZP.ReadyCheckEnhanced:checkIfBuffInTable(spellID, AIU.buffs["Flask"]) then
             currentFlask = {buffName, spellID, expirationTimer, icon}
-        elseif addonMain:checkIfBuffInTable(spellID, AIU.buffs["Food"]) then
+        elseif AZP.ReadyCheckEnhanced:checkIfBuffInTable(spellID, AIU.buffs["Food"]) then
             currentFood = {buffName, spellID, expirationTimer, icon}
-        elseif addonMain:checkIfBuffInTable(spellID, AIU.buffs["Rune"]) then
+        elseif AZP.ReadyCheckEnhanced:checkIfBuffInTable(spellID, AIU.buffs["Rune"]) then
             currentRune = {buffName, spellID, expirationTimer, icon}
-        elseif addonMain:checkIfBuffInTable(spellID, AIU.buffs["RaidBuff"]) == "Intellect" then
+        elseif AZP.ReadyCheckEnhanced:checkIfBuffInTable(spellID, AIU.buffs["RaidBuff"]) == "Intellect" then
             currentInt = {buffName, spellID, expirationTimer, icon}
-        elseif addonMain:checkIfBuffInTable(spellID, AIU.buffs["RaidBuff"]) == "Stamina" then
+        elseif AZP.ReadyCheckEnhanced:checkIfBuffInTable(spellID, AIU.buffs["RaidBuff"]) == "Stamina" then
             currentSta = {buffName, spellID, expirationTimer, icon}
-        elseif addonMain:checkIfBuffInTable(spellID, AIU.buffs["RaidBuff"]) == "Attack Power" then
+        elseif AZP.ReadyCheckEnhanced:checkIfBuffInTable(spellID, AIU.buffs["RaidBuff"]) == "Attack Power" then
             currentAtk = {buffName, spellID, expirationTimer, icon}
         end
         buffName, icon, expirationTimer, spellID = AZP.AddonHelper:GetBuffNameIconTimerID(i)
     end
 
-    local reinforceTime =  addonMain:ArmorKitScan()
+    local reinforceTime =  AZP.ReadyCheckEnhanced:ArmorKitScan()
     if reinforceTime ~= nil then
-        currentReinforce = {"Reinforce", 0, addonMain:ArmorKitScan(), reinforceIcon}
+        currentReinforce = {"Reinforce", 0, AZP.ReadyCheckEnhanced:ArmorKitScan(), reinforceIcon}
     end
     local hasMainHandEnchant, mainHandExpiration, mainHandCharges, mainHandEnchantID, hasOffHandEnchant, offHandExpiration, offHandCharges, offHandEnchantId = GetWeaponEnchantInfo()
     local itemLink, itemID = nil, nil
@@ -296,18 +295,18 @@ function addonMain:CheckConsumables(inputFrame)
         currentOHWepMod = "Unmoddable"
     end
 
-    currentFlaskText = addonMain:CheckConsumableTimer(currentFlask, "NO FLASK!")
-    currentFoodText = addonMain:CheckConsumableTimer(currentFood, "NO FOOD!")
-    currentRuneText = addonMain:CheckConsumableTimer(currentRune, "NO RUNE!")
-    currentMHWepModText = addonMain:CheckConsumableTimer(currentMHWepMod, "NO MH WepMod!")
+    currentFlaskText = AZP.ReadyCheckEnhanced:CheckConsumableTimer(currentFlask, "NO FLASK!")
+    currentFoodText = AZP.ReadyCheckEnhanced:CheckConsumableTimer(currentFood, "NO FOOD!")
+    currentRuneText = AZP.ReadyCheckEnhanced:CheckConsumableTimer(currentRune, "NO RUNE!")
+    currentMHWepModText = AZP.ReadyCheckEnhanced:CheckConsumableTimer(currentMHWepMod, "NO MH WepMod!")
     if currentOHWepMod ~= "Unmoddable" then
-        currentOHWepModText = addonMain:CheckConsumableTimer(currentOHWepMod, "NO OH WepMod!")
+        currentOHWepModText = AZP.ReadyCheckEnhanced:CheckConsumableTimer(currentOHWepMod, "NO OH WepMod!")
     end
 
-    currentIntText = addonMain:CheckConsumableTimer(currentInt, "NO INTELLECT!")
-    currentStaText = addonMain:CheckConsumableTimer(currentSta, "NO STAMINA!")
-    currentAtkText = addonMain:CheckConsumableTimer(currentAtk, "NO ATTACK POWER!")
-    currentReinforceText = addonMain:CheckConsumableTimer(currentReinforce, "NO REINFORCEMENT!")
+    currentIntText = AZP.ReadyCheckEnhanced:CheckConsumableTimer(currentInt, "NO INTELLECT!")
+    currentStaText = AZP.ReadyCheckEnhanced:CheckConsumableTimer(currentSta, "NO STAMINA!")
+    currentAtkText = AZP.ReadyCheckEnhanced:CheckConsumableTimer(currentAtk, "NO ATTACK POWER!")
+    currentReinforceText = AZP.ReadyCheckEnhanced:CheckConsumableTimer(currentReinforce, "NO REINFORCEMENT!")
 
     local cur, max = 0, 0
     for eIndex = 1, 17 do
