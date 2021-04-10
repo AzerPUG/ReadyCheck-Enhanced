@@ -1,6 +1,12 @@
-local GlobalAddonName, AIU = ...
+if AZP == nil then AZP = {} end
+if AZP.VersionControl == nil then AZP.VersionControl = {} end
+if AZP.OnLoad == nil then AZP.OnLoad = {} end
+if AZP.OnEvent == nil then AZP.OnEvent = {} end
+if AZP.OnEvent == nil then AZP.OnEvent = {} end
 
-local AZPIUReadyCheckVersion = 29
+AZP.VersionControl.ReadyCheckEnhanced = 29
+if AZP.ReadyCheckEnhanced == nil then AZP.ReadyCheckEnhanced = {} end
+
 local dash = " - "
 local name = "InstanceUtility" .. dash .. "ReadyCheck"
 local nameFull = ("AzerPUG " .. name)

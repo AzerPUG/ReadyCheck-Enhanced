@@ -1,6 +1,7 @@
-local GlobalAddonName, AIU = ...
+if AZP == nil then AZP = {} end
+if AZP.ReadyCheckEnhanced == nil then AZP.ReadyCheckEnhanced = {} end
 
-AIU.buffs =
+AZP.ReadyCheckEnhanced.buffs =
 {
     ["Flask"] =
     {
