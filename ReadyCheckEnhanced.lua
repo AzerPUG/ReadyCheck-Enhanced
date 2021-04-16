@@ -10,24 +10,21 @@ if AZP.ReadyCheckEnhanced == nil then AZP.ReadyCheckEnhanced = {} end
 local dash = " - "
 local name = "ReadyCheck Enhanced"
 local nameFull = ("AzerPUG " .. name)
-local promo = (nameFull .. dash ..  AZPIUReadyCheckVersion)
+local promo = (nameFull .. dash ..  AZP.VersionControl.ReadyCheckEnhanced)
 local respondedToReadyCheck = false
 
 local readyCheckDefaultText = nil
 local ReadyCheckCustomFrame = nil
+local UpdateFrame = nil
+local AZPRCESelfOptionPanel = nil
+
+local optionHeader = "|cFF00FFFFReadyCheck Enhanced|r"
 
 function AZP.VersionControl:ReadyCheckEnhanced()
-    return AZPIUReadyCheckVersion
+    return AZP.VersionControl.ReadyCheckEnhanced
 end
 
-function AZP.OnLoad:ReadyCheckEnhanced(self)
-    AZP.ReadyCheckEnhanced:ChangeOptionsText()
-
-    InstanceUtilityAddonFrame:RegisterEvent("READY_CHECK")
-    InstanceUtilityAddonFrame:RegisterEvent("UNIT_AURA")
-    InstanceUtilityAddonFrame:RegisterEvent("READY_CHECK_CONFIRM")
-    InstanceUtilityAddonFrame:RegisterEvent("READY_CHECK_FINISHED")
-
+function AZP.ReadyCheckEnhanced:OnLoadBoth()
     ReadyCheckCustomFrame = CreateFrame("Frame", "ReadyCheckCustomFrame", UIParent, "BackdropTemplate")
     ReadyCheckCustomFrame:SetSize(300, 225)
     ReadyCheckCustomFrame:SetPoint("CENTER", 0, 0)
@@ -40,12 +37,14 @@ function AZP.OnLoad:ReadyCheckEnhanced(self)
     ReadyCheckCustomFrame:SetBackdropColor(0.25, 0.25, 0.25, 1)
     ReadyCheckCustomFrame:Hide()
 
-    ReadyCheckFrameYesButton:SetParent(ReadyCheckCustomFrame)
-    ReadyCheckFrameYesButton:ClearAllPoints()
-    ReadyCheckFrameYesButton:SetPoint("BOTTOMLEFT", 25, 10)
-    ReadyCheckFrameNoButton:SetParent(ReadyCheckCustomFrame)
-    ReadyCheckFrameNoButton:ClearAllPoints()
-    ReadyCheckFrameNoButton:SetPoint("BOTTOMRIGHT", -25, 10)
+    DelayedExecution(10, function()
+        ReadyCheckFrameYesButton:SetParent(ReadyCheckCustomFrame)
+        ReadyCheckFrameYesButton:ClearAllPoints()
+        ReadyCheckFrameYesButton:SetPoint("BOTTOMLEFT", 25, 10)
+        ReadyCheckFrameNoButton:SetParent(ReadyCheckCustomFrame)
+        ReadyCheckFrameNoButton:ClearAllPoints()
+        ReadyCheckFrameNoButton:SetPoint("BOTTOMRIGHT", -25, 10)
+    end)
 
     ReadyCheckCustomFrame.HeaderText = ReadyCheckCustomFrame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
     ReadyCheckCustomFrame.HeaderText:SetSize(ReadyCheckCustomFrame:GetWidth(), 25)
@@ -71,7 +70,160 @@ function AZP.OnLoad:ReadyCheckEnhanced(self)
     AZPReadyNowButton:Hide()
 end
 
-function AZP.OnEvent:ReadyCheckEnhanced(event, arg1, ...)
+function AZP.ReadyCheckEnhanced:OnLoadCore()
+    AZP.Core:RegisterEvents("READY_CHECK", function(...) AZP.ReadyCheckEnhanced:eventReadyCheck(...) end)
+    AZP.Core:RegisterEvents("UNIT_AURA", function(...) AZP.ReadyCheckEnhanced:eventUnitAura(...) end)
+    AZP.Core:RegisterEvents("READY_CHECK_CONFIRM", function(...) AZP.ReadyCheckEnhanced:eventReadyCheckConfirm(...) end)
+    AZP.Core:RegisterEvents("READY_CHECK_FINISHED", function(...) AZP.ReadyCheckEnhanced:eventReadyCheckFinished(...) end)
+
+    AZP.ReadyCheckEnhanced:OnLoadBoth()
+
+    AZP.OptionsPanels:Generic("ReadyCheck Enhanced", optionHeader, function (frame)
+        AZP.ReadyCheckEnhanced:FillOptionsPanel(frame)
+    end)
+end
+
+function AZP.ReadyCheckEnhanced:OnLoadSelf()
+    C_ChatInfo.RegisterAddonMessagePrefix("AZPVERSIONS")
+
+    local EventFrame = CreateFrame("FRAME", nil)
+    EventFrame:RegisterEvent("READY_CHECK")
+    EventFrame:RegisterEvent("UNIT_AURA")
+    EventFrame:RegisterEvent("READY_CHECK_CONFIRM")
+    EventFrame:RegisterEvent("READY_CHECK_FINISHED")
+    EventFrame:SetScript("OnEvent", AZP.OnEvent.ReadyCheck)
+
+    UpdateFrame = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
+    UpdateFrame:SetPoint("CENTER", 0, 250)
+    UpdateFrame:SetSize(400, 200)
+    UpdateFrame:SetBackdrop({
+        bgFile = "Interface/Tooltips/UI-Tooltip-Background",
+        edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
+        edgeSize = 12,
+        insets = { left = 1, right = 1, top = 1, bottom = 1 },
+    })
+    UpdateFrame:SetBackdropColor(0.25, 0.25, 0.25, 0.80)
+    UpdateFrame.header = UpdateFrame:CreateFontString("UpdateFrame", "ARTWORK", "GameFontNormalHuge")
+    UpdateFrame.header:SetPoint("TOP", 0, -10)
+    UpdateFrame.header:SetText("|cFFFF0000AzerPUG ReadyCheck Enhanced is out of date!|r")
+
+    UpdateFrame.text = UpdateFrame:CreateFontString("UpdateFrame", "ARTWORK", "GameFontNormalLarge")
+    UpdateFrame.text:SetPoint("TOP", 0, -40)
+    UpdateFrame.text:SetText("Error!")
+
+    UpdateFrame:Hide()
+
+    local UpdateFrameCloseButton = CreateFrame("Button", nil, UpdateFrame, "UIPanelCloseButton")
+    UpdateFrameCloseButton:SetWidth(25)
+    UpdateFrameCloseButton:SetHeight(25)
+    UpdateFrameCloseButton:SetPoint("TOPRIGHT", UpdateFrame, "TOPRIGHT", 2, 2)
+    UpdateFrameCloseButton:SetScript("OnClick", function() UpdateFrame:Hide() end )
+
+    AZPRCESelfOptionPanel = CreateFrame("FRAME", nil)
+    AZPRCESelfOptionPanel.name = optionHeader
+    InterfaceOptions_AddCategory(AZPRCESelfOptionPanel)
+    AZPRCESelfOptionPanel.header = AZPRCESelfOptionPanel:CreateFontString(nil, "ARTWORK", "GameFontNormalHuge")
+    AZPRCESelfOptionPanel.header:SetPoint("TOP", 0, -10)
+    AZPRCESelfOptionPanel.header:SetText("|cFF00FFFFAzerPUG's ReadyCheckEnhanced Options!|r")
+
+    AZPRCESelfOptionPanel.footer = AZPRCESelfOptionPanel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+    AZPRCESelfOptionPanel.footer:SetPoint("TOP", 0, -300)
+    AZPRCESelfOptionPanel.footer:SetText(
+        "|cFF00FFFFAzerPUG Links:\n" ..
+        "Website: www.azerpug.com\n" ..
+        "Discord: www.azerpug.com/discord\n" ..
+        "Twitch: www.twitch.tv/azerpug\n|r"
+    )
+    AZP.ReadyCheckEnhanced:FillOptionsPanel(AZPRCESelfOptionPanel)
+    AZP.ReadyCheckEnhanced:OnLoadBoth(AZPRCESelfOptionPanel)
+    AZP.ReadyCheckEnhanced:ShareVersion()
+end
+
+function DelayedExecution(delayTime, delayedFunction)
+    local frame = CreateFrame("Frame")
+    frame.start_time = GetServerTime()
+    frame:SetScript("OnUpdate",
+        function(self)
+            if GetServerTime() - self.start_time > delayTime then
+                delayedFunction()
+                self:SetScript("OnUpdate", nil)
+                self:Hide()
+            end
+        end
+    )
+    frame:Show()
+end
+
+function AZP.ReadyCheckEnhanced:FillOptionsPanel(frameToFill)
+    frameToFill:Hide()
+end
+
+function AZP.ReadyCheckEnhanced:ShareVersion()    -- Change DelayedExecution to native WoW Function.
+    local versionString = string.format("|TT:%d|", AZP.VersionControl.ToolTips)
+    DelayedExecution(10, function()
+        if IsInGroup() then
+            if IsInRaid() then
+                C_ChatInfo.SendAddonMessage("AZPVERSIONS", versionString ,"RAID", 1)
+            else
+                C_ChatInfo.SendAddonMessage("AZPVERSIONS", versionString ,"PARTY", 1)
+            end
+        end
+        if IsInGuild() then
+            C_ChatInfo.SendAddonMessage("AZPVERSIONS", versionString ,"GUILD", 1)
+        end
+    end)
+end
+
+function AZP.ReadyCheckEnhanced:ReceiveVersion(version)
+    if version > AZP.VersionControl.ToolTips then
+        if (not HaveShowedUpdateNotification) then
+            HaveShowedUpdateNotification = true
+            UpdateFrame:Show()
+            UpdateFrame.text:SetText(
+                "Please download the new version through the CurseForge app.\n" ..
+                "Or use the CurseForge website to download it manually!\n\n" .. 
+                "Newer Version: v" .. version .. "\n" .. 
+                "Your version: v" .. AZP.VersionControl.ToolTips
+            )
+        end
+    end
+end
+
+function AZP.ReadyCheckEnhanced:eventReadyCheck(...)
+    local player = ...
+    if (player ~= UnitName("player")) then
+        ReadyCheckFrame:Hide()
+        ReadyCheckCustomFrame:Show()
+        AZP.ReadyCheckEnhanced:CheckConsumables(ReadyCheckFrameText)
+        respondedToReadyCheck = false
+    else
+        respondedToReadyCheck = true
+    end
+end
+
+function AZP.ReadyCheckEnhanced:eventUnitAura(...)
+    local player = ...
+    if (UnitName(player) == UnitName("player")) and ReadyCheckCustomFrame:IsShown() then
+        AZP.ReadyCheckEnhanced:CheckConsumables(ReadyCheckFrameText)
+    end
+end
+
+function AZP.ReadyCheckEnhanced:eventReadyCheckConfirm(...)
+    local player = ...
+    if (UnitName(player) == UnitName("player")) then
+        respondedToReadyCheck = true
+        ReadyCheckCustomFrame:Hide()
+    end
+end
+
+function AZP.ReadyCheckEnhanced:eventReadyCheckFinished(...)
+    if not respondedToReadyCheck then
+        AZPReadyNowButton:Show()
+    end
+    ReadyCheckCustomFrame:Hide()
+end
+
+function AZP.OnEvent:ReadyCheck(event, arg1, ...)
     if event == "READY_CHECK" then
         local player = arg1
         if (player ~= UnitName("player")) then
@@ -225,27 +377,27 @@ function AZP.ReadyCheckEnhanced:CheckConsumables(inputFrame)
     inputFrame:SetPoint("TOP", 0, 0)
 
     local buffs, i = { }, 1;
-    local buffName, icon, expirationTimer, spellID = AZP.AddonHelper:GetBuffNameIconTimerID(i)
 
+    local buffName, icon, _, _, _, expirationTimer, _, _, _, spellID = UnitBuff("player", i)
     local curTime = GetTime()
 
     while buffName do
         expirationTimer = floor((expirationTimer - curTime) / 60)
         i = i + 1;
-        if AZP.ReadyCheckEnhanced:checkIfBuffInTable(spellID, AIU.buffs["Flask"]) then
+        if AZP.ReadyCheckEnhanced:checkIfBuffInTable(spellID, AZP.ReadyCheckEnhanced.buffs["Flask"]) then
             currentFlask = {buffName, spellID, expirationTimer, icon}
-        elseif AZP.ReadyCheckEnhanced:checkIfBuffInTable(spellID, AIU.buffs["Food"]) then
+        elseif AZP.ReadyCheckEnhanced:checkIfBuffInTable(spellID, AZP.ReadyCheckEnhanced.buffs["Food"]) then
             currentFood = {buffName, spellID, expirationTimer, icon}
-        elseif AZP.ReadyCheckEnhanced:checkIfBuffInTable(spellID, AIU.buffs["Rune"]) then
+        elseif AZP.ReadyCheckEnhanced:checkIfBuffInTable(spellID, AZP.ReadyCheckEnhanced.buffs["Rune"]) then
             currentRune = {buffName, spellID, expirationTimer, icon}
-        elseif AZP.ReadyCheckEnhanced:checkIfBuffInTable(spellID, AIU.buffs["RaidBuff"]) == "Intellect" then
+        elseif AZP.ReadyCheckEnhanced:checkIfBuffInTable(spellID, AZP.ReadyCheckEnhanced.buffs["RaidBuff"]) == "Intellect" then
             currentInt = {buffName, spellID, expirationTimer, icon}
-        elseif AZP.ReadyCheckEnhanced:checkIfBuffInTable(spellID, AIU.buffs["RaidBuff"]) == "Stamina" then
+        elseif AZP.ReadyCheckEnhanced:checkIfBuffInTable(spellID, AZP.ReadyCheckEnhanced.buffs["RaidBuff"]) == "Stamina" then
             currentSta = {buffName, spellID, expirationTimer, icon}
-        elseif AZP.ReadyCheckEnhanced:checkIfBuffInTable(spellID, AIU.buffs["RaidBuff"]) == "Attack Power" then
+        elseif AZP.ReadyCheckEnhanced:checkIfBuffInTable(spellID, AZP.ReadyCheckEnhanced.buffs["RaidBuff"]) == "Attack Power" then
             currentAtk = {buffName, spellID, expirationTimer, icon}
         end
-        buffName, icon, expirationTimer, spellID = AZP.AddonHelper:GetBuffNameIconTimerID(i)
+        buffName, icon, _, _, _, expirationTimer, _, _, _, spellID = UnitBuff("player", i)
     end
 
     local reinforceTime =  AZP.ReadyCheckEnhanced:ArmorKitScan()
@@ -336,4 +488,8 @@ function AZP.ReadyCheckEnhanced:CheckConsumables(inputFrame)
     end
     printText = printText .. "\n"  .. currentReinforceText .. "\n" .. currentIntText .. "\n" .. currentStaText .. "\n" .. currentAtkText .. "\n" .. currentDurText
     BuffsLabel.contentText:SetText(printText)
+end
+
+if not IsAddOnLoaded("AzerPUG's Core") then
+    AZP.ReadyCheckEnhanced:OnLoadSelf()
 end
