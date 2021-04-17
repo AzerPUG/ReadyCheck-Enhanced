@@ -20,10 +20,6 @@ local AZPRCESelfOptionPanel = nil
 
 local optionHeader = "|cFF00FFFFReadyCheck Enhanced|r"
 
-function AZP.VersionControl:ReadyCheckEnhanced()
-    return AZP.VersionControl.ReadyCheckEnhanced
-end
-
 function AZP.ReadyCheckEnhanced:OnLoadBoth()
     ReadyCheckCustomFrame = CreateFrame("Frame", "ReadyCheckCustomFrame", UIParent, "BackdropTemplate")
     ReadyCheckCustomFrame:SetSize(300, 225)
@@ -225,31 +221,13 @@ end
 
 function AZP.OnEvent:ReadyCheck(event, arg1, ...)
     if event == "READY_CHECK" then
-        local player = arg1
-        if (player ~= UnitName("player")) then
-            ReadyCheckFrame:Hide()
-            ReadyCheckCustomFrame:Show()
-            AZP.ReadyCheckEnhanced:CheckConsumables(ReadyCheckFrameText)
-            respondedToReadyCheck = false
-        else
-            respondedToReadyCheck = true
-        end
+        AZP.ReadyCheckEnhanced:eventReadyCheck(arg1)
     elseif event == "UNIT_AURA" then
-        local player = arg1
-        if (UnitName(player) == UnitName("player")) and ReadyCheckCustomFrame:IsShown() then
-            AZP.ReadyCheckEnhanced:CheckConsumables(ReadyCheckFrameText)
-        end
+        AZP.ReadyCheckEnhanced:eventUnitAura(arg1)
     elseif event == "READY_CHECK_CONFIRM" then
-        local player = arg1
-        if (UnitName(player) == UnitName("player")) then
-            respondedToReadyCheck = true
-            ReadyCheckCustomFrame:Hide()
-        end
+        AZP.ReadyCheckEnhanced:eventReadyCheckConfirm(arg1)
     elseif event == "READY_CHECK_FINISHED" then
-        if not respondedToReadyCheck then
-            AZPReadyNowButton:Show()
-        end
-        ReadyCheckCustomFrame:Hide()
+        AZP.ReadyCheckEnhanced:eventReadyCheckFinished()
     end
 end
 
