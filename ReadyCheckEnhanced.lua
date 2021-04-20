@@ -227,7 +227,7 @@ function AZP.ReadyCheckEnhanced:eventReadyCheckFinished(...)
     ReadyCheckCustomFrame:Hide()
 end
 
-function AZP.OnEvent:ReadyCheck(event, ...)
+function AZP.OnEvent:ReadyCheck(self, event, ...)
     if event == "CHAT_MSG_ADDON" then
         AZP.ReadyCheckEnhanced:eventChatMsgAddon(...)
     elseif event == "READY_CHECK" then
