@@ -7,10 +7,6 @@ if AZP.OnEvent == nil then AZP.OnEvent = {} end
 AZP.VersionControl.ReadyCheckEnhanced = 29
 if AZP.ReadyCheckEnhanced == nil then AZP.ReadyCheckEnhanced = {} end
 
-local dash = " - "
-local name = "ReadyCheck Enhanced"
-local nameFull = ("AzerPUG " .. name)
-local promo = (nameFull .. dash ..  AZP.VersionControl.ReadyCheckEnhanced)
 local respondedToReadyCheck = false
 
 local readyCheckDefaultText = nil
