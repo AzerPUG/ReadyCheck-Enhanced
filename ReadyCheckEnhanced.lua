@@ -63,7 +63,6 @@ function AZP.ReadyCheckEnhanced:OnLoadBoth()
 end
 
 function AZP.ReadyCheckEnhanced:OnLoadCore()
-    AZP.Core:RegisterEvents("CHAT_MSG_ADDON", function(...) AZP.ReadyCheckEnhanced:eventChatMsgAddon(...) end)
     AZP.Core:RegisterEvents("READY_CHECK", function(...) AZP.ReadyCheckEnhanced:eventReadyCheck(...) end)
     AZP.Core:RegisterEvents("UNIT_AURA", function(...) AZP.ReadyCheckEnhanced:eventUnitAura(...) end)
     AZP.Core:RegisterEvents("READY_CHECK_CONFIRM", function(...) AZP.ReadyCheckEnhanced:eventReadyCheckConfirm(...) end)
@@ -183,10 +182,23 @@ function AZP.ReadyCheckEnhanced:ReceiveVersion(version)
     end
 end
 
+function AZP.ReadyCheckEnhanced:GetSpecificAddonVersion(versionString, addonWanted)
+    local pattern = "|([A-Z]+):([0-9]+)|"
+    local index = 1
+    while index < #versionString do
+        local _, endPos = string.find(versionString, pattern, index)
+        local addon, version = string.match(versionString, pattern, index)
+        index = endPos + 1
+        if addon == addonWanted then
+            return tonumber(version)
+        end
+    end
+end
+
 function AZP.ReadyCheckEnhanced:eventChatMsgAddon(...)
     local prefix, payload, _, sender = ...
     if prefix == "AZPVERSIONS" then
-        local version = AZP.UnLockables:GetSpecificAddonVersion(payload, "RCE")
+        local version = AZP.ReadyCheckEnhanced:GetSpecificAddonVersion(payload, "RCE")
         if version ~= nil then
             AZP.UnLockables:ReceiveVersion(version)
         end
