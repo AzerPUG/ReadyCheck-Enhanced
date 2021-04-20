@@ -63,6 +63,7 @@ function AZP.ReadyCheckEnhanced:OnLoadBoth()
 end
 
 function AZP.ReadyCheckEnhanced:OnLoadCore()
+    AZP.Core:RegisterEvents("CHAT_MSG_ADDON", function(...) AZP.ReadyCheckEnhanced:eventChatMsgAddon(...) end)
     AZP.Core:RegisterEvents("READY_CHECK", function(...) AZP.ReadyCheckEnhanced:eventReadyCheck(...) end)
     AZP.Core:RegisterEvents("UNIT_AURA", function(...) AZP.ReadyCheckEnhanced:eventUnitAura(...) end)
     AZP.Core:RegisterEvents("READY_CHECK_CONFIRM", function(...) AZP.ReadyCheckEnhanced:eventReadyCheckConfirm(...) end)
@@ -79,6 +80,7 @@ function AZP.ReadyCheckEnhanced:OnLoadSelf()
     C_ChatInfo.RegisterAddonMessagePrefix("AZPVERSIONS")
 
     local EventFrame = CreateFrame("FRAME", nil)
+    EventFrame:RegisterEvent("CHAT_MSG_ADDON")
     EventFrame:RegisterEvent("READY_CHECK")
     EventFrame:RegisterEvent("UNIT_AURA")
     EventFrame:RegisterEvent("READY_CHECK_CONFIRM")
@@ -151,7 +153,7 @@ function AZP.ReadyCheckEnhanced:FillOptionsPanel(frameToFill)
 end
 
 function AZP.ReadyCheckEnhanced:ShareVersion()    -- Change DelayedExecution to native WoW Function.
-    local versionString = string.format("|TT:%d|", AZP.VersionControl.ToolTips)
+    local versionString = string.format("|RCE:%d|", AZP.VersionControl.ToolTips)
     AZP.ReadyCheckEnhanced:DelayedExecution(10, function()
         if IsInGroup() then
             if IsInRaid() then
@@ -177,6 +179,16 @@ function AZP.ReadyCheckEnhanced:ReceiveVersion(version)
                 "Newer Version: v" .. version .. "\n" .. 
                 "Your version: v" .. AZP.VersionControl.ToolTips
             )
+        end
+    end
+end
+
+function AZP.ReadyCheckEnhanced:eventChatMsgAddon(...)
+    local prefix, payload, _, sender = ...
+    if prefix == "AZPVERSIONS" then
+        local version = AZP.UnLockables:GetSpecificAddonVersion(payload, "RCE")
+        if version ~= nil then
+            AZP.UnLockables:ReceiveVersion(version)
         end
     end
 end
@@ -216,7 +228,9 @@ function AZP.ReadyCheckEnhanced:eventReadyCheckFinished(...)
 end
 
 function AZP.OnEvent:ReadyCheck(event, ...)
-    if event == "READY_CHECK" then
+    if event == "CHAT_MSG_ADDON" then
+        AZP.ReadyCheckEnhanced:eventChatMsgAddon(...)
+    elseif event == "READY_CHECK" then
         AZP.ReadyCheckEnhanced:eventReadyCheck(...)
     elseif event == "UNIT_AURA" then
         AZP.ReadyCheckEnhanced:eventUnitAura(...)
