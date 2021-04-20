@@ -33,7 +33,7 @@ function AZP.ReadyCheckEnhanced:OnLoadBoth()
     ReadyCheckCustomFrame:SetBackdropColor(0.25, 0.25, 0.25, 1)
     ReadyCheckCustomFrame:Hide()
 
-    DelayedExecution(10, function()
+    AZP.ReadyCheckEnhanced:DelayedExecution(10, function()
         ReadyCheckFrameYesButton:SetParent(ReadyCheckCustomFrame)
         ReadyCheckFrameYesButton:ClearAllPoints()
         ReadyCheckFrameYesButton:SetPoint("BOTTOMLEFT", 25, 10)
@@ -135,7 +135,7 @@ function AZP.ReadyCheckEnhanced:OnLoadSelf()
     AZP.ReadyCheckEnhanced:ShareVersion()
 end
 
-function DelayedExecution(delayTime, delayedFunction)
+function AZP.ReadyCheckEnhanced:DelayedExecution(delayTime, delayedFunction)
     local frame = CreateFrame("Frame")
     frame.start_time = GetServerTime()
     frame:SetScript("OnUpdate",
@@ -156,7 +156,7 @@ end
 
 function AZP.ReadyCheckEnhanced:ShareVersion()    -- Change DelayedExecution to native WoW Function.
     local versionString = string.format("|TT:%d|", AZP.VersionControl.ToolTips)
-    DelayedExecution(10, function()
+    AZP.ReadyCheckEnhanced:DelayedExecution(10, function()
         if IsInGroup() then
             if IsInRaid() then
                 C_ChatInfo.SendAddonMessage("AZPVERSIONS", versionString ,"RAID", 1)
@@ -219,38 +219,16 @@ function AZP.ReadyCheckEnhanced:eventReadyCheckFinished(...)
     ReadyCheckCustomFrame:Hide()
 end
 
-function AZP.OnEvent:ReadyCheck(event, arg1, ...)
+function AZP.OnEvent:ReadyCheck(event, ...)
     if event == "READY_CHECK" then
-        AZP.ReadyCheckEnhanced:eventReadyCheck(arg1)
+        AZP.ReadyCheckEnhanced:eventReadyCheck(...)
     elseif event == "UNIT_AURA" then
-        AZP.ReadyCheckEnhanced:eventUnitAura(arg1)
+        AZP.ReadyCheckEnhanced:eventUnitAura(...)
     elseif event == "READY_CHECK_CONFIRM" then
-        AZP.ReadyCheckEnhanced:eventReadyCheckConfirm(arg1)
+        AZP.ReadyCheckEnhanced:eventReadyCheckConfirm(...)
     elseif event == "READY_CHECK_FINISHED" then
         AZP.ReadyCheckEnhanced:eventReadyCheckFinished()
     end
-end
-
-function AZP.ReadyCheckEnhanced:ChangeOptionsText()
-    ReadyCheckSubPanelPHTitle:Hide()
-    ReadyCheckSubPanelPHText:Hide()
-    ReadyCheckSubPanelPHTitle:SetParent(nil)
-    ReadyCheckSubPanelPHText:SetParent(nil)
-
-    local ReadyCheckSubPanelHeader = ReadyCheckSubPanel:CreateFontString("ReadyCheckSubPanelHeader", "ARTWORK", "GameFontNormalHuge")
-    ReadyCheckSubPanelHeader:SetText(promo)
-    ReadyCheckSubPanelHeader:SetWidth(ReadyCheckSubPanel:GetWidth())
-    ReadyCheckSubPanelHeader:SetHeight(ReadyCheckSubPanel:GetHeight())
-    ReadyCheckSubPanelHeader:SetPoint("TOP", 0, -10)
-
-    local ReadyCheckSubPanelText = ReadyCheckSubPanel:CreateFontString("ReadyCheckSubPanelHeader", "ARTWORK", "GameFontNormalLarge")
-    ReadyCheckSubPanelText:SetWidth(ReadyCheckSubPanel:GetWidth())
-    ReadyCheckSubPanelText:SetHeight(ReadyCheckSubPanel:GetHeight())
-    ReadyCheckSubPanelText:SetPoint("TOPLEFT", 0, -50)
-    ReadyCheckSubPanelText:SetText(
-        "AzerPUG-GameUtility-ReadyCheckEnhanced does not have options yet.\n" ..
-        "For feature requests visit our Discord Server!"
-    )
 end
 
 function AZP.ReadyCheckEnhanced:checkIfBuffInTable(buff, table)
