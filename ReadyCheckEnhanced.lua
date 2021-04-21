@@ -388,7 +388,7 @@ function AZP.ReadyCheckEnhanced:CheckConsumables(inputFrame)
     if itemLink ~= nil then
         if hasMainHandEnchant == true then
             local itemIDFromSpellID, itemNameFromSpellID = nil, nil
-            for _,category in ipairs(AIU.buffs["Weapon"]) do
+            for _,category in ipairs(AZP.ReadyCheckEnhanced.buffs["Weapon"]) do
                 if tContains(category[2], mainHandEnchantID) then
                     itemIDFromSpellID = category[2][2]
                     itemNameFromSpellID = category[1]
@@ -407,7 +407,7 @@ function AZP.ReadyCheckEnhanced:CheckConsumables(inputFrame)
         if v7 ~= "Miscellaneous" then
             if hasOffHandEnchant == true then
                 local itemIDFromSpellID, itemNameFromSpellID = nil, nil
-                for _,category in ipairs(AIU.buffs["Weapon"]) do
+                for _,category in ipairs(AZP.ReadyCheckEnhanced.buffs["Weapon"]) do
                     if tContains(category[2], offHandEnchantId) then
                         itemIDFromSpellID = category[2][2]
                         itemNameFromSpellID = category[1]
