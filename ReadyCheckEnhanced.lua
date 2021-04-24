@@ -4,7 +4,7 @@ if AZP.OnLoad == nil then AZP.OnLoad = {} end
 if AZP.OnEvent == nil then AZP.OnEvent = {} end
 if AZP.OnEvent == nil then AZP.OnEvent = {} end
 
-AZP.VersionControl.ReadyCheckEnhanced = 29
+AZP.VersionControl["ReadyCheck Enhanced"] = 29
 if AZP.ReadyCheckEnhanced == nil then AZP.ReadyCheckEnhanced = {} end
 
 local respondedToReadyCheck = false
@@ -13,6 +13,7 @@ local readyCheckDefaultText = nil
 local ReadyCheckCustomFrame = nil
 local UpdateFrame = nil
 local AZPRCESelfOptionPanel = nil
+local HaveShowedUpdateNotification = false
 
 local optionHeader = "|cFF00FFFFReadyCheck Enhanced|r"
 
@@ -70,6 +71,7 @@ function AZP.ReadyCheckEnhanced:OnLoadCore()
 
     AZP.ReadyCheckEnhanced:OnLoadBoth()
 
+    AZP.OptionsPanels:RemovePanel("ReadyCheck Enhanced")
     AZP.OptionsPanels:Generic("ReadyCheck Enhanced", optionHeader, function (frame)
         AZP.ReadyCheckEnhanced:FillOptionsPanel(frame)
     end)
@@ -84,7 +86,7 @@ function AZP.ReadyCheckEnhanced:OnLoadSelf()
     EventFrame:RegisterEvent("UNIT_AURA")
     EventFrame:RegisterEvent("READY_CHECK_CONFIRM")
     EventFrame:RegisterEvent("READY_CHECK_FINISHED")
-    EventFrame:SetScript("OnEvent", AZP.OnEvent.ReadyCheck)
+    EventFrame:SetScript("OnEvent", function(...) AZP.OnEvent:ReadyCheck(...) end)
 
     UpdateFrame = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
     UpdateFrame:SetPoint("CENTER", 0, 250)
@@ -152,7 +154,7 @@ function AZP.ReadyCheckEnhanced:FillOptionsPanel(frameToFill)
 end
 
 function AZP.ReadyCheckEnhanced:ShareVersion()    -- Change DelayedExecution to native WoW Function.
-    local versionString = string.format("|RCE:%d|", AZP.VersionControl.ToolTips)
+    local versionString = string.format("|RCE:%d|", AZP.VersionControl["ReadyCheck Enhanced"])
     AZP.ReadyCheckEnhanced:DelayedExecution(10, function()
         if IsInGroup() then
             if IsInRaid() then
@@ -168,7 +170,7 @@ function AZP.ReadyCheckEnhanced:ShareVersion()    -- Change DelayedExecution to 
 end
 
 function AZP.ReadyCheckEnhanced:ReceiveVersion(version)
-    if version > AZP.VersionControl.ToolTips then
+    if version > AZP.VersionControl["ReadyCheck Enhanced"] then
         if (not HaveShowedUpdateNotification) then
             HaveShowedUpdateNotification = true
             UpdateFrame:Show()
@@ -176,7 +178,7 @@ function AZP.ReadyCheckEnhanced:ReceiveVersion(version)
                 "Please download the new version through the CurseForge app.\n" ..
                 "Or use the CurseForge website to download it manually!\n\n" .. 
                 "Newer Version: v" .. version .. "\n" .. 
-                "Your version: v" .. AZP.VersionControl.ToolTips
+                "Your version: v" .. AZP.VersionControl["ReadyCheck Enhanced"]
             )
         end
     end
@@ -200,7 +202,7 @@ function AZP.ReadyCheckEnhanced:eventChatMsgAddon(...)
     if prefix == "AZPVERSIONS" then
         local version = AZP.ReadyCheckEnhanced:GetSpecificAddonVersion(payload, "RCE")
         if version ~= nil then
-            AZP.UnLockables:ReceiveVersion(version)
+            AZP.ReadyCheckEnhanced:ReceiveVersion(version)
         end
     end
 end
@@ -249,7 +251,7 @@ function AZP.OnEvent:ReadyCheck(self, event, ...)
     elseif event == "READY_CHECK_CONFIRM" then
         AZP.ReadyCheckEnhanced:eventReadyCheckConfirm(...)
     elseif event == "READY_CHECK_FINISHED" then
-        AZP.ReadyCheckEnhanced:eventReadyCheckFinished()
+        AZP.ReadyCheckEnhanced:eventReadyCheckFinished(...)
     end
 end
 
