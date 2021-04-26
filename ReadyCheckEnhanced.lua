@@ -84,7 +84,7 @@ function AZP.ReadyCheckEnhanced:OnLoadSelf()
     EventFrame:RegisterEvent("READY_CHECK_CONFIRM")
     EventFrame:RegisterEvent("READY_CHECK_FINISHED")
     EventFrame:RegisterEvent("GROUP_ROSTER_UPDATE")
-    EventFrame:SetScript("OnEvent", function(...) AZP.OnEvent:ReadyCheck(...) end)
+    EventFrame:SetScript("OnEvent", function(...) AZP.ReadyCheckEnhanced:OnEvent(...) end)
 
     UpdateFrame = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
     UpdateFrame:SetPoint("CENTER", 0, 250)
@@ -238,7 +238,7 @@ function AZP.ReadyCheckEnhanced:eventReadyCheckFinished(...)
     ReadyCheckCustomFrame:Hide()
 end
 
-function AZP.OnEvent:ReadyCheck(self, event, ...)
+function AZP.ReadyCheckEnhanced:OnEvent(self, event, ...)
     if event == "CHAT_MSG_ADDON" then
         AZP.ReadyCheckEnhanced:eventChatMsgAddon(...)
     elseif event == "READY_CHECK" then
