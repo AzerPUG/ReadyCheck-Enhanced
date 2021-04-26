@@ -467,6 +467,6 @@ function AZP.ReadyCheckEnhanced:CheckConsumables(inputFrame)
     BuffsLabel.contentText:SetText(printText)
 end
 
-if not IsAddOnLoaded("AzerPUG's Core") then
+if not IsAddOnLoaded("AzerPUGsCore") then
     AZP.ReadyCheckEnhanced:OnLoadSelf()
 end
