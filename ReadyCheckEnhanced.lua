@@ -83,6 +83,7 @@ function AZP.ReadyCheckEnhanced:OnLoadSelf()
     EventFrame:RegisterEvent("UNIT_AURA")
     EventFrame:RegisterEvent("READY_CHECK_CONFIRM")
     EventFrame:RegisterEvent("READY_CHECK_FINISHED")
+    EventFrame:RegisterEvent("GROUP_ROSTER_UPDATE")
     EventFrame:SetScript("OnEvent", function(...) AZP.OnEvent:ReadyCheck(...) end)
 
     UpdateFrame = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
@@ -128,7 +129,6 @@ function AZP.ReadyCheckEnhanced:OnLoadSelf()
     )
     AZP.ReadyCheckEnhanced:FillOptionsPanel(AZPRCESelfOptionPanel)
     AZP.ReadyCheckEnhanced:OnLoadBoth(AZPRCESelfOptionPanel)
-    AZP.ReadyCheckEnhanced:ShareVersion()
 end
 
 function AZP.ReadyCheckEnhanced:DelayedExecution(delayTime, delayedFunction)
@@ -249,6 +249,8 @@ function AZP.OnEvent:ReadyCheck(self, event, ...)
         AZP.ReadyCheckEnhanced:eventReadyCheckConfirm(...)
     elseif event == "READY_CHECK_FINISHED" then
         AZP.ReadyCheckEnhanced:eventReadyCheckFinished(...)
+    elseif event == "GROUP_ROSTER_UPDATE" then
+        AZP.ReadyCheckEnhanced:ShareVersion()
     end
 end
 
