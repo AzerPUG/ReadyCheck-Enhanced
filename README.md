@@ -16,7 +16,7 @@
 AzerPUG's ReadyCheck Enhanced adds a lot of functionality to the standard (very limited) ReadyCheck system. The ReadyCheck window now also shows Raid Buffs (Int/AtkPwr/Stam), Gear Buffs (Oils/Stone/ArmorKit), Consumables (Flask/Food/Rune) and Gear Info (Durability). Just as an extra reminder of what you need to use. Time left on these buffs are tracked and displayed in green, unless they are close to running out, in which case they turn yellow. Not present buffs will be listed in red.
 
 # Bugs, Errors, Glitches and Requests.
-If you find any of the above, please do not hessitate to create a GitHub Issue here: https://github.com/AzerPUG/ReadyCheck-Enhanced/issues  
+If you find any of the above, please do not hesitate to create a GitHub Issue here: https://github.com/AzerPUG/ReadyCheck-Enhanced/issues  
 Or you can join our Discord and let us know in the AzerTech channel: http://www.azerpug.com/discord  
 Please note that our Discord Verification level prevents new people from talking/commenting/ranking in the first 10 minutes!
 
