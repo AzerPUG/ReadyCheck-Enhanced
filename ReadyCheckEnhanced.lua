@@ -3,6 +3,7 @@ if AZP.VersionControl == nil then AZP.VersionControl = {} end
 
 AZP.VersionControl["ReadyCheck Enhanced"] = 31
 if AZP.ReadyCheckEnhanced == nil then AZP.ReadyCheckEnhanced = {} end
+if AZP.ReadyCheckEnhanced.Events == nil then AZP.ReadyCheckEnhanced.Events = {} end
 
 local respondedToReadyCheck = false
 
@@ -61,10 +62,10 @@ function AZP.ReadyCheckEnhanced:OnLoadBoth()
 end
 
 function AZP.ReadyCheckEnhanced:OnLoadCore()
-    AZP.Core:RegisterEvents("READY_CHECK", function(...) AZP.ReadyCheckEnhanced:eventReadyCheck(...) end)
-    AZP.Core:RegisterEvents("UNIT_AURA", function(...) AZP.ReadyCheckEnhanced:eventUnitAura(...) end)
-    AZP.Core:RegisterEvents("READY_CHECK_CONFIRM", function(...) AZP.ReadyCheckEnhanced:eventReadyCheckConfirm(...) end)
-    AZP.Core:RegisterEvents("READY_CHECK_FINISHED", function(...) AZP.ReadyCheckEnhanced:eventReadyCheckFinished(...) end)
+    AZP.Core:RegisterEvents("READY_CHECK", function(...) AZP.ReadyCheckEnhanced.Events:ReadyCheck(...) end)
+    AZP.Core:RegisterEvents("UNIT_AURA", function(...) AZP.ReadyCheckEnhanced.Events:UnitAura(...) end)
+    AZP.Core:RegisterEvents("READY_CHECK_CONFIRM", function(...) AZP.ReadyCheckEnhanced.Events:ReadyCheckConfirm(...) end)
+    AZP.Core:RegisterEvents("READY_CHECK_FINISHED", function(...) AZP.ReadyCheckEnhanced.Events:ReadyCheckFinished(...) end)
 
     AZP.ReadyCheckEnhanced:OnLoadBoth()
 
@@ -198,7 +199,7 @@ function AZP.ReadyCheckEnhanced:GetSpecificAddonVersion(versionString, addonWant
     end
 end
 
-function AZP.ReadyCheckEnhanced:eventChatMsgAddon(...)
+function AZP.ReadyCheckEnhanced.Events:ChatMsgAddon(...)
     local prefix, payload, _, sender = ...
     if prefix == "AZPVERSIONS" then
         local version = AZP.ReadyCheckEnhanced:GetSpecificAddonVersion(payload, "RCE")
@@ -208,7 +209,7 @@ function AZP.ReadyCheckEnhanced:eventChatMsgAddon(...)
     end
 end
 
-function AZP.ReadyCheckEnhanced:eventReadyCheck(...)
+function AZP.ReadyCheckEnhanced.Events:ReadyCheck(...)
     local player = ...
     if (player ~= UnitName("player")) then
         ReadyCheckFrame:Hide()
@@ -220,14 +221,14 @@ function AZP.ReadyCheckEnhanced:eventReadyCheck(...)
     end
 end
 
-function AZP.ReadyCheckEnhanced:eventUnitAura(...)
+function AZP.ReadyCheckEnhanced.Events:UnitAura(...)
     local player = ...
     if (UnitName(player) == UnitName("player")) and ReadyCheckCustomFrame:IsShown() then
         AZP.ReadyCheckEnhanced:CheckConsumables(ReadyCheckFrameText)
     end
 end
 
-function AZP.ReadyCheckEnhanced:eventReadyCheckConfirm(...)
+function AZP.ReadyCheckEnhanced.Events:ReadyCheckConfirm(...)
     local player = ...
     if (UnitName(player) == UnitName("player")) then
         respondedToReadyCheck = true
@@ -235,7 +236,7 @@ function AZP.ReadyCheckEnhanced:eventReadyCheckConfirm(...)
     end
 end
 
-function AZP.ReadyCheckEnhanced:eventReadyCheckFinished(...)
+function AZP.ReadyCheckEnhanced.Events:ReadyCheckFinished(...)
     if not respondedToReadyCheck then
         AZPReadyNowButton:Show()
     end
@@ -244,15 +245,15 @@ end
 
 function AZP.ReadyCheckEnhanced:OnEvent(self, event, ...)
     if event == "CHAT_MSG_ADDON" then
-        AZP.ReadyCheckEnhanced:eventChatMsgAddon(...)
+        AZP.ReadyCheckEnhanced.Events:ChatMsgAddon(...)
     elseif event == "READY_CHECK" then
-        AZP.ReadyCheckEnhanced:eventReadyCheck(...)
+        AZP.ReadyCheckEnhanced.Events:ReadyCheck(...)
     elseif event == "UNIT_AURA" then
-        AZP.ReadyCheckEnhanced:eventUnitAura(...)
+        AZP.ReadyCheckEnhanced.Events:UnitAura(...)
     elseif event == "READY_CHECK_CONFIRM" then
-        AZP.ReadyCheckEnhanced:eventReadyCheckConfirm(...)
+        AZP.ReadyCheckEnhanced.Events:ReadyCheckConfirm(...)
     elseif event == "READY_CHECK_FINISHED" then
-        AZP.ReadyCheckEnhanced:eventReadyCheckFinished(...)
+        AZP.ReadyCheckEnhanced.Events:ReadyCheckFinished(...)
     elseif event == "GROUP_ROSTER_UPDATE" then
         AZP.ReadyCheckEnhanced:ShareVersion()
     end
