@@ -16,7 +16,18 @@
 [![](https://github.com/AzerPUG/AZP-Files/raw/main/Panels/Instagram%20Panel%20Small.png "")](http://www.azerpug.com/instagram "") 
 
 # Description and Features
-AzerPUG's ReadyCheck Enhanced adds a lot of functionality to the standard (very limited) ReadyCheck system. The ReadyCheck window now also shows Raid Buffs (Int/AtkPwr/Stam), Gear Buffs (Oils/Stone/ArmorKit), Consumables (Flask/Food/Rune) and Gear Info (Durability). Just as an extra reminder of what you need to use. Time left on these buffs are tracked and displayed in green, unless they are close to running out, in which case they turn yellow. Not present buffs will be listed in red.
+AzerPUG's ReadyCheck Enhanced adds a lot of functionality to the standard (very limited) ReadyCheck system. The ReadyCheck window now also shows Raid Buffs (Int/AtkPwr/Stam), Gear Buffs (Oils/Stone/ArmorKit), Consumables (Flask/Food/Rune) and Gear Info (Durability). Just as an extra reminder of what you need to use. Time left on these buffs are tracked and displayed in green, unless they are close to running out, in which case they turn yellow. Not present buffs will be listed in red. 
+
+# Optional Core
+All AzerPUG AddOns are stand-alone and as lightweight as possible.  
+However, some very resource intensive things with AddOns are really nice to have.  
+In order to provide these extra things, like optimization or combining the AddOns into one bigger one, we have an optinal, combined AddOn.  
+Anyone who uses several of our AddOns, is strongly suggested to use the [AzerPUG's Core](https://www.curseforge.com/wow/addons/azerpugs-core) as well.  
+This Core AddOn will do several things that are considered an imporvement by most people:
+- Speed up loading times
+- Register events more efficiently.
+- Deal with all the event handling for all AzerPUG AddOns.
+- Deal with all the version control for all AzerPUG AddOns.  
 
 # Bugs, Errors, Glitches and Requests.
 If you find any of the above, please do not hesitate to create a GitHub Issue here: https://github.com/AzerPUG/ReadyCheck-Enhanced/issues  
