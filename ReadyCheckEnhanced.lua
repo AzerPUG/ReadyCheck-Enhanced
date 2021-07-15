@@ -233,6 +233,7 @@ function AZP.ReadyCheckEnhanced.Events:ReadyCheckConfirm(...)
     if (UnitName(player) == UnitName("player")) then
         respondedToReadyCheck = true
         ReadyCheckCustomFrame:Hide()
+        if GetReadyCheckStatus("player") == "notready" then AZPReadyNowButton:Show() end
     end
 end
 
