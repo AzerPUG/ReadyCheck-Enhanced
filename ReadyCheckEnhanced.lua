@@ -1,7 +1,7 @@
 if AZP == nil then AZP = {} end
 if AZP.VersionControl == nil then AZP.VersionControl = {} end
 
-AZP.VersionControl["ReadyCheck Enhanced"] = 34
+AZP.VersionControl["ReadyCheck Enhanced"] = 35
 if AZP.ReadyCheckEnhanced == nil then AZP.ReadyCheckEnhanced = {} end
 if AZP.ReadyCheckEnhanced.Events == nil then AZP.ReadyCheckEnhanced.Events = {} end
 
@@ -17,7 +17,7 @@ local optionHeader = "|cFF00FFFFReadyCheck Enhanced|r"
 
 function AZP.ReadyCheckEnhanced:OnLoadBoth()
     ReadyCheckCustomFrame = CreateFrame("Frame", "ReadyCheckCustomFrame", UIParent, "BackdropTemplate")
-    ReadyCheckCustomFrame:SetSize(300, 225)
+    ReadyCheckCustomFrame:SetSize(300, 250)
     ReadyCheckCustomFrame:SetPoint("CENTER", 0, 0)
     ReadyCheckCustomFrame:SetBackdrop({
         bgFile = "Interface/Tooltips/UI-Tooltip-Background",
@@ -332,6 +332,7 @@ function AZP.ReadyCheckEnhanced:CheckConsumables(inputFrame)
     local currentFood, currentFoodText = nil, nil
     local currentFlask, currentFlaskText = nil, nil
     local currentRune, currentRuneText = nil, nil
+    local currentVantus, currentVantusText = nil, nil
     local currentMHWepMod, currentMHWepModText = nil, nil
     local currentOHWepMod, currentOHWepModText = nil, nil
     local currentReinforce, currentReinforceText = nil, nil
@@ -381,6 +382,8 @@ function AZP.ReadyCheckEnhanced:CheckConsumables(inputFrame)
             currentSta = {buffName, spellID, expirationTimer, icon}
         elseif AZP.ReadyCheckEnhanced:checkIfBuffInTable(spellID, AZP.ReadyCheckEnhanced.buffs["RaidBuff"]) == "Attack Power" then
             currentAtk = {buffName, spellID, expirationTimer, icon}
+        elseif AZP.ReadyCheckEnhanced:checkIfBuffInTable(spellID, AZP.ReadyCheckEnhanced.buffs.Vantus) then
+            currentVantus = {buffName, spellID, expirationTimer, icon}
         end
         buffName, icon, _, _, _, expirationTimer, _, _, _, spellID = UnitBuff("player", i)
     end
@@ -432,18 +435,19 @@ function AZP.ReadyCheckEnhanced:CheckConsumables(inputFrame)
         currentOHWepMod = "Unmoddable"
     end
 
-    currentFlaskText = AZP.ReadyCheckEnhanced:CheckConsumableTimer(currentFlask, "NO FLASK!")
-    currentFoodText = AZP.ReadyCheckEnhanced:CheckConsumableTimer(currentFood, "NO FOOD!")
-    currentRuneText = AZP.ReadyCheckEnhanced:CheckConsumableTimer(currentRune, "NO RUNE!")
-    currentMHWepModText = AZP.ReadyCheckEnhanced:CheckConsumableTimer(currentMHWepMod, "NO MH WepMod!")
+    currentFlaskText = AZP.ReadyCheckEnhanced:CheckConsumableTimer(currentFlask, " NO FLASK!")
+    currentFoodText = AZP.ReadyCheckEnhanced:CheckConsumableTimer(currentFood, " NO FOOD!")
+    currentRuneText = AZP.ReadyCheckEnhanced:CheckConsumableTimer(currentRune, " NO RUNE!")
+    currentVantusText = AZP.ReadyCheckEnhanced:CheckConsumableTimer(currentVantus, " NO VANTUS!")
+    currentMHWepModText = AZP.ReadyCheckEnhanced:CheckConsumableTimer(currentMHWepMod, " NO MH WepMod!")
     if currentOHWepMod ~= "Unmoddable" then
-        currentOHWepModText = AZP.ReadyCheckEnhanced:CheckConsumableTimer(currentOHWepMod, "NO OH WepMod!")
+        currentOHWepModText = AZP.ReadyCheckEnhanced:CheckConsumableTimer(currentOHWepMod, " NO OH WepMod!")
     end
 
-    currentIntText = AZP.ReadyCheckEnhanced:CheckConsumableTimer(currentInt, "NO INTELLECT!")
-    currentStaText = AZP.ReadyCheckEnhanced:CheckConsumableTimer(currentSta, "NO STAMINA!")
-    currentAtkText = AZP.ReadyCheckEnhanced:CheckConsumableTimer(currentAtk, "NO ATTACK POWER!")
-    currentReinforceText = AZP.ReadyCheckEnhanced:CheckConsumableTimer(currentReinforce, "NO REINFORCEMENT!")
+    currentIntText = AZP.ReadyCheckEnhanced:CheckConsumableTimer(currentInt, " NO INTELLECT!")
+    currentStaText = AZP.ReadyCheckEnhanced:CheckConsumableTimer(currentSta, " NO STAMINA!")
+    currentAtkText = AZP.ReadyCheckEnhanced:CheckConsumableTimer(currentAtk, " NO ATTACK POWER!")
+    currentReinforceText = AZP.ReadyCheckEnhanced:CheckConsumableTimer(currentReinforce, " NO REINFORCEMENT!")
 
     local cur, max = 0, 0
     for eIndex = 1, 17 do
@@ -471,7 +475,7 @@ function AZP.ReadyCheckEnhanced:CheckConsumables(inputFrame)
     if currentOHWepModText ~= nil then
         printText = printText .. "     " .. currentOHWepModText
     end
-    printText = printText .. "\n"  .. currentReinforceText .. "\n" .. currentIntText .. "\n" .. currentStaText .. "\n" .. currentAtkText .. "\n" .. currentDurText
+    printText = printText .. "\n"  .. currentReinforceText .. "\n" .. currentIntText .. "\n" .. currentStaText .. "\n" .. currentAtkText .. "\n" .. currentVantusText .. "\n" .. currentDurText
     BuffsLabel.contentText:SetText(printText)
 end
 

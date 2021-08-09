@@ -33,4 +33,17 @@ AZP.ReadyCheckEnhanced.buffs =
         {"Weighted", {6201, 171439}},
         {"Sharpened", {6200, 171437}},
     },
+    Vantus =
+    {
+        {"01", {354384}},     -- Terragrue
+        {"02", {354385}},     -- Eye of the Jailer
+        {"03", {354386}},     -- The Nine
+        {"04", {354387}},     -- Remnant of Ner'Zhul
+        {"05", {354388}},     -- Soulrender Dormazain
+        {"06", {354389}},     -- Painsmith Reznal
+        {"07", {354390}},     -- Guardian of the First Ones
+        {"08", {354391}},     -- Fatescribe Roh-Kalo
+        {"09", {354392}},     -- Kel'Thuzad
+        {"10", {354393}},     -- Sylvanas Windrunner
+    },
 }
