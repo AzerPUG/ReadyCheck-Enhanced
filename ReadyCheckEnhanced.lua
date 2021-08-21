@@ -16,17 +16,7 @@ local HaveShowedUpdateNotification = false
 local optionHeader = "|cFF00FFFFReadyCheck Enhanced|r"
 
 function AZP.ReadyCheckEnhanced:OnLoadBoth()
-    ReadyCheckCustomFrame = CreateFrame("Frame", "ReadyCheckCustomFrame", UIParent, "BackdropTemplate")
-    ReadyCheckCustomFrame:SetSize(300, 250)
-    ReadyCheckCustomFrame:SetPoint("CENTER", 0, 0)
-    ReadyCheckCustomFrame:SetBackdrop({
-        bgFile = "Interface/Tooltips/UI-Tooltip-Background",
-        edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
-        edgeSize = 12,
-        insets = { left = 1, right = 1, top = 1, bottom = 1 },
-    })
-    ReadyCheckCustomFrame:SetBackdropColor(0.25, 0.25, 0.25, 1)
-    ReadyCheckCustomFrame:Hide()
+    AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
 
     AZP.ReadyCheckEnhanced:DelayedExecution(10, function()
         ReadyCheckFrameYesButton:SetParent(ReadyCheckCustomFrame)
@@ -471,12 +461,81 @@ function AZP.ReadyCheckEnhanced:CheckConsumables(inputFrame)
     currentDurText = currentDurText .. currentDur .. "% Durability." .. colorEnd
 
     ReadyCheckCustomFrame.HeaderText:SetText(readyCheckDefaultText)
-    local printText = currentFlaskText .. "\n" .. currentFoodText .. "\n" .. currentRuneText .. "\n" .. currentMHWepModText
+    local currentWepModText = currentMHWepModText
     if currentOHWepModText ~= nil then
-        printText = printText .. "     " .. currentOHWepModText
+        currentWepModText = currentWepModText ..  "\n" .. currentOHWepModText
     end
-    printText = printText .. "\n"  .. currentReinforceText .. "\n" .. currentIntText .. "\n" .. currentStaText .. "\n" .. currentAtkText .. "\n" .. currentVantusText .. "\n" .. currentDurText
-    BuffsLabel.contentText:SetText(printText)
+
+    ReadyCheckEachPullText:SetText(string.format("%s\n%s", currentFoodText, currentRuneText))
+    ReadyCheckCrossPullText:SetText(string.format("%s\n%s\n%s", currentFlaskText, currentReinforceText, currentWepModText))
+    ReadyCheckRaidBuffsText:SetText(string.format("%s\n%s\n%s", currentIntText, currentStaText, currentAtkText))
+    ReadyCheckOtherText:SetText(string.format("%s\n%s", currentVantusText, currentDurText))
+end
+
+function AZP.ReadyCheckEnhanced:SetBackDrop(OnFrame)
+    OnFrame:SetBackdrop({
+        bgFile = "Interface/Tooltips/UI-Tooltip-Background",
+        edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
+        edgeSize = 12,
+        insets = { left = 1, right = 1, top = 1, bottom = 1 },
+    })
+    OnFrame:SetBackdropColor(0.25, 0.25, 0.25, 1)
+end
+
+function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
+    ReadyCheckCustomFrame = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
+    ReadyCheckCustomFrame:SetPoint("CENTER")
+    ReadyCheckCustomFrame:SetSize(400, 225)
+    ReadyCheckCustomFrame.EachPull = CreateFrame("Frame", nil, ReadyCheckCustomFrame, "BackdropTemplate")
+    ReadyCheckCustomFrame.EachPull:SetSize(195, 80)
+    ReadyCheckCustomFrame.EachPull:SetPoint("TOPLEFT", 5, -30)
+    ReadyCheckCustomFrame.EachPull.Title = ReadyCheckCustomFrame.EachPull:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+    ReadyCheckCustomFrame.EachPull.Title:SetText("Each Pull")
+    ReadyCheckCustomFrame.EachPull.Title:SetSize(195, 15)
+    ReadyCheckCustomFrame.EachPull.Title:SetPoint("TOPLEFT", 0, -3)
+    ReadyCheckCustomFrame.EachPull.Content = ReadyCheckCustomFrame.EachPull:CreateFontString("ReadyCheckEachPullText", "ARTWORK", "GameFontNormalLarge")
+    ReadyCheckCustomFrame.EachPull.Content:SetSize(190, 65)
+    ReadyCheckCustomFrame.EachPull.Content:SetPoint("TOPLEFT", 5, -15)
+    ReadyCheckCustomFrame.EachPull.Content:SetJustifyH("LEFT")
+    ReadyCheckCustomFrame.CrossPull = CreateFrame("Frame", nil, ReadyCheckCustomFrame, "BackdropTemplate")
+    ReadyCheckCustomFrame.CrossPull:SetSize(195, 80)
+    ReadyCheckCustomFrame.CrossPull:SetPoint("TOPRIGHT", -5, -30)
+    ReadyCheckCustomFrame.CrossPull.Title = ReadyCheckCustomFrame.CrossPull:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+    ReadyCheckCustomFrame.CrossPull.Title:SetText("Cross Pull")
+    ReadyCheckCustomFrame.CrossPull.Title:SetSize(195, 15)
+    ReadyCheckCustomFrame.CrossPull.Title:SetPoint("TOPLEFT", 0, -3)
+    ReadyCheckCustomFrame.CrossPull.Content = ReadyCheckCustomFrame.CrossPull:CreateFontString("ReadyCheckCrossPullText", "ARTWORK", "GameFontNormalLarge")
+    ReadyCheckCustomFrame.CrossPull.Content:SetSize(190, 65)
+    ReadyCheckCustomFrame.CrossPull.Content:SetPoint("TOPLEFT", 5, -15)
+    ReadyCheckCustomFrame.CrossPull.Content:SetJustifyH("LEFT")
+    ReadyCheckCustomFrame.RaidBuffs = CreateFrame("Frame", nil, ReadyCheckCustomFrame, "BackdropTemplate")
+    ReadyCheckCustomFrame.RaidBuffs:SetSize(195, 80)
+    ReadyCheckCustomFrame.RaidBuffs:SetPoint("TOPLEFT", ReadyCheckCustomFrame.EachPull, "BOTTOMLEFT")
+    ReadyCheckCustomFrame.RaidBuffs.Title = ReadyCheckCustomFrame.RaidBuffs:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+    ReadyCheckCustomFrame.RaidBuffs.Title:SetText("Raid Buffs")
+    ReadyCheckCustomFrame.RaidBuffs.Title:SetSize(195, 15)
+    ReadyCheckCustomFrame.RaidBuffs.Title:SetPoint("TOPLEFT", 0, -3)
+    ReadyCheckCustomFrame.RaidBuffs.Content = ReadyCheckCustomFrame.RaidBuffs:CreateFontString("ReadyCheckRaidBuffsText", "ARTWORK", "GameFontNormalLarge")
+    ReadyCheckCustomFrame.RaidBuffs.Content:SetSize(190, 65)
+    ReadyCheckCustomFrame.RaidBuffs.Content:SetPoint("TOPLEFT", 5, -15)
+    ReadyCheckCustomFrame.RaidBuffs.Content:SetJustifyH("LEFT")
+    ReadyCheckCustomFrame.Other = CreateFrame("Frame", nil, ReadyCheckCustomFrame, "BackdropTemplate")
+    ReadyCheckCustomFrame.Other:SetSize(195, 80)
+    ReadyCheckCustomFrame.Other:SetPoint("TOPRIGHT", ReadyCheckCustomFrame.CrossPull, "BOTTOMRIGHT")
+    ReadyCheckCustomFrame.Other.Title = ReadyCheckCustomFrame.Other:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+    ReadyCheckCustomFrame.Other.Title:SetText("Other")
+    ReadyCheckCustomFrame.Other.Title:SetSize(195, 15)
+    ReadyCheckCustomFrame.Other.Title:SetPoint("TOPLEFT", 0, -3)
+    ReadyCheckCustomFrame.Other.Content = ReadyCheckCustomFrame.Other:CreateFontString("ReadyCheckOtherText", "ARTWORK", "GameFontNormalLarge")
+    ReadyCheckCustomFrame.Other.Content:SetSize(190, 65)
+    ReadyCheckCustomFrame.Other.Content:SetPoint("TOPLEFT", 5, -15)
+    ReadyCheckCustomFrame.Other.Content:SetJustifyH("LEFT")
+    AZP.ReadyCheckEnhanced:SetBackDrop(ReadyCheckCustomFrame)
+    AZP.ReadyCheckEnhanced:SetBackDrop(ReadyCheckCustomFrame.EachPull)
+    AZP.ReadyCheckEnhanced:SetBackDrop(ReadyCheckCustomFrame.CrossPull)
+    AZP.ReadyCheckEnhanced:SetBackDrop(ReadyCheckCustomFrame.RaidBuffs)
+    AZP.ReadyCheckEnhanced:SetBackDrop(ReadyCheckCustomFrame.Other)
+    ReadyCheckCustomFrame:Hide()
 end
 
 if not IsAddOnLoaded("AzerPUGsCore") then
