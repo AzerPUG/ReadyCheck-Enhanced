@@ -334,6 +334,17 @@ function AZP.ReadyCheckEnhanced:CheckBuff(curBuff, data)
     end
 end
 
+function AZP.ReadyCheckEnhanced:CheckVantusBuff(curBuff, data)
+    local curTime = GetTime()
+    if data.Name == nil then
+        BuffFrames[curBuff].Texture:SetTexture(134400)
+        BuffFrames[curBuff].String:SetText(string.format("\124cFFFF0000Missing %s!\124r", curBuff))
+    else
+        BuffFrames[curBuff].Texture:SetTexture(data.Icon)
+        BuffFrames[curBuff].String:SetText(string.format("\124cFF00FF00%d days.\124r", math.ceil((data.Time - curTime) / 86400)))
+    end
+end
+
 function AZP.ReadyCheckEnhanced:CheckBuffs(inputFrame)
     local questionMarkIcon = "\124T134400:16\124t "
     local repairIcon = "\124T132281:16\124t"
@@ -375,22 +386,33 @@ function AZP.ReadyCheckEnhanced:CheckBuffs(inputFrame)
 
     local buffName, icon, _, _, _, expirationTimer, _, _, _, spellID = UnitBuff("player", i)
     local buffData = {Name = buffName, ID = spellID, Time = expirationTimer, Icon = icon}
-
+    local matchedBuffNames = {}
     while buffName do
         i = i + 1;
         if AZP.ReadyCheckEnhanced.buffs.Flask[spellID] ~= nil then
             AZP.ReadyCheckEnhanced:CheckBuff("Flask", buffData)
+            table.insert( matchedBuffNames, "Flask" )
         elseif AZP.ReadyCheckEnhanced.buffs.Food[spellID] ~= nil then
             AZP.ReadyCheckEnhanced:CheckBuff("Food", buffData)
+            table.insert( matchedBuffNames, "Food" )
         elseif AZP.ReadyCheckEnhanced.buffs.Rune[spellID] ~= nil then
             AZP.ReadyCheckEnhanced:CheckBuff("Rune", buffData)
+            table.insert( matchedBuffNames, "Rune" )
         elseif AZP.ReadyCheckEnhanced.buffs.Vantus[spellID] ~= nil then
-            AZP.ReadyCheckEnhanced:CheckBuff("Vantus", buffData)
+            AZP.ReadyCheckEnhanced:CheckVantusBuff("Vantus", buffData)
+            table.insert( matchedBuffNames, "Vantus" )
         elseif AZP.ReadyCheckEnhanced.buffs.RaidBuff[spellID] ~= nil then
             AZP.ReadyCheckEnhanced:CheckBuff(AZP.ReadyCheckEnhanced.buffs.RaidBuff[spellID], buffData)
+            table.insert( matchedBuffNames, AZP.ReadyCheckEnhanced.buffs.RaidBuff[spellID] )
         end
         buffName, icon, _, _, _, expirationTimer, _, _, _, spellID = UnitBuff("player", i)
         buffData = {Name = buffName, ID = spellID, Time = expirationTimer, Icon = icon}
+    end
+
+    for key, _ in pairs(BuffFrames) do
+        if not tContains(matchedBuffNames, key) then
+            AZP.ReadyCheckEnhanced:CheckBuff(key, {})
+        end
     end
 
     local reinforceTime =  AZP.ReadyCheckEnhanced:ArmorKitScan()
