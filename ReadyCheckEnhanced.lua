@@ -1,7 +1,7 @@
 if AZP == nil then AZP = {} end
 if AZP.VersionControl == nil then AZP.VersionControl = {} end
 
-AZP.VersionControl["ReadyCheck Enhanced"] = 36
+AZP.VersionControl["ReadyCheck Enhanced"] = 37
 if AZP.ReadyCheckEnhanced == nil then AZP.ReadyCheckEnhanced = {} end
 if AZP.ReadyCheckEnhanced.Events == nil then AZP.ReadyCheckEnhanced.Events = {} end
 
@@ -34,8 +34,6 @@ function AZP.ReadyCheckEnhanced:OnLoadBoth()
     ReadyCheckCustomFrame.HeaderText = ReadyCheckCustomFrame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
     ReadyCheckCustomFrame.HeaderText:SetSize(ReadyCheckCustomFrame:GetWidth(), 25)
     ReadyCheckCustomFrame.HeaderText:SetPoint("TOP", 0, 0)
-
-
 
     local AZPReadyNowButton = CreateFrame("Button", "AZPReadyNowButton", UIParent, "UIPanelButtonTemplate")
     AZPReadyNowButton.contentText = AZPReadyNowButton:CreateFontString(nil, "ARTWORK", "GameFontNormalHuge")
@@ -226,6 +224,7 @@ function AZP.ReadyCheckEnhanced.Events:ReadyCheckConfirm(...)
     local player = ...
     if (UnitName(player) == UnitName("player")) then
         respondedToReadyCheck = true
+        ChooseItemFrame:Hide()
         ReadyCheckCustomFrame:Hide()
         if GetReadyCheckStatus("player") == "notready" then AZPReadyNowButton:Show() end
     end
@@ -235,6 +234,7 @@ function AZP.ReadyCheckEnhanced.Events:ReadyCheckFinished(...)
     if not respondedToReadyCheck then
         AZPReadyNowButton:Show()
     end
+    ChooseItemFrame:Hide()
     ReadyCheckCustomFrame:Hide()
 end
 
@@ -345,6 +345,110 @@ function AZP.ReadyCheckEnhanced:CheckVantusBuff(curBuff, data)
     end
 end
 
+function AZP.ReadyCheckEnhanced:CheckWeaponMods()
+    local curTime = GetTime()
+    local hasMainHandEnchant, mainHandExpiration, mainHandCharges, mainHandEnchantID, hasOffHandEnchant, offHandExpiration, offHandCharges, offHandEnchantId = GetWeaponEnchantInfo()
+    local itemLink, itemID = nil, nil
+    local currentMHWepMod, currentOHWepMod = nil, nil
+    itemLink = GetInventoryItemLink("Player", 16)
+    if itemLink ~= nil then
+        if hasMainHandEnchant == true then
+            local itemIDFromSpellID, itemNameFromSpellID = nil, nil
+            if AZP.ReadyCheckEnhanced.buffs.WeaponIDs[mainHandEnchantID] ~= nil then
+                itemIDFromSpellID = AZP.ReadyCheckEnhanced.buffs.WeaponIDs[mainHandEnchantID]
+                itemNameFromSpellID = AZP.ReadyCheckEnhanced.buffs.Weapon[mainHandEnchantID]
+            
+                local itemIcon = GetItemIcon(itemIDFromSpellID)
+                local expirationTimer = floor(mainHandExpiration / 1000 / 60)
+                currentMHWepMod = {Name = itemNameFromSpellID, ID = offHandEnchantId, Time = expirationTimer, Icon = itemIcon}
+            end
+        end
+    end
+
+    itemLink = GetInventoryItemLink("Player", 17)
+    if itemLink ~= nil then
+        local _, _, _, _, _, _, v7 = GetItemInfo(itemLink)
+        if v7 ~= "Miscellaneous" then
+            if hasOffHandEnchant == true then
+                local itemIDFromSpellID, itemNameFromSpellID = nil, nil
+                if AZP.ReadyCheckEnhanced.buffs.WeaponIDs[offHandEnchantId] ~= nil then
+                    itemIDFromSpellID = AZP.ReadyCheckEnhanced.buffs.WeaponIDs[offHandEnchantId]
+                    itemNameFromSpellID = AZP.ReadyCheckEnhanced.buffs.Weapon[offHandEnchantId]
+
+                    local itemIcon = GetItemIcon(itemIDFromSpellID)
+                    local expirationTimer = floor(offHandExpiration / 1000 / 60)
+                    currentOHWepMod = {Name = itemNameFromSpellID, ID = offHandEnchantId, Time = expirationTimer, Icon = itemIcon}
+                end
+            end
+        else currentOHWepMod = "Unmoddable" end
+    else currentOHWepMod = "Unmoddable" end
+
+    if currentOHWepMod == "Unmoddable" then
+        BuffFrames.OHWepMod:Hide()
+    else
+        BuffFrames.OHWepMod:Show()
+        if currentOHWepMod == nil then
+            BuffFrames.OHWepMod.Texture:SetTexture(134400)
+            BuffFrames.OHWepMod.String:SetText("\124cFFFF0000Missing OH Wep Mod!\124r")
+        else
+            local color = nil
+            if currentOHWepMod.Time <= TrashHoldMinutes then color = "\124cFFFFFF00" else color = "\124cFF00FF00" end
+            BuffFrames.OHWepMod.Texture:SetTexture(currentOHWepMod.Icon)
+            BuffFrames.OHWepMod.String:SetText(string.format("%s%d minutes.\124r", color, currentOHWepMod.Time))
+        end
+    end
+
+    if currentMHWepMod == nil then
+        BuffFrames.MHWepMod.Texture:SetTexture(134400)
+        BuffFrames.MHWepMod.String:SetText("\124cFFFF0000Missing MH Wep Mod!\124r")
+    else
+        local color = nil
+        if currentMHWepMod.Time <= TrashHoldMinutes then color = "\124cFFFFFF00" else color = "\124cFF00FF00" end
+        BuffFrames.MHWepMod.Texture:SetTexture(currentMHWepMod.Icon)
+        BuffFrames.MHWepMod.String:SetText(string.format("%s%d minutes.\124r", color, currentMHWepMod.Time))
+    end
+end
+
+function AZP.ReadyCheckEnhanced:CheckArmorBuff()
+    
+    local expirationTimer = AZP.ReadyCheckEnhanced:ArmorKitScan()
+    if expirationTimer == nil then
+        BuffFrames.ArmorKit.Texture:SetTexture(134400)
+        BuffFrames.ArmorKit.String:SetText("\124cFFFF0000Missing Armor Kit!\124r")
+    else
+        local color = nil
+        if expirationTimer <= TrashHoldMinutes then color = "\124cFFFFFF00" else color = "\124cFF00FF00" end
+        BuffFrames.ArmorKit.Texture:SetTexture(3528447)
+        BuffFrames.ArmorKit.String:SetText(string.format("%s%d minutes.\124r", color, expirationTimer))
+    end
+end
+
+function AZP.ReadyCheckEnhanced:CheckDurability()
+    local cur, max = 0, 0
+    for eIndex = 1, 17 do
+        local v1, v2 = GetInventoryItemDurability(eIndex)
+        if v1 == nil or v2 == nill then
+        else
+            cur = cur + v1
+            max = max + v2
+        end
+    end
+
+    local color = nil
+
+    local currentDur = math.floor(cur/max*100)
+
+    if currentDur < 10 then
+        color = "\124cFFFF0000"
+    elseif currentDur < 25 then
+        color = "\124cFFFFFF00"
+    elseif currentDur > 25 then
+        color = "\124cFF00FF00"
+    end
+    BuffFrames.Repair.Texture:SetTexture(132281)
+    BuffFrames.Repair.String:SetText(string.format("%s%d%% Durability.\124r", color, currentDur))
+end
+
 function AZP.ReadyCheckEnhanced:CheckBuffs(inputFrame)
     local questionMarkIcon = "\124T134400:16\124t "
     local repairIcon = "\124T132281:16\124t"
@@ -386,7 +490,7 @@ function AZP.ReadyCheckEnhanced:CheckBuffs(inputFrame)
 
     local buffName, icon, _, _, _, expirationTimer, _, _, _, spellID = UnitBuff("player", i)
     local buffData = {Name = buffName, ID = spellID, Time = expirationTimer, Icon = icon}
-    local matchedBuffNames = {}
+    local matchedBuffNames = {"Repair", "OHWepMod", "MHWepMod", "ArmorKit"} -- Pre assigned items are not player buffs.
     while buffName do
         i = i + 1;
         if AZP.ReadyCheckEnhanced.buffs.Flask[spellID] ~= nil then
@@ -408,6 +512,10 @@ function AZP.ReadyCheckEnhanced:CheckBuffs(inputFrame)
         buffName, icon, _, _, _, expirationTimer, _, _, _, spellID = UnitBuff("player", i)
         buffData = {Name = buffName, ID = spellID, Time = expirationTimer, Icon = icon}
     end
+
+    AZP.ReadyCheckEnhanced:CheckDurability()
+    AZP.ReadyCheckEnhanced:CheckWeaponMods()
+    AZP.ReadyCheckEnhanced:CheckArmorBuff()
 
     for key, _ in pairs(BuffFrames) do
         if not tContains(matchedBuffNames, key) then
@@ -438,61 +546,6 @@ function AZP.ReadyCheckEnhanced:CheckBuffs(inputFrame)
         end
     end
 
-    itemLink = GetInventoryItemLink("Player", 17)
-    if itemLink ~= nil then
-        local _, _, _, _, _, _, v7 = GetItemInfo(itemLink)
-        if v7 ~= "Miscellaneous" then
-            if hasOffHandEnchant == true then
-                local itemIDFromSpellID, itemNameFromSpellID = nil, nil
-                for _,category in ipairs(AZP.ReadyCheckEnhanced.buffs.Weapon) do
-                    if tContains(category[2], offHandEnchantId) then
-                        itemIDFromSpellID = AZP.ReadyCheckEnhanced.buffs.WeaponIDs[key]
-                        itemNameFromSpellID = category[mainHandEnchantID]
-                    end
-                end
-
-                local itemIcon = GetItemIcon(itemIDFromSpellID)
-                expirationTimer = floor(offHandExpiration / 1000 / 60)
-                currentOHWepMod = {itemNameFromSpellID, offHandEnchantId, expirationTimer, itemIcon}
-            end
-        else currentOHWepMod = "Unmoddable" end
-    else currentOHWepMod = "Unmoddable" end
-
-    currentFlaskText = AZP.ReadyCheckEnhanced:CheckBuffTimer(currentFlask, " NO FLASK!")
-    currentFoodText = AZP.ReadyCheckEnhanced:CheckBuffTimer(currentFood, " NO FOOD!")
-    currentRuneText = AZP.ReadyCheckEnhanced:CheckBuffTimer(currentRune, " NO RUNE!")
-    currentVantusText = AZP.ReadyCheckEnhanced:CheckBuffTimer(currentVantus, " NO VANTUS!")
-    currentMHWepModText = AZP.ReadyCheckEnhanced:CheckBuffTimer(currentMHWepMod, " NO MH WepMod!")
-    if currentOHWepMod ~= "Unmoddable" then
-        currentOHWepModText = AZP.ReadyCheckEnhanced:CheckBuffTimer(currentOHWepMod, " NO OH WepMod!")
-    end
-
-    currentIntText = AZP.ReadyCheckEnhanced:CheckBuffTimer(currentInt, " NO INTELLECT!")
-    currentStaText = AZP.ReadyCheckEnhanced:CheckBuffTimer(currentSta, " NO STAMINA!")
-    currentAtkText = AZP.ReadyCheckEnhanced:CheckBuffTimer(currentAtk, " NO ATTACK POWER!")
-    currentReinforceText = AZP.ReadyCheckEnhanced:CheckBuffTimer(currentReinforce, " NO REINFORCEMENT!")
-
-    local cur, max = 0, 0
-    for eIndex = 1, 17 do
-        local v1, v2 = GetInventoryItemDurability(eIndex)
-        if v1 == nil or v2 == nill then
-        else
-            cur = cur + v1
-            max = max + v2
-        end
-    end
-
-    currentDur = math.floor(cur/max*100)
-    currentDurText = repairIcon
-    if currentDur < 10 then
-        currentDurText = currentDurText .. colorRed
-    elseif currentDur < 25 then
-        currentDurText = currentDurText .. colorYellow
-    elseif currentDur > 25 then
-        currentDurText = currentDurText .. collorGreen
-    end
-    currentDurText = string.format("%s %s%% Durability.%s", currentDurText, currentDur, colorEnd)
-
     ReadyCheckCustomFrame.HeaderText:SetText(readyCheckDefaultText)
     local currentWepModText = currentMHWepModText
     if currentOHWepModText ~= nil then
@@ -510,7 +563,7 @@ function AZP.ReadyCheckEnhanced:SetBackDrop(OnFrame)
     OnFrame:SetBackdropColor(0.25, 0.25, 0.25, 1)
 end
 
-function AZP.UseConsumable(Buff)
+function AZP.UseConsumable(Buff, AdditionalAttributes)
     local presentConsumables = {}
     for i = 0, 4 do
         for j = 0, 40 do
@@ -527,32 +580,48 @@ function AZP.UseConsumable(Buff)
     elseif #presentConsumables == 1 then
         BuffFrames[Buff]:SetAttribute("type", "item")
         BuffFrames[Buff]:SetAttribute("item", presentConsumables[1].Bag .. " " .. presentConsumables[1].Slot)
+        if AdditionalAttributes ~= nil then
+            for attr, value in pairs(AdditionalAttributes) do
+                BuffFrames[Buff]:SetAttribute(attr, value)
+            end
+        end
+
     else
         ChooseItemFrame:Show()
-        ChooseItemFrame.Choices = {}
+        for _,f in ipairs(ChooseItemFrame.Choices) do
+            f:Hide()
+        end
         for i = 1, #presentConsumables do
-            ChooseItemFrame.Choices[i] = CreateFrame("Button", nil, ChooseItemFrame, "InsecureActionButtonTemplate")
-            ChooseItemFrame.Choices[i]:SetSize(50, 50)
+            local ChoiceButton = ChooseItemFrame.Choices[i]
+            if ChoiceButton == nil then
+                ChooseItemFrame.Choices[i] = CreateFrame("Button", nil, ChooseItemFrame, "InsecureActionButtonTemplate")
+                ChoiceButton = ChooseItemFrame.Choices[i]
+                ChoiceButton:SetSize(50, 50)
+
+                
+                ChoiceButton.Texture = ChoiceButton:CreateTexture(nil, "BACKGROUND")
+                ChoiceButton.Texture:SetSize(50, 50)
+                ChoiceButton.Texture:SetPoint("CENTER", 0, 0)
+
+                ChoiceButton.String = ChoiceButton:CreateFontString("ReadyCheckFoodText", "ARTWORK", "GameFontNormalLarge")
+                ChoiceButton.String:SetSize(60, 16)
+                ChoiceButton.String:SetPoint("BOTTOM", ChoiceButton.Texture, "TOP", 0, 2)
+                local curFont, curSize, curFlags = ChoiceButton.String:GetFont()
+                ChoiceButton.String:SetFont(curFont, curSize - 3, curFlags)
+            end
+
             local xOff = -35 * (#presentConsumables - 1)
-            if i == 1 then ChooseItemFrame.Choices[i]:SetPoint("BOTTOM", xOff, 15)
-            else ChooseItemFrame.Choices[i]:SetPoint("LEFT", ChooseItemFrame.Choices[i-1], "RIGHT", 20, 0) end
+            if i == 1 then ChoiceButton:SetPoint("BOTTOM", xOff, 15)
+            else ChoiceButton:SetPoint("LEFT", ChooseItemFrame.Choices[i-1], "RIGHT", 20, 0) end
 
-            ChooseItemFrame.Choices[i]:SetAttribute("type", "item")
-            ChooseItemFrame.Choices[i]:SetAttribute("item", presentConsumables[i].Bag .. " " .. presentConsumables[i].Slot)
-
-            ChooseItemFrame.Choices[i].Texture = ChooseItemFrame.Choices[i]:CreateTexture(nil, "BACKGROUND")
-            ChooseItemFrame.Choices[i].Texture:SetSize(50, 50)
-            ChooseItemFrame.Choices[i].Texture:SetPoint("CENTER", 0, 0)
-
-            ChooseItemFrame.Choices[i].String = ChooseItemFrame.Choices[i]:CreateFontString("ReadyCheckFoodText", "ARTWORK", "GameFontNormalLarge")
-            ChooseItemFrame.Choices[i].String:SetSize(50, 24)
-            ChooseItemFrame.Choices[i].String:SetPoint("BOTTOM", ChooseItemFrame.Choices[i].Texture, "TOP", 0, 5)
-            ChooseItemFrame.Choices[i].String:SetText("Derp!!")
-            ChooseItemFrame.Choices[i].String:SetText(AZP.ReadyCheckEnhanced.Consumables[Buff][presentConsumables[i].ID])
+            ChoiceButton:SetAttribute("type", "item")
+            ChoiceButton:SetAttribute("item", presentConsumables[i].Bag .. " " .. presentConsumables[i].Slot)
+            ChoiceButton.String:SetText(AZP.ReadyCheckEnhanced.Consumables[Buff][presentConsumables[i].ID])
 
             local _, _, _, _, Icon = GetItemInfoInstant(presentConsumables[i].ID)
 
-            ChooseItemFrame.Choices[i].Texture:SetTexture(Icon)
+            ChoiceButton.Texture:SetTexture(Icon)
+            ChoiceButton:Show()
         end
     end
 end
@@ -606,9 +675,23 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.CrossPull.Title:SetSize(195, 15)
     ReadyCheckCustomFrame.CrossPull.Title:SetPoint("TOPLEFT", 0, -3)
 
+    ReadyCheckCustomFrame.CrossPull.ArmorKitFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.CrossPull, "InsecureActionButtonTemplate")
+    ReadyCheckCustomFrame.CrossPull.ArmorKitFrame:SetSize(ReadyCheckCustomFrame.CrossPull:GetWidth(), 20)
+    ReadyCheckCustomFrame.CrossPull.ArmorKitFrame:SetPoint("TOP", 0, -16)
+    ReadyCheckCustomFrame.CrossPull.ArmorKitFrame:SetScript("OnMouseDown", function() AZP.UseConsumable("ArmorKit", {["target-slot"] = "5"}) end)
+    ReadyCheckCustomFrame.CrossPull.ArmorKitFrame.Texture = ReadyCheckCustomFrame.CrossPull.ArmorKitFrame:CreateTexture(nil, "BACKGROUND")
+    ReadyCheckCustomFrame.CrossPull.ArmorKitFrame.Texture:SetSize(20, 20)
+    ReadyCheckCustomFrame.CrossPull.ArmorKitFrame.Texture:SetPoint("LEFT", 5, 0)
+    ReadyCheckCustomFrame.CrossPull.ArmorKitFrame.Texture:SetTexture(134400)
+    ReadyCheckCustomFrame.CrossPull.ArmorKitFrame.String = ReadyCheckCustomFrame.CrossPull.ArmorKitFrame:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+    ReadyCheckCustomFrame.CrossPull.ArmorKitFrame.String:SetSize(ReadyCheckCustomFrame.CrossPull:GetWidth(), 20)
+    ReadyCheckCustomFrame.CrossPull.ArmorKitFrame.String:SetPoint("LEFT", 30, -2)
+    ReadyCheckCustomFrame.CrossPull.ArmorKitFrame.String:SetJustifyH("LEFT")
+    BuffFrames.ArmorKit = ReadyCheckCustomFrame.CrossPull.ArmorKitFrame
+
     ReadyCheckCustomFrame.CrossPull.FlaskFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.CrossPull, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.CrossPull.FlaskFrame:SetSize(ReadyCheckCustomFrame.CrossPull:GetWidth(), 20)
-    ReadyCheckCustomFrame.CrossPull.FlaskFrame:SetPoint("TOP", 0, -16)
+    ReadyCheckCustomFrame.CrossPull.FlaskFrame:SetPoint("TOP", 0, -41)
     ReadyCheckCustomFrame.CrossPull.FlaskFrame:SetScript("OnMouseDown", function() AZP.UseConsumable("Flask") end)
     ReadyCheckCustomFrame.CrossPull.FlaskFrame.Texture = ReadyCheckCustomFrame.CrossPull.FlaskFrame:CreateTexture(nil, "BACKGROUND")
     ReadyCheckCustomFrame.CrossPull.FlaskFrame.Texture:SetSize(20, 20)
@@ -622,7 +705,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
 
     ReadyCheckCustomFrame.CrossPull.MHWepModFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.CrossPull, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.CrossPull.MHWepModFrame:SetSize(ReadyCheckCustomFrame.CrossPull:GetWidth(), 20)
-    ReadyCheckCustomFrame.CrossPull.MHWepModFrame:SetPoint("TOP", 0, -41)
+    ReadyCheckCustomFrame.CrossPull.MHWepModFrame:SetPoint("TOP", 0, -66)
     ReadyCheckCustomFrame.CrossPull.MHWepModFrame:SetScript("OnMouseDown", function() AZP.UseConsumable("MHWepMod") end)
     ReadyCheckCustomFrame.CrossPull.MHWepModFrame.Texture = ReadyCheckCustomFrame.CrossPull.MHWepModFrame:CreateTexture(nil, "BACKGROUND")
     ReadyCheckCustomFrame.CrossPull.MHWepModFrame.Texture:SetSize(20, 20)
@@ -636,7 +719,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
 
     ReadyCheckCustomFrame.CrossPull.OHWepModFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.CrossPull, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.CrossPull.OHWepModFrame:SetSize(ReadyCheckCustomFrame.CrossPull:GetWidth(), 20)
-    ReadyCheckCustomFrame.CrossPull.OHWepModFrame:SetPoint("TOP", 0, -66)
+    ReadyCheckCustomFrame.CrossPull.OHWepModFrame:SetPoint("TOP", 0, -91)
     ReadyCheckCustomFrame.CrossPull.OHWepModFrame:SetScript("OnMouseDown", function() AZP.UseConsumable("OHWepMod") end)
     ReadyCheckCustomFrame.CrossPull.OHWepModFrame.Texture = ReadyCheckCustomFrame.CrossPull.OHWepModFrame:CreateTexture(nil, "BACKGROUND")
     ReadyCheckCustomFrame.CrossPull.OHWepModFrame.Texture:SetSize(20, 20)
@@ -648,19 +731,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.CrossPull.OHWepModFrame.String:SetJustifyH("LEFT")
     BuffFrames.OHWepMod = ReadyCheckCustomFrame.CrossPull.OHWepModFrame
 
-    ReadyCheckCustomFrame.CrossPull.ArmorKitFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.CrossPull, "InsecureActionButtonTemplate")
-    ReadyCheckCustomFrame.CrossPull.ArmorKitFrame:SetSize(ReadyCheckCustomFrame.CrossPull:GetWidth(), 20)
-    ReadyCheckCustomFrame.CrossPull.ArmorKitFrame:SetPoint("TOP", 0, -91)
-    ReadyCheckCustomFrame.CrossPull.ArmorKitFrame:SetScript("OnMouseDown", function() AZP.UseConsumable("ArmorKit") end)
-    ReadyCheckCustomFrame.CrossPull.ArmorKitFrame.Texture = ReadyCheckCustomFrame.CrossPull.ArmorKitFrame:CreateTexture(nil, "BACKGROUND")
-    ReadyCheckCustomFrame.CrossPull.ArmorKitFrame.Texture:SetSize(20, 20)
-    ReadyCheckCustomFrame.CrossPull.ArmorKitFrame.Texture:SetPoint("LEFT", 5, 0)
-    ReadyCheckCustomFrame.CrossPull.ArmorKitFrame.Texture:SetTexture(134400)
-    ReadyCheckCustomFrame.CrossPull.ArmorKitFrame.String = ReadyCheckCustomFrame.CrossPull.ArmorKitFrame:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
-    ReadyCheckCustomFrame.CrossPull.ArmorKitFrame.String:SetSize(ReadyCheckCustomFrame.CrossPull:GetWidth(), 20)
-    ReadyCheckCustomFrame.CrossPull.ArmorKitFrame.String:SetPoint("LEFT", 30, -2)
-    ReadyCheckCustomFrame.CrossPull.ArmorKitFrame.String:SetJustifyH("LEFT")
-    BuffFrames.ArmorKit = ReadyCheckCustomFrame.CrossPull.ArmorKitFrame
+    
 
     ReadyCheckCustomFrame.RaidBuffs = CreateFrame("Frame", nil, ReadyCheckCustomFrame, "BackdropTemplate")
     ReadyCheckCustomFrame.RaidBuffs:SetSize(195, 125)
@@ -673,7 +744,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.RaidBuffs.IntellectFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.RaidBuffs, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.RaidBuffs.IntellectFrame:SetSize(ReadyCheckCustomFrame.RaidBuffs:GetWidth(), 20)
     ReadyCheckCustomFrame.RaidBuffs.IntellectFrame:SetPoint("TOP", 0, -16)
-    ReadyCheckCustomFrame.RaidBuffs.IntellectFrame:SetScript("OnMouseDown", function() AZP.UseConsumable("Intellect") end)
+    -- ReadyCheckCustomFrame.RaidBuffs.IntellectFrame:SetScript("OnMouseDown", function() AZP.UseConsumable("Intellect") end)
     ReadyCheckCustomFrame.RaidBuffs.IntellectFrame.Texture = ReadyCheckCustomFrame.RaidBuffs.IntellectFrame:CreateTexture(nil, "BACKGROUND")
     ReadyCheckCustomFrame.RaidBuffs.IntellectFrame.Texture:SetSize(20, 20)
     ReadyCheckCustomFrame.RaidBuffs.IntellectFrame.Texture:SetPoint("LEFT", 5, 0)
@@ -687,7 +758,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.RaidBuffs.StaminaFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.RaidBuffs, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.RaidBuffs.StaminaFrame:SetSize(ReadyCheckCustomFrame.RaidBuffs:GetWidth(), 20)
     ReadyCheckCustomFrame.RaidBuffs.StaminaFrame:SetPoint("TOP", 0, -41)
-    ReadyCheckCustomFrame.RaidBuffs.StaminaFrame:SetScript("OnMouseDown", function() AZP.UseConsumable("Stamina") end)
+    -- ReadyCheckCustomFrame.RaidBuffs.StaminaFrame:SetScript("OnMouseDown", function() AZP.UseConsumable("Stamina") end)
     ReadyCheckCustomFrame.RaidBuffs.StaminaFrame.Texture = ReadyCheckCustomFrame.RaidBuffs.StaminaFrame:CreateTexture(nil, "BACKGROUND")
     ReadyCheckCustomFrame.RaidBuffs.StaminaFrame.Texture:SetSize(20, 20)
     ReadyCheckCustomFrame.RaidBuffs.StaminaFrame.Texture:SetPoint("LEFT", 5, 0)
@@ -701,7 +772,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.RaidBuffs, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame:SetSize(ReadyCheckCustomFrame.RaidBuffs:GetWidth(), 20)
     ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame:SetPoint("TOP", 0, -66)
-    ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame:SetScript("OnMouseDown", function() AZP.UseConsumable("AttackPower") end)
+    -- ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame:SetScript("OnMouseDown", function() AZP.UseConsumable("AttackPower") end)
     ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame.Texture = ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame:CreateTexture(nil, "BACKGROUND")
     ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame.Texture:SetSize(20, 20)
     ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame.Texture:SetPoint("LEFT", 5, 0)
@@ -723,7 +794,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.Other.VantusFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.Other, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.Other.VantusFrame:SetSize(ReadyCheckCustomFrame.Other:GetWidth(), 20)
     ReadyCheckCustomFrame.Other.VantusFrame:SetPoint("TOP", 0, -16)
-    ReadyCheckCustomFrame.Other.VantusFrame:SetScript("OnMouseDown", function() AZP.UseConsumable("Vantus") end)
+    --ReadyCheckCustomFrame.Other.VantusFrame:SetScript("OnMouseDown", function() AZP.UseConsumable("Vantus", {["target"] = "boss1"}) end)
     ReadyCheckCustomFrame.Other.VantusFrame.Texture = ReadyCheckCustomFrame.Other.VantusFrame:CreateTexture(nil, "BACKGROUND")
     ReadyCheckCustomFrame.Other.VantusFrame.Texture:SetSize(20, 20)
     ReadyCheckCustomFrame.Other.VantusFrame.Texture:SetPoint("LEFT", 5, 0)
@@ -737,7 +808,6 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.Other.RepairFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.Other, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.Other.RepairFrame:SetSize(ReadyCheckCustomFrame.Other:GetWidth(), 20)
     ReadyCheckCustomFrame.Other.RepairFrame:SetPoint("TOP", 0, -41)
-    ReadyCheckCustomFrame.Other.RepairFrame:SetScript("OnMouseDown", function() AZP.UseConsumable("Repair") end)
     ReadyCheckCustomFrame.Other.RepairFrame.Texture = ReadyCheckCustomFrame.Other.RepairFrame:CreateTexture(nil, "BACKGROUND")
     ReadyCheckCustomFrame.Other.RepairFrame.Texture:SetSize(20, 20)
     ReadyCheckCustomFrame.Other.RepairFrame.Texture:SetPoint("LEFT", 5, 0)
@@ -766,11 +836,18 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
         insets = { left = 1, right = 1, top = 1, bottom = 1 },
     })
     ChooseItemFrame:SetBackdropColor(0.25, 0.25, 0.25, 1)
+    ChooseItemFrame.Choices = {}
 
     ChooseItemFrame.Header = ChooseItemFrame:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
     ChooseItemFrame.Header:SetSize(ChooseItemFrame:GetWidth(), 50)
     ChooseItemFrame.Header:SetPoint("TOP", 0, 0)
     ChooseItemFrame.Header:SetText("More than one item detected in your bags.\nPlease choose which one you want!")
+
+    ChooseItemFrame.CloseButton = CreateFrame("Button", nil, ChooseItemFrame, "UIPanelCloseButton")
+    ChooseItemFrame.CloseButton:SetSize(20, 21)
+    ChooseItemFrame.CloseButton:SetPoint("TOPRIGHT", ChooseItemFrame, "TOPRIGHT", 2, 2)
+    ChooseItemFrame.CloseButton:SetScript("OnClick", function() ChooseItemFrame:Hide() end )
+
     ChooseItemFrame:Hide()
 end
 

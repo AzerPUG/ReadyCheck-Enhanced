@@ -24,14 +24,20 @@ AZP.ReadyCheckEnhanced.Consumables =
     {
         [186662] = "Vantus Rune: Sanctum of Domination",
     },
-    Weapon =
+    MHWepMod =
     {
         [171285] = "Shadowcore",
         [171286] = "Embalmers",
         [171437] = "Sharpening",
         [171439] = "Weightstone",
     },
+    ArmorKit =
+    {
+        [172347] = "Armor Kit"
+    }
 }
+AZP.ReadyCheckEnhanced.Consumables.OHWepMod = AZP.ReadyCheckEnhanced.Consumables.MHWepMod
+
 
 AZP.ReadyCheckEnhanced.buffs =
 {
