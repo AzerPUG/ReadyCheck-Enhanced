@@ -1,7 +1,7 @@
 if AZP == nil then AZP = {} end
 if AZP.VersionControl == nil then AZP.VersionControl = {} end
 
-AZP.VersionControl["ReadyCheck Enhanced"] = 37
+AZP.VersionControl["ReadyCheck Enhanced"] = 38
 if AZP.ReadyCheckEnhanced == nil then AZP.ReadyCheckEnhanced = {} end
 if AZP.ReadyCheckEnhanced.Events == nil then AZP.ReadyCheckEnhanced.Events = {} end
 
@@ -563,14 +563,26 @@ function AZP.ReadyCheckEnhanced:SetBackDrop(OnFrame)
     OnFrame:SetBackdropColor(0.25, 0.25, 0.25, 1)
 end
 
-function AZP.UseConsumable(Buff, AdditionalAttributes)
+function AZP.ReadyCheckEnhanced:PresentConsumablesContains(presentConsumables, itemID)
+    for _,consumable in ipairs(presentConsumables) do
+        if consumable.ID == itemID then
+            return true
+        end
+    end
+    return false
+end
+
+function AZP.ReadyCheckEnhanced:UseConsumable(Buff, AdditionalAttributes)
     local presentConsumables = {}
     for i = 0, 4 do
         for j = 0, 40 do
             local itemID = GetContainerItemID(i, j)
             if itemID ~= nil then
                 if AZP.ReadyCheckEnhanced.Consumables[Buff][itemID] ~= nil then
-                    presentConsumables[#presentConsumables + 1] = {ID = itemID, Bag = i, Slot = j}
+                    local curItem = {ID = itemID, Bag = i, Slot = j}
+                    if AZP.ReadyCheckEnhanced:PresentConsumablesContains(presentConsumables, itemID) == false then
+                        presentConsumables[#presentConsumables + 1] = {ID = itemID, Bag = i, Slot = j}
+                    end
                 end
             end
         end
@@ -585,7 +597,6 @@ function AZP.UseConsumable(Buff, AdditionalAttributes)
                 BuffFrames[Buff]:SetAttribute(attr, value)
             end
         end
-
     else
         ChooseItemFrame:Show()
         for _,f in ipairs(ChooseItemFrame.Choices) do
@@ -598,7 +609,6 @@ function AZP.UseConsumable(Buff, AdditionalAttributes)
                 ChoiceButton = ChooseItemFrame.Choices[i]
                 ChoiceButton:SetSize(50, 50)
 
-                
                 ChoiceButton.Texture = ChoiceButton:CreateTexture(nil, "BACKGROUND")
                 ChoiceButton.Texture:SetSize(50, 50)
                 ChoiceButton.Texture:SetPoint("CENTER", 0, 0)
@@ -642,7 +652,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.EachPull.FoodFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.EachPull, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.EachPull.FoodFrame:SetSize(ReadyCheckCustomFrame.EachPull:GetWidth(), 20)
     ReadyCheckCustomFrame.EachPull.FoodFrame:SetPoint("TOP", 0, -16)
-    ReadyCheckCustomFrame.EachPull.FoodFrame:SetScript("OnMouseDown", function() AZP.UseConsumable("Food") end)
+    ReadyCheckCustomFrame.EachPull.FoodFrame:SetScript("OnMouseDown", function() AZP.ReadyCheckEnhanced:UseConsumable("Food") end)
     ReadyCheckCustomFrame.EachPull.FoodFrame.Texture = ReadyCheckCustomFrame.EachPull.FoodFrame:CreateTexture(nil, "BACKGROUND")
     ReadyCheckCustomFrame.EachPull.FoodFrame.Texture:SetSize(20, 20)
     ReadyCheckCustomFrame.EachPull.FoodFrame.Texture:SetPoint("LEFT", 5, 0)
@@ -656,7 +666,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.EachPull.RuneFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.EachPull, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.EachPull.RuneFrame:SetSize(ReadyCheckCustomFrame.EachPull:GetWidth(), 20)
     ReadyCheckCustomFrame.EachPull.RuneFrame:SetPoint("TOP", 0, -41)
-    ReadyCheckCustomFrame.EachPull.RuneFrame:SetScript("OnMouseDown", function() AZP.UseConsumable("Rune") end)
+    ReadyCheckCustomFrame.EachPull.RuneFrame:SetScript("OnMouseDown", function() AZP.ReadyCheckEnhanced:UseConsumable("Rune") end)
     ReadyCheckCustomFrame.EachPull.RuneFrame.Texture = ReadyCheckCustomFrame.EachPull.RuneFrame:CreateTexture(nil, "BACKGROUND")
     ReadyCheckCustomFrame.EachPull.RuneFrame.Texture:SetSize(20, 20)
     ReadyCheckCustomFrame.EachPull.RuneFrame.Texture:SetPoint("LEFT", 5, 0)
@@ -678,7 +688,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.CrossPull.ArmorKitFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.CrossPull, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.CrossPull.ArmorKitFrame:SetSize(ReadyCheckCustomFrame.CrossPull:GetWidth(), 20)
     ReadyCheckCustomFrame.CrossPull.ArmorKitFrame:SetPoint("TOP", 0, -16)
-    ReadyCheckCustomFrame.CrossPull.ArmorKitFrame:SetScript("OnMouseDown", function() AZP.UseConsumable("ArmorKit", {["target-slot"] = "5"}) end)
+    ReadyCheckCustomFrame.CrossPull.ArmorKitFrame:SetScript("OnMouseDown", function() AZP.ReadyCheckEnhanced:UseConsumable("ArmorKit", {["target-slot"] = "5"}) end)
     ReadyCheckCustomFrame.CrossPull.ArmorKitFrame.Texture = ReadyCheckCustomFrame.CrossPull.ArmorKitFrame:CreateTexture(nil, "BACKGROUND")
     ReadyCheckCustomFrame.CrossPull.ArmorKitFrame.Texture:SetSize(20, 20)
     ReadyCheckCustomFrame.CrossPull.ArmorKitFrame.Texture:SetPoint("LEFT", 5, 0)
@@ -692,7 +702,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.CrossPull.FlaskFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.CrossPull, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.CrossPull.FlaskFrame:SetSize(ReadyCheckCustomFrame.CrossPull:GetWidth(), 20)
     ReadyCheckCustomFrame.CrossPull.FlaskFrame:SetPoint("TOP", 0, -41)
-    ReadyCheckCustomFrame.CrossPull.FlaskFrame:SetScript("OnMouseDown", function() AZP.UseConsumable("Flask") end)
+    ReadyCheckCustomFrame.CrossPull.FlaskFrame:SetScript("OnMouseDown", function() AZP.ReadyCheckEnhanced:UseConsumable("Flask") end)
     ReadyCheckCustomFrame.CrossPull.FlaskFrame.Texture = ReadyCheckCustomFrame.CrossPull.FlaskFrame:CreateTexture(nil, "BACKGROUND")
     ReadyCheckCustomFrame.CrossPull.FlaskFrame.Texture:SetSize(20, 20)
     ReadyCheckCustomFrame.CrossPull.FlaskFrame.Texture:SetPoint("LEFT", 5, 0)
@@ -706,7 +716,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.CrossPull.MHWepModFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.CrossPull, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.CrossPull.MHWepModFrame:SetSize(ReadyCheckCustomFrame.CrossPull:GetWidth(), 20)
     ReadyCheckCustomFrame.CrossPull.MHWepModFrame:SetPoint("TOP", 0, -66)
-    ReadyCheckCustomFrame.CrossPull.MHWepModFrame:SetScript("OnMouseDown", function() AZP.UseConsumable("MHWepMod") end)
+    ReadyCheckCustomFrame.CrossPull.MHWepModFrame:SetScript("OnMouseDown", function() AZP.ReadyCheckEnhanced:UseConsumable("MHWepMod") end)
     ReadyCheckCustomFrame.CrossPull.MHWepModFrame.Texture = ReadyCheckCustomFrame.CrossPull.MHWepModFrame:CreateTexture(nil, "BACKGROUND")
     ReadyCheckCustomFrame.CrossPull.MHWepModFrame.Texture:SetSize(20, 20)
     ReadyCheckCustomFrame.CrossPull.MHWepModFrame.Texture:SetPoint("LEFT", 5, 0)
@@ -720,7 +730,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.CrossPull.OHWepModFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.CrossPull, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.CrossPull.OHWepModFrame:SetSize(ReadyCheckCustomFrame.CrossPull:GetWidth(), 20)
     ReadyCheckCustomFrame.CrossPull.OHWepModFrame:SetPoint("TOP", 0, -91)
-    ReadyCheckCustomFrame.CrossPull.OHWepModFrame:SetScript("OnMouseDown", function() AZP.UseConsumable("OHWepMod") end)
+    ReadyCheckCustomFrame.CrossPull.OHWepModFrame:SetScript("OnMouseDown", function() AZP.ReadyCheckEnhanced:UseConsumable("OHWepMod") end)
     ReadyCheckCustomFrame.CrossPull.OHWepModFrame.Texture = ReadyCheckCustomFrame.CrossPull.OHWepModFrame:CreateTexture(nil, "BACKGROUND")
     ReadyCheckCustomFrame.CrossPull.OHWepModFrame.Texture:SetSize(20, 20)
     ReadyCheckCustomFrame.CrossPull.OHWepModFrame.Texture:SetPoint("LEFT", 5, 0)
@@ -730,8 +740,6 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.CrossPull.OHWepModFrame.String:SetPoint("LEFT", 30, -2)
     ReadyCheckCustomFrame.CrossPull.OHWepModFrame.String:SetJustifyH("LEFT")
     BuffFrames.OHWepMod = ReadyCheckCustomFrame.CrossPull.OHWepModFrame
-
-    
 
     ReadyCheckCustomFrame.RaidBuffs = CreateFrame("Frame", nil, ReadyCheckCustomFrame, "BackdropTemplate")
     ReadyCheckCustomFrame.RaidBuffs:SetSize(195, 125)
@@ -744,7 +752,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.RaidBuffs.IntellectFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.RaidBuffs, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.RaidBuffs.IntellectFrame:SetSize(ReadyCheckCustomFrame.RaidBuffs:GetWidth(), 20)
     ReadyCheckCustomFrame.RaidBuffs.IntellectFrame:SetPoint("TOP", 0, -16)
-    -- ReadyCheckCustomFrame.RaidBuffs.IntellectFrame:SetScript("OnMouseDown", function() AZP.UseConsumable("Intellect") end)
+    -- ReadyCheckCustomFrame.RaidBuffs.IntellectFrame:SetScript("OnMouseDown", function() AZP.ReadyCheckEnhanced:UseConsumable("Intellect") end)
     ReadyCheckCustomFrame.RaidBuffs.IntellectFrame.Texture = ReadyCheckCustomFrame.RaidBuffs.IntellectFrame:CreateTexture(nil, "BACKGROUND")
     ReadyCheckCustomFrame.RaidBuffs.IntellectFrame.Texture:SetSize(20, 20)
     ReadyCheckCustomFrame.RaidBuffs.IntellectFrame.Texture:SetPoint("LEFT", 5, 0)
@@ -758,7 +766,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.RaidBuffs.StaminaFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.RaidBuffs, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.RaidBuffs.StaminaFrame:SetSize(ReadyCheckCustomFrame.RaidBuffs:GetWidth(), 20)
     ReadyCheckCustomFrame.RaidBuffs.StaminaFrame:SetPoint("TOP", 0, -41)
-    -- ReadyCheckCustomFrame.RaidBuffs.StaminaFrame:SetScript("OnMouseDown", function() AZP.UseConsumable("Stamina") end)
+    -- ReadyCheckCustomFrame.RaidBuffs.StaminaFrame:SetScript("OnMouseDown", function() AZP.ReadyCheckEnhanced:UseConsumable("Stamina") end)
     ReadyCheckCustomFrame.RaidBuffs.StaminaFrame.Texture = ReadyCheckCustomFrame.RaidBuffs.StaminaFrame:CreateTexture(nil, "BACKGROUND")
     ReadyCheckCustomFrame.RaidBuffs.StaminaFrame.Texture:SetSize(20, 20)
     ReadyCheckCustomFrame.RaidBuffs.StaminaFrame.Texture:SetPoint("LEFT", 5, 0)
@@ -772,7 +780,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.RaidBuffs, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame:SetSize(ReadyCheckCustomFrame.RaidBuffs:GetWidth(), 20)
     ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame:SetPoint("TOP", 0, -66)
-    -- ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame:SetScript("OnMouseDown", function() AZP.UseConsumable("AttackPower") end)
+    -- ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame:SetScript("OnMouseDown", function() AZP.ReadyCheckEnhanced:UseConsumable("AttackPower") end)
     ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame.Texture = ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame:CreateTexture(nil, "BACKGROUND")
     ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame.Texture:SetSize(20, 20)
     ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame.Texture:SetPoint("LEFT", 5, 0)
@@ -794,7 +802,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.Other.VantusFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.Other, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.Other.VantusFrame:SetSize(ReadyCheckCustomFrame.Other:GetWidth(), 20)
     ReadyCheckCustomFrame.Other.VantusFrame:SetPoint("TOP", 0, -16)
-    --ReadyCheckCustomFrame.Other.VantusFrame:SetScript("OnMouseDown", function() AZP.UseConsumable("Vantus", {["target"] = "boss1"}) end)
+    --ReadyCheckCustomFrame.Other.VantusFrame:SetScript("OnMouseDown", function() AZP.ReadyCheckEnhanced:UseConsumable("Vantus", {["target"] = "boss1"}) end)
     ReadyCheckCustomFrame.Other.VantusFrame.Texture = ReadyCheckCustomFrame.Other.VantusFrame:CreateTexture(nil, "BACKGROUND")
     ReadyCheckCustomFrame.Other.VantusFrame.Texture:SetSize(20, 20)
     ReadyCheckCustomFrame.Other.VantusFrame.Texture:SetPoint("LEFT", 5, 0)
