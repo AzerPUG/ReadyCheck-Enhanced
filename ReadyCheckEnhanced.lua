@@ -1,7 +1,7 @@
 if AZP == nil then AZP = {} end
 if AZP.VersionControl == nil then AZP.VersionControl = {} end
 
-AZP.VersionControl["ReadyCheck Enhanced"] = 38
+AZP.VersionControl["ReadyCheck Enhanced"] = 39
 if AZP.ReadyCheckEnhanced == nil then AZP.ReadyCheckEnhanced = {} end
 if AZP.ReadyCheckEnhanced.Events == nil then AZP.ReadyCheckEnhanced.Events = {} end
 
@@ -203,12 +203,11 @@ end
 
 function AZP.ReadyCheckEnhanced.Events:ReadyCheck(...)
     local player = ...
-    if (player ~= UnitName("player")) then
-        ReadyCheckFrame:Hide()
-        ReadyCheckCustomFrame:Show()
-        AZP.ReadyCheckEnhanced:CheckBuffs(ReadyCheckFrameText)
-        respondedToReadyCheck = false
-    else
+    ReadyCheckCustomFrame:Show()
+    ReadyCheckFrame:Hide()
+    AZP.ReadyCheckEnhanced:CheckBuffs(ReadyCheckFrameText)
+    respondedToReadyCheck = false
+    if player == UnitName("player") then
         respondedToReadyCheck = true
     end
 end
@@ -478,13 +477,14 @@ function AZP.ReadyCheckEnhanced:CheckBuffs(inputFrame)
     end
 
     readyCheckDefaultText = inputFrame:GetText()
-    local endOfLine, _ = string.find(readyCheckDefaultText, "\n")
-    if endOfLine ~= nil then
-        readyCheckDefaultText = string.sub(readyCheckDefaultText, 1, endOfLine -1 )
+    if readyCheckDefaultText ~= nil then
+        local endOfLine, _ = string.find(readyCheckDefaultText, "\n")
+        if endOfLine ~= nil then
+            readyCheckDefaultText = string.sub(readyCheckDefaultText, 1, endOfLine -1 )
+        end
+    else
+        readyCheckDefaultText = "You initiated a ReadyCheck!"
     end
-
-    inputFrame:SetSize(250, 25)
-    inputFrame:SetPoint("TOP", 0, 0)
 
     local i = 1;
 
@@ -495,19 +495,19 @@ function AZP.ReadyCheckEnhanced:CheckBuffs(inputFrame)
         i = i + 1;
         if AZP.ReadyCheckEnhanced.buffs.Flask[spellID] ~= nil then
             AZP.ReadyCheckEnhanced:CheckBuff("Flask", buffData)
-            table.insert( matchedBuffNames, "Flask" )
+            table.insert(matchedBuffNames, "Flask")
         elseif AZP.ReadyCheckEnhanced.buffs.Food[spellID] ~= nil then
             AZP.ReadyCheckEnhanced:CheckBuff("Food", buffData)
-            table.insert( matchedBuffNames, "Food" )
+            table.insert(matchedBuffNames, "Food")
         elseif AZP.ReadyCheckEnhanced.buffs.Rune[spellID] ~= nil then
             AZP.ReadyCheckEnhanced:CheckBuff("Rune", buffData)
-            table.insert( matchedBuffNames, "Rune" )
+            table.insert(matchedBuffNames, "Rune")
         elseif AZP.ReadyCheckEnhanced.buffs.Vantus[spellID] ~= nil then
             AZP.ReadyCheckEnhanced:CheckVantusBuff("Vantus", buffData)
-            table.insert( matchedBuffNames, "Vantus" )
+            table.insert(matchedBuffNames, "Vantus")
         elseif AZP.ReadyCheckEnhanced.buffs.RaidBuff[spellID] ~= nil then
             AZP.ReadyCheckEnhanced:CheckBuff(AZP.ReadyCheckEnhanced.buffs.RaidBuff[spellID], buffData)
-            table.insert( matchedBuffNames, AZP.ReadyCheckEnhanced.buffs.RaidBuff[spellID] )
+            table.insert(matchedBuffNames, AZP.ReadyCheckEnhanced.buffs.RaidBuff[spellID])
         end
         buffName, icon, _, _, _, expirationTimer, _, _, _, spellID = UnitBuff("player", i)
         buffData = {Name = buffName, ID = spellID, Time = expirationTimer, Icon = icon}
