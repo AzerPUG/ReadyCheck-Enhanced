@@ -1,7 +1,7 @@
 if AZP == nil then AZP = {} end
 if AZP.VersionControl == nil then AZP.VersionControl = {} end
 
-AZP.VersionControl["ReadyCheck Enhanced"] = 39
+AZP.VersionControl["ReadyCheck Enhanced"] = 40
 if AZP.ReadyCheckEnhanced == nil then AZP.ReadyCheckEnhanced = {} end
 if AZP.ReadyCheckEnhanced.Events == nil then AZP.ReadyCheckEnhanced.Events = {} end
 
@@ -58,6 +58,7 @@ function AZP.ReadyCheckEnhanced:OnLoadCore()
     AZP.Core:RegisterEvents("UNIT_AURA", function(...) AZP.ReadyCheckEnhanced.Events:UnitAura(...) end)
     AZP.Core:RegisterEvents("READY_CHECK_CONFIRM", function(...) AZP.ReadyCheckEnhanced.Events:ReadyCheckConfirm(...) end)
     AZP.Core:RegisterEvents("READY_CHECK_FINISHED", function(...) AZP.ReadyCheckEnhanced.Events:ReadyCheckFinished(...) end)
+    AZP.Core:RegisterEvents("PLAYER_LOOT_SPEC_UPDATED", function(...) AZP.ReadyCheckEnhanced.Events:LootSpecChanged(...) end)
 
     AZP.ReadyCheckEnhanced:OnLoadBoth()
 
@@ -77,6 +78,7 @@ function AZP.ReadyCheckEnhanced:OnLoadSelf()
     EventFrame:RegisterEvent("READY_CHECK_CONFIRM")
     EventFrame:RegisterEvent("READY_CHECK_FINISHED")
     EventFrame:RegisterEvent("GROUP_ROSTER_UPDATE")
+    EventFrame:RegisterEvent("PLAYER_LOOT_SPEC_UPDATED")
     EventFrame:SetScript("OnEvent", function(...) AZP.ReadyCheckEnhanced:OnEvent(...) end)
 
     UpdateFrame = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
@@ -237,6 +239,10 @@ function AZP.ReadyCheckEnhanced.Events:ReadyCheckFinished(...)
     ReadyCheckCustomFrame:Hide()
 end
 
+function AZP.ReadyCheckEnhanced.Events:LootSpecChanged(...)
+    AZP.ReadyCheckEnhanced:CheckLootSpec()
+end
+
 function AZP.ReadyCheckEnhanced:OnEvent(self, event, ...)
     if event == "CHAT_MSG_ADDON" then
         AZP.ReadyCheckEnhanced.Events:ChatMsgAddon(...)
@@ -250,6 +256,8 @@ function AZP.ReadyCheckEnhanced:OnEvent(self, event, ...)
         AZP.ReadyCheckEnhanced.Events:ReadyCheckFinished(...)
     elseif event == "GROUP_ROSTER_UPDATE" then
         AZP.ReadyCheckEnhanced:ShareVersion()
+    elseif event == "PLAYER_LOOT_SPEC_UPDATED" then
+        AZP.ReadyCheckEnhanced.Events:LootSpecChanged(...)
     end
 end
 
@@ -356,7 +364,7 @@ function AZP.ReadyCheckEnhanced:CheckWeaponMods()
             if AZP.ReadyCheckEnhanced.buffs.WeaponIDs[mainHandEnchantID] ~= nil then
                 itemIDFromSpellID = AZP.ReadyCheckEnhanced.buffs.WeaponIDs[mainHandEnchantID]
                 itemNameFromSpellID = AZP.ReadyCheckEnhanced.buffs.Weapon[mainHandEnchantID]
-            
+
                 local itemIcon = GetItemIcon(itemIDFromSpellID)
                 local expirationTimer = floor(mainHandExpiration / 1000 / 60)
                 currentMHWepMod = {Name = itemNameFromSpellID, ID = offHandEnchantId, Time = expirationTimer, Icon = itemIcon}
@@ -409,7 +417,6 @@ function AZP.ReadyCheckEnhanced:CheckWeaponMods()
 end
 
 function AZP.ReadyCheckEnhanced:CheckArmorBuff()
-    
     local expirationTimer = AZP.ReadyCheckEnhanced:ArmorKitScan()
     if expirationTimer == nil then
         BuffFrames.ArmorKit.Texture:SetTexture(134400)
@@ -444,8 +451,24 @@ function AZP.ReadyCheckEnhanced:CheckDurability()
     elseif currentDur > 25 then
         color = "\124cFF00FF00"
     end
+
     BuffFrames.Repair.Texture:SetTexture(132281)
     BuffFrames.Repair.String:SetText(string.format("%s%d%% Durability.\124r", color, currentDur))
+end
+
+function AZP.ReadyCheckEnhanced:CheckLootSpec()
+    local LootSpecID = GetLootSpecialization()
+    local LootSpecName, LootSpecIconID = nil, nil
+    if LootSpecID == 0 then
+        local _, _, curClass = UnitClass("Player")
+        local curSpec = GetSpecialization()
+        LootSpecID = AZP.SpecsByClass[curClass].Specs[curSpec].ID
+    end
+    LootSpecName = AZP.SpecInfo[LootSpecID].Name
+    LootSpecIconID = AZP.SpecInfo[LootSpecID].Icon
+    local color = "\124cFFFFFF00"
+    ReadyCheckCustomFrame.Other.LootFrame.Texture:SetTexture(LootSpecIconID)
+    ReadyCheckCustomFrame.Other.LootFrame.String:SetText(string.format("%sLoot: %s.\124r", color, LootSpecName))
 end
 
 function AZP.ReadyCheckEnhanced:CheckBuffs(inputFrame)
@@ -459,6 +482,7 @@ function AZP.ReadyCheckEnhanced:CheckBuffs(inputFrame)
     local currentMHWepMod, currentMHWepModText = nil, nil
     local currentOHWepMod, currentOHWepModText = nil, nil
     local currentReinforce, currentReinforceText = nil, nil
+    local currentLootSpec, currentLootSpecText = nil, nil
     local currentInt, currentIntText = nil, nil
     local currentSta, currentStaText = nil, nil
     local currentAtk, currentAtkText = nil, nil
@@ -513,6 +537,7 @@ function AZP.ReadyCheckEnhanced:CheckBuffs(inputFrame)
         buffData = {Name = buffName, ID = spellID, Time = expirationTimer, Icon = icon}
     end
 
+    AZP.ReadyCheckEnhanced:CheckLootSpec()
     AZP.ReadyCheckEnhanced:CheckDurability()
     AZP.ReadyCheckEnhanced:CheckWeaponMods()
     AZP.ReadyCheckEnhanced:CheckArmorBuff()
@@ -825,6 +850,19 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.Other.RepairFrame.String:SetPoint("LEFT", 30, -2)
     ReadyCheckCustomFrame.Other.RepairFrame.String:SetJustifyH("LEFT")
     BuffFrames.Repair = ReadyCheckCustomFrame.Other.RepairFrame
+
+    ReadyCheckCustomFrame.Other.LootFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.Other, "InsecureActionButtonTemplate")
+    ReadyCheckCustomFrame.Other.LootFrame:SetSize(ReadyCheckCustomFrame.Other:GetWidth(), 20)
+    ReadyCheckCustomFrame.Other.LootFrame:SetPoint("TOP", 0, -66)
+    ReadyCheckCustomFrame.Other.LootFrame.Texture = ReadyCheckCustomFrame.Other.LootFrame:CreateTexture(nil, "BACKGROUND")
+    ReadyCheckCustomFrame.Other.LootFrame.Texture:SetSize(20, 20)
+    ReadyCheckCustomFrame.Other.LootFrame.Texture:SetPoint("LEFT", 5, 0)
+    ReadyCheckCustomFrame.Other.LootFrame.Texture:SetTexture(134400)
+    ReadyCheckCustomFrame.Other.LootFrame.String = ReadyCheckCustomFrame.Other.LootFrame:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+    ReadyCheckCustomFrame.Other.LootFrame.String:SetSize(ReadyCheckCustomFrame.Other:GetWidth(), 20)
+    ReadyCheckCustomFrame.Other.LootFrame.String:SetPoint("LEFT", 30, -2)
+    ReadyCheckCustomFrame.Other.LootFrame.String:SetJustifyH("LEFT")
+    --BuffFrames.Loot = ReadyCheckCustomFrame.Other.LootFrame
 
     AZP.ReadyCheckEnhanced:SetBackDrop(ReadyCheckCustomFrame)
     AZP.ReadyCheckEnhanced:SetBackDrop(ReadyCheckCustomFrame.EachPull)
