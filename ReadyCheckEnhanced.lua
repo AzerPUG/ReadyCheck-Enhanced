@@ -1,7 +1,7 @@
 if AZP == nil then AZP = {} end
 if AZP.VersionControl == nil then AZP.VersionControl = {} end
 
-AZP.VersionControl["ReadyCheck Enhanced"] = 40
+AZP.VersionControl["ReadyCheck Enhanced"] = 41
 if AZP.ReadyCheckEnhanced == nil then AZP.ReadyCheckEnhanced = {} end
 if AZP.ReadyCheckEnhanced.Events == nil then AZP.ReadyCheckEnhanced.Events = {} end
 
@@ -59,6 +59,7 @@ function AZP.ReadyCheckEnhanced:OnLoadCore()
     AZP.Core:RegisterEvents("READY_CHECK_CONFIRM", function(...) AZP.ReadyCheckEnhanced.Events:ReadyCheckConfirm(...) end)
     AZP.Core:RegisterEvents("READY_CHECK_FINISHED", function(...) AZP.ReadyCheckEnhanced.Events:ReadyCheckFinished(...) end)
     AZP.Core:RegisterEvents("PLAYER_LOOT_SPEC_UPDATED", function(...) AZP.ReadyCheckEnhanced.Events:LootSpecChanged(...) end)
+    AZP.Core:RegisterEvents("PLAYER_EQUIPMENT_CHANGED", function(...) AZP.ReadyCheckEnhanced.Events:EquipmentChanged(...) end)
 
     AZP.ReadyCheckEnhanced:OnLoadBoth()
 
@@ -79,6 +80,7 @@ function AZP.ReadyCheckEnhanced:OnLoadSelf()
     EventFrame:RegisterEvent("READY_CHECK_FINISHED")
     EventFrame:RegisterEvent("GROUP_ROSTER_UPDATE")
     EventFrame:RegisterEvent("PLAYER_LOOT_SPEC_UPDATED")
+    EventFrame:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
     EventFrame:SetScript("OnEvent", function(...) AZP.ReadyCheckEnhanced:OnEvent(...) end)
 
     UpdateFrame = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
@@ -207,7 +209,7 @@ function AZP.ReadyCheckEnhanced.Events:ReadyCheck(...)
     local player = ...
     ReadyCheckCustomFrame:Show()
     ReadyCheckFrame:Hide()
-    AZP.ReadyCheckEnhanced:CheckBuffs(ReadyCheckFrameText)
+    AZP.ReadyCheckEnhanced:CheckReadyData(ReadyCheckFrameText)
     respondedToReadyCheck = false
     if player == UnitName("player") then
         respondedToReadyCheck = true
@@ -217,7 +219,7 @@ end
 function AZP.ReadyCheckEnhanced.Events:UnitAura(...)
     local player = ...
     if (UnitName(player) == UnitName("player")) and ReadyCheckCustomFrame:IsShown() then
-        AZP.ReadyCheckEnhanced:CheckBuffs(ReadyCheckFrameText)
+        AZP.ReadyCheckEnhanced:CheckReadyData(ReadyCheckFrameText)
     end
 end
 
@@ -243,6 +245,10 @@ function AZP.ReadyCheckEnhanced.Events:LootSpecChanged(...)
     AZP.ReadyCheckEnhanced:CheckLootSpec()
 end
 
+function AZP.ReadyCheckEnhanced.Events:EquipmentChanged(...)
+    AZP.ReadyCheckEnhanced:CheckEquipement()
+end
+
 function AZP.ReadyCheckEnhanced:OnEvent(self, event, ...)
     if event == "CHAT_MSG_ADDON" then
         AZP.ReadyCheckEnhanced.Events:ChatMsgAddon(...)
@@ -258,6 +264,8 @@ function AZP.ReadyCheckEnhanced:OnEvent(self, event, ...)
         AZP.ReadyCheckEnhanced:ShareVersion()
     elseif event == "PLAYER_LOOT_SPEC_UPDATED" then
         AZP.ReadyCheckEnhanced.Events:LootSpecChanged(...)
+    elseif event == "PLAYER_EQUIPMENT_CHANGED" then
+        AZP.ReadyCheckEnhanced.Events:EquipmentChanged(...)
     end
 end
 
@@ -471,7 +479,24 @@ function AZP.ReadyCheckEnhanced:CheckLootSpec()
     ReadyCheckCustomFrame.Other.LootFrame.String:SetText(string.format("%sLoot: %s.\124r", color, LootSpecName))
 end
 
-function AZP.ReadyCheckEnhanced:CheckBuffs(inputFrame)
+function AZP.ReadyCheckEnhanced:CheckEquipement()
+    local anyEquiped = false
+    for i = 0, C_EquipmentSet.GetNumEquipmentSets() - 1 do
+        local name, iconID, _, isEquipped = C_EquipmentSet.GetEquipmentSetInfo(i)
+        if isEquipped == true then
+            anyEquiped = true
+            ReadyCheckCustomFrame.Other.EquipementFrame.Texture:SetTexture(iconID)
+            ReadyCheckCustomFrame.Other.EquipementFrame.String:SetText(string.format("\124cFFFFFF00Gear: %s.\124r", name))
+        end
+    end
+
+    if anyEquiped == false then
+        ReadyCheckCustomFrame.Other.EquipementFrame.Texture:SetTexture(134400)
+        ReadyCheckCustomFrame.Other.EquipementFrame.String:SetText("\124cFFFF0000No GearSet Equiped!\124r")
+    end
+end
+
+function AZP.ReadyCheckEnhanced:CheckReadyData(inputFrame)
     local questionMarkIcon = "\124T134400:16\124t "
     local repairIcon = "\124T132281:16\124t"
     local reinforceIcon = "3528447"
@@ -537,6 +562,7 @@ function AZP.ReadyCheckEnhanced:CheckBuffs(inputFrame)
         buffData = {Name = buffName, ID = spellID, Time = expirationTimer, Icon = icon}
     end
 
+    AZP.ReadyCheckEnhanced:CheckEquipement()
     AZP.ReadyCheckEnhanced:CheckLootSpec()
     AZP.ReadyCheckEnhanced:CheckDurability()
     AZP.ReadyCheckEnhanced:CheckWeaponMods()
@@ -863,6 +889,19 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.Other.LootFrame.String:SetPoint("LEFT", 30, -2)
     ReadyCheckCustomFrame.Other.LootFrame.String:SetJustifyH("LEFT")
     --BuffFrames.Loot = ReadyCheckCustomFrame.Other.LootFrame
+
+    ReadyCheckCustomFrame.Other.EquipementFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.Other, "InsecureActionButtonTemplate")
+    ReadyCheckCustomFrame.Other.EquipementFrame:SetSize(ReadyCheckCustomFrame.Other:GetWidth(), 20)
+    ReadyCheckCustomFrame.Other.EquipementFrame:SetPoint("TOP", 0, -91)
+    ReadyCheckCustomFrame.Other.EquipementFrame.Texture = ReadyCheckCustomFrame.Other.EquipementFrame:CreateTexture(nil, "BACKGROUND")
+    ReadyCheckCustomFrame.Other.EquipementFrame.Texture:SetSize(20, 20)
+    ReadyCheckCustomFrame.Other.EquipementFrame.Texture:SetPoint("LEFT", 5, 0)
+    ReadyCheckCustomFrame.Other.EquipementFrame.Texture:SetTexture(134400)
+    ReadyCheckCustomFrame.Other.EquipementFrame.String = ReadyCheckCustomFrame.Other.EquipementFrame:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+    ReadyCheckCustomFrame.Other.EquipementFrame.String:SetSize(ReadyCheckCustomFrame.Other:GetWidth(), 20)
+    ReadyCheckCustomFrame.Other.EquipementFrame.String:SetPoint("LEFT", 30, -2)
+    ReadyCheckCustomFrame.Other.EquipementFrame.String:SetJustifyH("LEFT")
+    --BuffFrames.Loot = ReadyCheckCustomFrame.Other.EquipementFrame
 
     AZP.ReadyCheckEnhanced:SetBackDrop(ReadyCheckCustomFrame)
     AZP.ReadyCheckEnhanced:SetBackDrop(ReadyCheckCustomFrame.EachPull)
