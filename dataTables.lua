@@ -71,6 +71,8 @@ AZP.ReadyCheckEnhanced.buffs =
         [6188] = "Shadowcore",
         [6201] = "Weighted",
         [6200] = "Sharpened",
+        [5401] = "Windfury MH",
+        [5400] = "Flametongue OH",
     },
     WeaponIDs =
     {
@@ -78,6 +80,8 @@ AZP.ReadyCheckEnhanced.buffs =
         [6188] = 171285,
         [6201] = 171439,
         [6200] = 171437,
+        [5401] = 33757,
+        [5400] = 318038,
     },
     Vantus =
     {
