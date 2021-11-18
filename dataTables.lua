@@ -272,3 +272,35 @@ AZP.SpecsByClass =
         }
     },
 }
+
+AZP.Covenants =
+{
+    NightFae =
+        {
+              Sigil = "Interface\\Garrison\\OrderHallLandingButtonCovenants.blp",
+               Niya = "Interface\\Garrison\\Portraits\\FollowerPortrait_95232.blp",
+        Dreamweaver = "Interface\\Garrison\\Portraits\\FollowerPortrait_94430.blp",
+             Korayn = "Interface\\Garrison\\Portraits\\FollowerPortrait_95248.blp",
+        },
+        Venthyr =
+        {
+            Sigil = "Interface\\Garrison\\OrderHallLandingButtonCovenants.blp",
+               V1 = "Interface\\Garrison\\Portraits\\FollowerPortrait_94741.blp",
+               V2 = "Interface\\Garrison\\Portraits\\FollowerPortrait_93210.blp",
+               V3 = "Interface\\Garrison\\Portraits\\FollowerPortrait_93223.blp",
+        },
+        Necrolord =
+        {
+            Sigil = "Interface\\Garrison\\OrderHallLandingButtonCovenants.blp",
+               N1 = "Interface\\Garrison\\Portraits\\FollowerPortrait_93825.blp",
+               N2 = "Interface\\Garrison\\Portraits\\FollowerPortrait_96102.blp",
+               N3 = "Interface\\Garrison\\Portraits\\FollowerPortrait_94122.blp",
+        },
+        Kyrian =
+        {
+            Sigil = "Interface\\Garrison\\OrderHallLandingButtonCovenants.blp",
+               K1 = "Interface\\Garrison\\Portraits\\FollowerPortrait_94505.blp",
+               K2 = "Interface\\Garrison\\Portraits\\FollowerPortrait_93927.blp",
+               K3 = "Interface\\Garrison\\Portraits\\FollowerPortrait_97681.blp",
+    },
+}

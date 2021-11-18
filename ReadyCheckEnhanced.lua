@@ -1,7 +1,7 @@
 if AZP == nil then AZP = {} end
 if AZP.VersionControl == nil then AZP.VersionControl = {} end
 
-AZP.VersionControl["ReadyCheck Enhanced"] = 43
+AZP.VersionControl["ReadyCheck Enhanced"] = 44
 if AZP.ReadyCheckEnhanced == nil then AZP.ReadyCheckEnhanced = {} end
 if AZP.ReadyCheckEnhanced.Events == nil then AZP.ReadyCheckEnhanced.Events = {} end
 
@@ -373,7 +373,7 @@ function AZP.ReadyCheckEnhanced:CheckWeaponMods()
                 itemNameFromSpellID = AZP.ReadyCheckEnhanced.buffs.Weapon[mainHandEnchantID]
 
                 local curIcon = nil
-                    if hasOffHandEnchant == 5400 or 5401 then curIcon = GetSpellTexture(itemIDFromSpellID)
+                    if mainHandEnchantID == 5400 or mainHandEnchantID == 5401 then curIcon = GetSpellTexture(itemIDFromSpellID)
                     else curIcon = GetItemIcon(itemIDFromSpellID) end
                 local expirationTimer = floor(mainHandExpiration / 1000 / 60)
                 currentMHWepMod = {Name = itemNameFromSpellID, ID = offHandEnchantId, Time = expirationTimer, Icon = curIcon}
@@ -392,7 +392,7 @@ function AZP.ReadyCheckEnhanced:CheckWeaponMods()
                     itemNameFromSpellID = AZP.ReadyCheckEnhanced.buffs.Weapon[offHandEnchantId]
 
                     local curIcon = nil
-                    if hasOffHandEnchant == 5400 or 5401 then curIcon = GetSpellTexture(itemIDFromSpellID)
+                    if offHandEnchantId == 5400 or offHandEnchantId == 5401 then curIcon = GetSpellTexture(itemIDFromSpellID)
                     else curIcon = GetItemIcon(itemIDFromSpellID) end
                     local expirationTimer = floor(offHandExpiration / 1000 / 60)
                     currentOHWepMod = {Name = itemNameFromSpellID, ID = offHandEnchantId, Time = expirationTimer, Icon = curIcon}
@@ -488,37 +488,18 @@ function AZP.ReadyCheckEnhanced:CheckEquipement()
         local name, iconID, _, isEquipped = C_EquipmentSet.GetEquipmentSetInfo(i)
         if isEquipped == true then
             anyEquiped = true
-            ReadyCheckCustomFrame.Other.EquipementFrame.Texture:SetTexture(iconID)
-            ReadyCheckCustomFrame.Other.EquipementFrame.String:SetText(string.format("\124cFFFFFF00Gear: %s.\124r", name))
+            ReadyCheckCustomFrame.BuildInfo.EquipementFrame.Texture:SetTexture(iconID)
+            ReadyCheckCustomFrame.BuildInfo.EquipementFrame.String:SetText(string.format("\124cFFFFFF00Gear: %s.\124r", name))
         end
     end
 
     if anyEquiped == false then
-        ReadyCheckCustomFrame.Other.EquipementFrame.Texture:SetTexture(134400)
-        ReadyCheckCustomFrame.Other.EquipementFrame.String:SetText("\124cFFFF0000No GearSet Equiped!\124r")
+        ReadyCheckCustomFrame.BuildInfo.EquipementFrame.Texture:SetTexture(134400)
+        ReadyCheckCustomFrame.BuildInfo.EquipementFrame.String:SetText("\124cFFFF0000No GearSet Equiped!\124r")
     end
 end
 
 function AZP.ReadyCheckEnhanced:CheckReadyData(inputFrame)
-    local questionMarkIcon = "\124T134400:16\124t "
-    local repairIcon = "\124T132281:16\124t"
-    local reinforceIcon = "3528447"
-    local currentFood, currentFoodText = nil, nil
-    local currentFlask, currentFlaskText = nil, nil
-    local currentRune, currentRuneText = nil, nil
-    local currentVantus, currentVantusText = nil, nil
-    local currentMHWepMod, currentMHWepModText = nil, nil
-    local currentOHWepMod, currentOHWepModText = nil, nil
-    local currentReinforce, currentReinforceText = nil, nil
-    local currentLootSpec, currentLootSpecText = nil, nil
-    local currentInt, currentIntText = nil, nil
-    local currentSta, currentStaText = nil, nil
-    local currentAtk, currentAtkText = nil, nil
-    local currentDur, currentDurText = nil, nil
-    local colorRed = "\124cFFFF0000"
-    local colorYellow = "\124cFFFFFF00"
-    local collorGreen = "\124cFF00FF00"
-    local colorEnd = "\124r"
     if BuffsLabel == nil then
         local BuffsLabel = CreateFrame("Frame", "BuffsLabel", ReadyCheckCustomFrame)
         BuffsLabel:SetSize(100, 150)
@@ -542,7 +523,7 @@ function AZP.ReadyCheckEnhanced:CheckReadyData(inputFrame)
 
     local buffName, icon, _, _, _, expirationTimer, _, _, _, spellID = UnitBuff("player", i)
     local buffData = {Name = buffName, ID = spellID, Time = expirationTimer, Icon = icon}
-    local matchedBuffNames = {"Repair", "OHWepMod", "MHWepMod", "ArmorKit"} -- Pre assigned items are not player buffs.
+    local matchedBuffNames = {"Repair", "OHWepMod", "MHWepMod", "ArmorKit"}     -- Pre assigned items are not player buffs.
     while buffName do
         i = i + 1;
         if AZP.ReadyCheckEnhanced.buffs.Flask[spellID] ~= nil then
@@ -578,33 +559,8 @@ function AZP.ReadyCheckEnhanced:CheckReadyData(inputFrame)
     end
 
     local reinforceTime =  AZP.ReadyCheckEnhanced:ArmorKitScan()
-    if reinforceTime ~= nil then
-        currentReinforce = {"Reinforce", 0, reinforceTime, reinforceIcon}
-    end
-    local hasMainHandEnchant, mainHandExpiration, mainHandCharges, mainHandEnchantID, hasOffHandEnchant, offHandExpiration, offHandCharges, offHandEnchantId = GetWeaponEnchantInfo()
-    local itemLink, itemID = nil, nil
-    itemLink = GetInventoryItemLink("Player", 16)
-    if itemLink ~= nil then
-        if hasMainHandEnchant == true then
-            local itemIDFromSpellID, itemNameFromSpellID = nil, nil
-            for key, category in ipairs(AZP.ReadyCheckEnhanced.buffs.Weapon) do
-                if tContains(category[2], mainHandEnchantID) then
-                    itemIDFromSpellID = AZP.ReadyCheckEnhanced.buffs.WeaponIDs[key]
-                    itemNameFromSpellID = category[mainHandEnchantID]
-                end
-            end
-
-            local itemIcon = GetItemIcon(itemIDFromSpellID)
-            expirationTimer = floor(mainHandExpiration / 1000 / 60)
-            currentMHWepMod = {itemNameFromSpellID, mainHandEnchantID, expirationTimer, itemIcon}
-        end
-    end
 
     ReadyCheckCustomFrame.HeaderText:SetText(readyCheckDefaultText)
-    local currentWepModText = currentMHWepModText
-    if currentOHWepModText ~= nil then
-        currentWepModText = currentWepModText ..  "\n" .. currentOHWepModText
-    end
 end
 
 function AZP.ReadyCheckEnhanced:SetBackDrop(OnFrame)
@@ -635,7 +591,7 @@ function AZP.ReadyCheckEnhanced:UseConsumable(Buff, AdditionalAttributes)
                 if AZP.ReadyCheckEnhanced.Consumables[Buff][itemID] ~= nil then
                     local curItem = {ID = itemID, Bag = i, Slot = j}
                     if AZP.ReadyCheckEnhanced:PresentConsumablesContains(presentConsumables, itemID) == false then
-                        presentConsumables[#presentConsumables + 1] = {ID = itemID, Bag = i, Slot = j}
+                        presentConsumables[#presentConsumables + 1] = {ID = itemID, Bag = i, Slot = j}      -- XXX Why not use curItem?
                     end
                 end
             end
@@ -693,15 +649,47 @@ end
 function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
     ReadyCheckCustomFrame:SetPoint("CENTER")
-    ReadyCheckCustomFrame:SetSize(400, 350)
+    ReadyCheckCustomFrame:SetSize(545, 350)
 
     ReadyCheckCustomFrame.EachPull = CreateFrame("Frame", nil, ReadyCheckCustomFrame, "BackdropTemplate")
-    ReadyCheckCustomFrame.EachPull:SetSize(195, 125)
+    ReadyCheckCustomFrame.EachPull:SetSize(175, 125)
     ReadyCheckCustomFrame.EachPull:SetPoint("TOPLEFT", 5, -30)
     ReadyCheckCustomFrame.EachPull.Title = ReadyCheckCustomFrame.EachPull:CreateFontString(nil, "ARTWORK", "GameFontNormal")
     ReadyCheckCustomFrame.EachPull.Title:SetText("Each Pull")
-    ReadyCheckCustomFrame.EachPull.Title:SetSize(195, 15)
-    ReadyCheckCustomFrame.EachPull.Title:SetPoint("TOPLEFT", 0, -3)
+    ReadyCheckCustomFrame.EachPull.Title:SetSize(175, 15)
+    ReadyCheckCustomFrame.EachPull.Title:SetPoint("TOP", 0, -3)
+
+    ReadyCheckCustomFrame.CrossPull = CreateFrame("Frame", nil, ReadyCheckCustomFrame, "BackdropTemplate")
+    ReadyCheckCustomFrame.CrossPull:SetSize(175, 125)
+    ReadyCheckCustomFrame.CrossPull:SetPoint("LEFT", ReadyCheckCustomFrame.EachPull, "RIGHT", 5, 0)
+    ReadyCheckCustomFrame.CrossPull.Title = ReadyCheckCustomFrame.CrossPull:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+    ReadyCheckCustomFrame.CrossPull.Title:SetText("Cross Pull")
+    ReadyCheckCustomFrame.CrossPull.Title:SetSize(175, 15)
+    ReadyCheckCustomFrame.CrossPull.Title:SetPoint("TOP", 0, -3)
+
+    ReadyCheckCustomFrame.RaidBuffs = CreateFrame("Frame", nil, ReadyCheckCustomFrame, "BackdropTemplate")
+    ReadyCheckCustomFrame.RaidBuffs:SetSize(175, 125)
+    ReadyCheckCustomFrame.RaidBuffs:SetPoint("LEFT", ReadyCheckCustomFrame.CrossPull, "RIGHT", 5, 0)
+    ReadyCheckCustomFrame.RaidBuffs.Title = ReadyCheckCustomFrame.RaidBuffs:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+    ReadyCheckCustomFrame.RaidBuffs.Title:SetText("Raid Buffs")
+    ReadyCheckCustomFrame.RaidBuffs.Title:SetSize(175, 15)
+    ReadyCheckCustomFrame.RaidBuffs.Title:SetPoint("TOP", 0, -3)
+
+    ReadyCheckCustomFrame.BuildInfo = CreateFrame("Frame", nil, ReadyCheckCustomFrame, "BackdropTemplate")
+    ReadyCheckCustomFrame.BuildInfo:SetSize(175, 125)
+    ReadyCheckCustomFrame.BuildInfo:SetPoint("TOP", ReadyCheckCustomFrame.EachPull, "BOTTOM", 0, -5)
+    ReadyCheckCustomFrame.BuildInfo.Title = ReadyCheckCustomFrame.BuildInfo:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+    ReadyCheckCustomFrame.BuildInfo.Title:SetText("Build Info")
+    ReadyCheckCustomFrame.BuildInfo.Title:SetSize(175, 15)
+    ReadyCheckCustomFrame.BuildInfo.Title:SetPoint("TOP", 0, -3)
+
+    ReadyCheckCustomFrame.Other = CreateFrame("Frame", nil, ReadyCheckCustomFrame, "BackdropTemplate")
+    ReadyCheckCustomFrame.Other:SetSize(355, 125)
+    ReadyCheckCustomFrame.Other:SetPoint("LEFT", ReadyCheckCustomFrame.BuildInfo, "RIGHT", 5, 0)
+    ReadyCheckCustomFrame.Other.Title = ReadyCheckCustomFrame.Other:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+    ReadyCheckCustomFrame.Other.Title:SetText("Other")
+    ReadyCheckCustomFrame.Other.Title:SetSize(175, 15)
+    ReadyCheckCustomFrame.Other.Title:SetPoint("TOP", 0, -3)
 
     ReadyCheckCustomFrame.EachPull.FoodFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.EachPull, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.EachPull.FoodFrame:SetSize(ReadyCheckCustomFrame.EachPull:GetWidth(), 20)
@@ -730,14 +718,6 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.EachPull.RuneFrame.String:SetPoint("LEFT", 30, -2)
     ReadyCheckCustomFrame.EachPull.RuneFrame.String:SetJustifyH("LEFT")
     BuffFrames.Rune = ReadyCheckCustomFrame.EachPull.RuneFrame
-
-    ReadyCheckCustomFrame.CrossPull = CreateFrame("Frame", nil, ReadyCheckCustomFrame, "BackdropTemplate")
-    ReadyCheckCustomFrame.CrossPull:SetSize(195, 125)
-    ReadyCheckCustomFrame.CrossPull:SetPoint("TOPRIGHT", -5, -30)
-    ReadyCheckCustomFrame.CrossPull.Title = ReadyCheckCustomFrame.CrossPull:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-    ReadyCheckCustomFrame.CrossPull.Title:SetText("Cross Pull")
-    ReadyCheckCustomFrame.CrossPull.Title:SetSize(195, 15)
-    ReadyCheckCustomFrame.CrossPull.Title:SetPoint("TOPLEFT", 0, -3)
 
     ReadyCheckCustomFrame.CrossPull.ArmorKitFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.CrossPull, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.CrossPull.ArmorKitFrame:SetSize(ReadyCheckCustomFrame.CrossPull:GetWidth(), 20)
@@ -795,14 +775,6 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.CrossPull.OHWepModFrame.String:SetJustifyH("LEFT")
     BuffFrames.OHWepMod = ReadyCheckCustomFrame.CrossPull.OHWepModFrame
 
-    ReadyCheckCustomFrame.RaidBuffs = CreateFrame("Frame", nil, ReadyCheckCustomFrame, "BackdropTemplate")
-    ReadyCheckCustomFrame.RaidBuffs:SetSize(195, 125)
-    ReadyCheckCustomFrame.RaidBuffs:SetPoint("TOPLEFT", ReadyCheckCustomFrame.EachPull, "BOTTOMLEFT")
-    ReadyCheckCustomFrame.RaidBuffs.Title = ReadyCheckCustomFrame.RaidBuffs:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-    ReadyCheckCustomFrame.RaidBuffs.Title:SetText("Raid Buffs")
-    ReadyCheckCustomFrame.RaidBuffs.Title:SetSize(195, 15)
-    ReadyCheckCustomFrame.RaidBuffs.Title:SetPoint("TOPLEFT", 0, -3)
-
     ReadyCheckCustomFrame.RaidBuffs.IntellectFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.RaidBuffs, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.RaidBuffs.IntellectFrame:SetSize(ReadyCheckCustomFrame.RaidBuffs:GetWidth(), 20)
     ReadyCheckCustomFrame.RaidBuffs.IntellectFrame:SetPoint("TOP", 0, -16)
@@ -845,17 +817,24 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame.String:SetJustifyH("LEFT")
     BuffFrames.AttackPower = ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame
 
-    ReadyCheckCustomFrame.Other = CreateFrame("Frame", nil, ReadyCheckCustomFrame, "BackdropTemplate")
-    ReadyCheckCustomFrame.Other:SetSize(195, 125)
-    ReadyCheckCustomFrame.Other:SetPoint("TOPRIGHT", ReadyCheckCustomFrame.CrossPull, "BOTTOMRIGHT")
-    ReadyCheckCustomFrame.Other.Title = ReadyCheckCustomFrame.Other:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-    ReadyCheckCustomFrame.Other.Title:SetText("Other")
-    ReadyCheckCustomFrame.Other.Title:SetSize(195, 15)
-    ReadyCheckCustomFrame.Other.Title:SetPoint("TOPLEFT", 0, -3)
+    ReadyCheckCustomFrame.BuildInfo.EquipementFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.BuildInfo, "InsecureActionButtonTemplate")
+    ReadyCheckCustomFrame.BuildInfo.EquipementFrame:SetSize(ReadyCheckCustomFrame.BuildInfo:GetWidth(), 20)
+    ReadyCheckCustomFrame.BuildInfo.EquipementFrame:SetPoint("TOP", 0, -16)
+    ReadyCheckCustomFrame.BuildInfo.EquipementFrame.Texture = ReadyCheckCustomFrame.BuildInfo.EquipementFrame:CreateTexture(nil, "BACKGROUND")
+    ReadyCheckCustomFrame.BuildInfo.EquipementFrame.Texture:SetSize(20, 20)
+    ReadyCheckCustomFrame.BuildInfo.EquipementFrame.Texture:SetPoint("LEFT", 5, 0)
+    ReadyCheckCustomFrame.BuildInfo.EquipementFrame.Texture:SetTexture(134400)
+    ReadyCheckCustomFrame.BuildInfo.EquipementFrame.String = ReadyCheckCustomFrame.BuildInfo.EquipementFrame:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+    ReadyCheckCustomFrame.BuildInfo.EquipementFrame.String:SetSize(ReadyCheckCustomFrame.BuildInfo:GetWidth(), 20)
+    ReadyCheckCustomFrame.BuildInfo.EquipementFrame.String:SetPoint("LEFT", 30, -2)
+    ReadyCheckCustomFrame.BuildInfo.EquipementFrame.String:SetJustifyH("LEFT")
+    --BuffFrames.Loot = ReadyCheckCustomFrame.BuildInfo.EquipementFrame
+
+    AZP.ReadyCheckEnhanced:CovenantStuff()
 
     ReadyCheckCustomFrame.Other.VantusFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.Other, "InsecureActionButtonTemplate")
-    ReadyCheckCustomFrame.Other.VantusFrame:SetSize(ReadyCheckCustomFrame.Other:GetWidth(), 20)
-    ReadyCheckCustomFrame.Other.VantusFrame:SetPoint("TOP", 0, -16)
+    ReadyCheckCustomFrame.Other.VantusFrame:SetSize(((ReadyCheckCustomFrame.Other:GetWidth() -5) /2), 20)
+    ReadyCheckCustomFrame.Other.VantusFrame:SetPoint("TOPLEFT", 0, -17.5)
     --ReadyCheckCustomFrame.Other.VantusFrame:SetScript("OnMouseDown", function() AZP.ReadyCheckEnhanced:UseConsumable("Vantus", {["target"] = "boss1"}) end)
     ReadyCheckCustomFrame.Other.VantusFrame.Texture = ReadyCheckCustomFrame.Other.VantusFrame:CreateTexture(nil, "BACKGROUND")
     ReadyCheckCustomFrame.Other.VantusFrame.Texture:SetSize(20, 20)
@@ -868,8 +847,8 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     BuffFrames.Vantus = ReadyCheckCustomFrame.Other.VantusFrame
 
     ReadyCheckCustomFrame.Other.RepairFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.Other, "InsecureActionButtonTemplate")
-    ReadyCheckCustomFrame.Other.RepairFrame:SetSize(ReadyCheckCustomFrame.Other:GetWidth(), 20)
-    ReadyCheckCustomFrame.Other.RepairFrame:SetPoint("TOP", 0, -41)
+    ReadyCheckCustomFrame.Other.RepairFrame:SetSize(((ReadyCheckCustomFrame.Other:GetWidth() -5) /2), 20)
+    ReadyCheckCustomFrame.Other.RepairFrame:SetPoint("TOP", ReadyCheckCustomFrame.Other.VantusFrame, "BOTTOM", 0, -5)
     ReadyCheckCustomFrame.Other.RepairFrame.Texture = ReadyCheckCustomFrame.Other.RepairFrame:CreateTexture(nil, "BACKGROUND")
     ReadyCheckCustomFrame.Other.RepairFrame.Texture:SetSize(20, 20)
     ReadyCheckCustomFrame.Other.RepairFrame.Texture:SetPoint("LEFT", 5, 0)
@@ -881,8 +860,8 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     BuffFrames.Repair = ReadyCheckCustomFrame.Other.RepairFrame
 
     ReadyCheckCustomFrame.Other.LootFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.Other, "InsecureActionButtonTemplate")
-    ReadyCheckCustomFrame.Other.LootFrame:SetSize(ReadyCheckCustomFrame.Other:GetWidth(), 20)
-    ReadyCheckCustomFrame.Other.LootFrame:SetPoint("TOP", 0, -66)
+    ReadyCheckCustomFrame.Other.LootFrame:SetSize(((ReadyCheckCustomFrame.Other:GetWidth() -5) /2), 20)
+    ReadyCheckCustomFrame.Other.LootFrame:SetPoint("TOP", ReadyCheckCustomFrame.Other.RepairFrame, "BOTTOM", 0, -5)
     ReadyCheckCustomFrame.Other.LootFrame.Texture = ReadyCheckCustomFrame.Other.LootFrame:CreateTexture(nil, "BACKGROUND")
     ReadyCheckCustomFrame.Other.LootFrame.Texture:SetSize(20, 20)
     ReadyCheckCustomFrame.Other.LootFrame.Texture:SetPoint("LEFT", 5, 0)
@@ -893,23 +872,59 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.Other.LootFrame.String:SetJustifyH("LEFT")
     --BuffFrames.Loot = ReadyCheckCustomFrame.Other.LootFrame
 
-    ReadyCheckCustomFrame.Other.EquipementFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.Other, "InsecureActionButtonTemplate")
-    ReadyCheckCustomFrame.Other.EquipementFrame:SetSize(ReadyCheckCustomFrame.Other:GetWidth(), 20)
-    ReadyCheckCustomFrame.Other.EquipementFrame:SetPoint("TOP", 0, -91)
-    ReadyCheckCustomFrame.Other.EquipementFrame.Texture = ReadyCheckCustomFrame.Other.EquipementFrame:CreateTexture(nil, "BACKGROUND")
-    ReadyCheckCustomFrame.Other.EquipementFrame.Texture:SetSize(20, 20)
-    ReadyCheckCustomFrame.Other.EquipementFrame.Texture:SetPoint("LEFT", 5, 0)
-    ReadyCheckCustomFrame.Other.EquipementFrame.Texture:SetTexture(134400)
-    ReadyCheckCustomFrame.Other.EquipementFrame.String = ReadyCheckCustomFrame.Other.EquipementFrame:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
-    ReadyCheckCustomFrame.Other.EquipementFrame.String:SetSize(ReadyCheckCustomFrame.Other:GetWidth(), 20)
-    ReadyCheckCustomFrame.Other.EquipementFrame.String:SetPoint("LEFT", 30, -2)
-    ReadyCheckCustomFrame.Other.EquipementFrame.String:SetJustifyH("LEFT")
-    --BuffFrames.Loot = ReadyCheckCustomFrame.Other.EquipementFrame
+    -- ReadyCheckCustomFrame.Other.HealthStones = CreateFrame("Button", nil, ReadyCheckCustomFrame.Other, "InsecureActionButtonTemplate")
+    -- ReadyCheckCustomFrame.Other.HealthStones:SetSize(ReadyCheckCustomFrame.Other:GetWidth(), 20)
+    -- ReadyCheckCustomFrame.Other.HealthStones:SetPoint("LEFT", ReadyCheckCustomFrame.Other.VantusFrame, "RIGHT", 5, 0)
+    -- ReadyCheckCustomFrame.Other.HealthStones.Texture = ReadyCheckCustomFrame.Other.HealthStones:CreateTexture(nil, "BACKGROUND")
+    -- ReadyCheckCustomFrame.Other.HealthStones.Texture:SetSize(20, 20)
+    -- ReadyCheckCustomFrame.Other.HealthStones.Texture:SetPoint("LEFT", 5, 0)
+    -- ReadyCheckCustomFrame.Other.HealthStones.Texture:SetTexture(GetFileIDFromPath("Interface/GLUES/CHARACTERCREATE/UI-CharacterCreate-Classes"))
+    -- local curTextureCoordinates = nil
+    --     if curClass ==  3 then curTextureCoordinates = {0.00, 0.25, 0.25, 0.50}
+    -- elseif curClass ==  4 then curTextureCoordinates = {0.50, 0.75, 0.00, 0.25}
+    -- elseif curClass ==  6 then curTextureCoordinates = {0.25, 0.50, 0.50, 0.75}
+    -- elseif curClass ==  8 then curTextureCoordinates = {0.25, 0.50, 0.00, 0.25}
+    -- elseif curClass ==  9 then curTextureCoordinates = {0.75, 1.00, 0.25, 0.50}
+    -- elseif curClass == 11 then curTextureCoordinates = {0.75, 1.00, 0.25, 0.50} end
+    -- ReadyCheckCustomFrame.Other.HealthStones.Texture:SetTexCoord(curTextureCoordinates[1], curTextureCoordinates[2], curTextureCoordinates[3], curTextureCoordinates[4])
+    -- ReadyCheckCustomFrame.Other.HealthStones.String = ReadyCheckCustomFrame.Other.HealthStones:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+    -- ReadyCheckCustomFrame.Other.HealthStones.String:SetSize(ReadyCheckCustomFrame.Other:GetWidth(), 20)
+    -- ReadyCheckCustomFrame.Other.HealthStones.String:SetPoint("LEFT", 30, -2)
+    -- ReadyCheckCustomFrame.Other.HealthStones.String:SetJustifyH("LEFT")
+    -- ReadyCheckCustomFrame.Other.HealthStones.String:SetText("\124cFF00FFFFComing Soon!\124r")
+    -- --BuffFrames.Loot = ReadyCheckCustomFrame.ClassInfo.ComingSoon
+
+    local _, _, curClass = UnitClass("PLAYER")
+    if curClass == 3 or curClass == 4 or curClass == 6 or curClass == 8 or curClass == 9 or curClass == 11 then
+        ReadyCheckCustomFrame.Other.ComingSoon = CreateFrame("Button", nil, ReadyCheckCustomFrame.Other, "InsecureActionButtonTemplate")
+        ReadyCheckCustomFrame.Other.ComingSoon:SetSize(ReadyCheckCustomFrame.Other:GetWidth(), 20)
+        ReadyCheckCustomFrame.Other.ComingSoon:SetPoint("LEFT", ReadyCheckCustomFrame.Other.VantusFrame, "RIGHT", 5, 0)
+        ReadyCheckCustomFrame.Other.ComingSoon.Texture = ReadyCheckCustomFrame.Other.ComingSoon:CreateTexture(nil, "BACKGROUND")
+        ReadyCheckCustomFrame.Other.ComingSoon.Texture:SetSize(20, 20)
+        ReadyCheckCustomFrame.Other.ComingSoon.Texture:SetPoint("LEFT", 5, 0)
+        ReadyCheckCustomFrame.Other.ComingSoon.Texture:SetTexture(GetFileIDFromPath("Interface/ICONS/Warlock_ Healthstone"))
+        -- ReadyCheckCustomFrame.Other.ComingSoon.Texture:SetTexture(GetFileIDFromPath("Interface/GLUES/CHARACTERCREATE/UI-CharacterCreate-Classes"))
+        -- local curTextureCoordinates = nil
+        --     if curClass ==  3 then curTextureCoordinates = {0.00, 0.25, 0.25, 0.50}
+        -- elseif curClass ==  4 then curTextureCoordinates = {0.50, 0.75, 0.00, 0.25}
+        -- elseif curClass ==  6 then curTextureCoordinates = {0.25, 0.50, 0.50, 0.75}
+        -- elseif curClass ==  8 then curTextureCoordinates = {0.25, 0.50, 0.00, 0.25}
+        -- elseif curClass ==  9 then curTextureCoordinates = {0.75, 1.00, 0.25, 0.50}
+        -- elseif curClass == 11 then curTextureCoordinates = {0.75, 1.00, 0.25, 0.50} end
+        -- ReadyCheckCustomFrame.Other.ComingSoon.Texture:SetTexCoord(curTextureCoordinates[1], curTextureCoordinates[2], curTextureCoordinates[3], curTextureCoordinates[4])
+        ReadyCheckCustomFrame.Other.ComingSoon.String = ReadyCheckCustomFrame.Other.ComingSoon:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+        ReadyCheckCustomFrame.Other.ComingSoon.String:SetSize(ReadyCheckCustomFrame.Other:GetWidth(), 50)
+        ReadyCheckCustomFrame.Other.ComingSoon.String:SetPoint("LEFT", 30, -2)
+        ReadyCheckCustomFrame.Other.ComingSoon.String:SetJustifyH("LEFT")
+        ReadyCheckCustomFrame.Other.ComingSoon.String:SetText("\124cFF00FFFFHealthstone\nFunctionality\nComing Soon!\124r")
+        --BuffFrames.Loot = ReadyCheckCustomFrame.ClassInfo.ComingSoon
+    end
 
     AZP.ReadyCheckEnhanced:SetBackDrop(ReadyCheckCustomFrame)
     AZP.ReadyCheckEnhanced:SetBackDrop(ReadyCheckCustomFrame.EachPull)
     AZP.ReadyCheckEnhanced:SetBackDrop(ReadyCheckCustomFrame.CrossPull)
     AZP.ReadyCheckEnhanced:SetBackDrop(ReadyCheckCustomFrame.RaidBuffs)
+    AZP.ReadyCheckEnhanced:SetBackDrop(ReadyCheckCustomFrame.BuildInfo)
     AZP.ReadyCheckEnhanced:SetBackDrop(ReadyCheckCustomFrame.Other)
     ReadyCheckCustomFrame:Hide()
 
@@ -937,6 +952,40 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ChooseItemFrame.CloseButton:SetScript("OnClick", function() ChooseItemFrame:Hide() end )
 
     ChooseItemFrame:Hide()
+end
+
+function AZP.ReadyCheckEnhanced:CovenantStuff()
+    local Width, Height = 20, 20
+
+    ReadyCheckCustomFrame.BuildInfo.NFSigilFrame = ReadyCheckCustomFrame.BuildInfo:CreateTexture(nil, "ARTWORK")
+    ReadyCheckCustomFrame.BuildInfo.NFSigilFrame:SetSize(40, 40)
+    ReadyCheckCustomFrame.BuildInfo.NFSigilFrame:SetPoint("TOPLEFT", 25, -35)
+    ReadyCheckCustomFrame.BuildInfo.NFSigilFrame:SetTexture(GetFileIDFromPath(AZP.Covenants.NightFae.Sigil))
+    ReadyCheckCustomFrame.BuildInfo.NFSigilFrame:SetTexCoord(0.132812, 0.259766, 0.00390625, 0.257812)
+
+    ReadyCheckCustomFrame.BuildInfo.VSigilFrame = ReadyCheckCustomFrame.BuildInfo:CreateTexture(nil, "ARTWORK")
+    ReadyCheckCustomFrame.BuildInfo.VSigilFrame:SetSize(40, 40)
+    ReadyCheckCustomFrame.BuildInfo.VSigilFrame:SetPoint("LEFT", ReadyCheckCustomFrame.BuildInfo.NFSigilFrame, "RIGHT", -10, 0)
+    ReadyCheckCustomFrame.BuildInfo.VSigilFrame:SetTexture(GetFileIDFromPath(AZP.Covenants.Venthyr.Sigil))
+    ReadyCheckCustomFrame.BuildInfo.VSigilFrame:SetTexCoord(0.787109, 0.914062, 0.00390625, 0.257812)
+
+    ReadyCheckCustomFrame.BuildInfo.NSigilFrame = ReadyCheckCustomFrame.BuildInfo:CreateTexture(nil, "ARTWORK")
+    ReadyCheckCustomFrame.BuildInfo.NSigilFrame:SetSize(40, 40)
+    ReadyCheckCustomFrame.BuildInfo.NSigilFrame:SetPoint("LEFT", ReadyCheckCustomFrame.BuildInfo.VSigilFrame, "RIGHT", -10, 0)
+    ReadyCheckCustomFrame.BuildInfo.NSigilFrame:SetTexture(GetFileIDFromPath(AZP.Covenants.Necrolord.Sigil))
+    ReadyCheckCustomFrame.BuildInfo.NSigilFrame:SetTexCoord(0.394531, 0.521484, 0.527344, 0.78125)
+
+    ReadyCheckCustomFrame.BuildInfo.KSigilFrame = ReadyCheckCustomFrame.BuildInfo:CreateTexture(nil, "ARTWORK")
+    ReadyCheckCustomFrame.BuildInfo.KSigilFrame:SetSize(40, 40)
+    ReadyCheckCustomFrame.BuildInfo.KSigilFrame:SetPoint("LEFT", ReadyCheckCustomFrame.BuildInfo.NSigilFrame, "RIGHT", -10, 0)
+    ReadyCheckCustomFrame.BuildInfo.KSigilFrame:SetTexture(GetFileIDFromPath(AZP.Covenants.Kyrian.Sigil))
+    ReadyCheckCustomFrame.BuildInfo.KSigilFrame:SetTexCoord(0.263672, 0.390625, 0.265625, 0.519531)
+
+    ReadyCheckCustomFrame.BuildInfo.ComingSoon = ReadyCheckCustomFrame.BuildInfo:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+    ReadyCheckCustomFrame.BuildInfo.ComingSoon:SetSize(ReadyCheckCustomFrame.BuildInfo:GetWidth(), 50)
+    ReadyCheckCustomFrame.BuildInfo.ComingSoon:SetPoint("TOP", 0, -65)
+    ReadyCheckCustomFrame.BuildInfo.ComingSoon:SetJustifyH("CENTER")
+    ReadyCheckCustomFrame.BuildInfo.ComingSoon:SetText("\124cFF00FFFFCovenant Functionality\nComing Soon!\124r")
 end
 
 if not IsAddOnLoaded("AzerPUGsCore") then
