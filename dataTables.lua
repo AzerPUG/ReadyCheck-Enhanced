@@ -1,6 +1,35 @@
 if AZP == nil then AZP = {} end
 if AZP.ReadyCheckEnhanced == nil then AZP.ReadyCheckEnhanced = {} end
 
+AZP.ReadyCheckEnhanced.CovenantIcons =
+{
+    Sigil =
+    {
+        NightFae  = {FilePath = "", },
+        Venthyr   = {FilePath = "", },
+        Necrolord = {FilePath = "", },
+        Kyrian    = {FilePath = "", },
+    },
+    Soulbind =
+    {
+        [1] = {Covenant =  "NightFae", Name =        "Niya", FilePath = "Interface\\Garrison\\Portraits\\FollowerPortrait_95232.blp"},
+        [2] = {Covenant =  "NightFae", Name = "Dreamweaver", FilePath = "Interface\\Garrison\\Portraits\\FollowerPortrait_94430.blp"},
+        [6] = {Covenant =  "NightFae", Name =      "Korayn", FilePath = "Interface\\Garrison\\Portraits\\FollowerPortrait_95248.blp"},
+
+        [6] = {Covenant =   "Venthyr", Name =      "Korayn", FilePath = "Interface\\Garrison\\Portraits\\FollowerPortrait_94430.blp"},
+        [6] = {Covenant =   "Venthyr", Name =      "Korayn", FilePath = "Interface\\Garrison\\Portraits\\FollowerPortrait_94430.blp"},
+        [6] = {Covenant =   "Venthyr", Name =      "Korayn", FilePath = "Interface\\Garrison\\Portraits\\FollowerPortrait_94430.blp"},
+
+        [6] = {Covenant = "Necrolord", Name =      "Korayn", FilePath = "Interface\\Garrison\\Portraits\\FollowerPortrait_94430.blp"},
+        [6] = {Covenant = "Necrolord", Name =      "Korayn", FilePath = "Interface\\Garrison\\Portraits\\FollowerPortrait_94430.blp"},
+        [6] = {Covenant = "Necrolord", Name =      "Korayn", FilePath = "Interface\\Garrison\\Portraits\\FollowerPortrait_94430.blp"},
+
+        [6] = {Covenant =    "Kyrian", Name =      "Korayn", FilePath = "Interface\\Garrison\\Portraits\\FollowerPortrait_94430.blp"},
+        [6] = {Covenant =    "Kyrian", Name =      "Korayn", FilePath = "Interface\\Garrison\\Portraits\\FollowerPortrait_94430.blp"},
+        [6] = {Covenant =    "Kyrian", Name =      "Korayn", FilePath = "Interface\\Garrison\\Portraits\\FollowerPortrait_94430.blp"},
+    }
+}
+
 AZP.ReadyCheckEnhanced.Consumables =
 {
     Flask =
