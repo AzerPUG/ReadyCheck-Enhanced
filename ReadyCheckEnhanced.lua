@@ -495,6 +495,34 @@ function AZP.ReadyCheckEnhanced:CheckHealthStones()
     ReadyCheckCustomFrame.Other.HealthStones.String:SetText(curHSChrageCountString)
 end
 
+function AZP.ReadyCheckEnhanced:CheckSoulStone()
+    local i = 1
+    local curTime = GetTime()
+    local curRaidI = "RAID" .. i
+    local curName = UnitName(curRaidI)
+    local curSSTargetString = "|cFFFF0000No SoulStone Target!|r"
+    while curName ~= nil do
+        local j = 1
+        local _, _, _, _, _, expirationTimer, source, _, _, spellID = UnitBuff(curRaidI, j)
+        while spellID ~= nil do
+            if spellID == 20707 then
+                if source == "player" then
+                    local curMinutes = math.floor((expirationTimer - curTime) / 60)
+                    local curSSColor = nil
+                    if curMinutes > 10 then curSSColor = "00FF00" else curSSColor = "FF8800" end
+                    curSSTargetString = string.format("|cFF%s%s - %s minutes|r", curSSColor, curName, curMinutes)
+                end
+            end
+            j = j + 1
+            _, _, _, _, _, expirationTimer, source, _, _, spellID = UnitBuff(curRaidI, j)
+        end
+        i = i + 1
+        curRaidI = "RAID" .. i
+        curName = UnitName(curRaidI)
+    end
+    ReadyCheckCustomFrame.Other.SoulStone.String:SetText(curSSTargetString)
+end
+
 function AZP.ReadyCheckEnhanced:CheckEquipement()
     local anyEquiped = false
     for i = 0, C_EquipmentSet.GetNumEquipmentSets() - 1 do
@@ -565,6 +593,9 @@ function AZP.ReadyCheckEnhanced:CheckReadyData(inputFrame)
     AZP.ReadyCheckEnhanced:CheckWeaponMods()
     AZP.ReadyCheckEnhanced:CheckArmorBuff()
     AZP.ReadyCheckEnhanced:CheckHealthStones()
+
+    local _, _, curClass = UnitClass("player")
+    if curClass == 9 then AZP.ReadyCheckEnhanced:CheckSoulStone() end
 
     for key, _ in pairs(BuffFrames) do
         if not tContains(matchedBuffNames, key) then
@@ -898,6 +929,20 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.Other.HealthStones.String:SetPoint("LEFT", 30, -2)
     ReadyCheckCustomFrame.Other.HealthStones.String:SetJustifyH("LEFT")
 
+    local _, _, curClass = UnitClass("PLAYER")
+    if curClass == 9 then
+        ReadyCheckCustomFrame.Other.SoulStone = CreateFrame("Button", nil, ReadyCheckCustomFrame.Other, "InsecureActionButtonTemplate")
+        ReadyCheckCustomFrame.Other.SoulStone:SetSize((ReadyCheckCustomFrame.Other:GetWidth() -5) / 2, 20)
+        ReadyCheckCustomFrame.Other.SoulStone:SetPoint("LEFT", ReadyCheckCustomFrame.Other.RepairFrame, "RIGHT", 5, 0)
+        ReadyCheckCustomFrame.Other.SoulStone.Texture = ReadyCheckCustomFrame.Other.SoulStone:CreateTexture(nil, "BACKGROUND")
+        ReadyCheckCustomFrame.Other.SoulStone.Texture:SetSize(20, 20)
+        ReadyCheckCustomFrame.Other.SoulStone.Texture:SetPoint("LEFT", 5, 0)
+        ReadyCheckCustomFrame.Other.SoulStone.Texture:SetTexture(GetFileIDFromPath("Interface/ICONS/Spell_Shadow_SoulGem"))
+        ReadyCheckCustomFrame.Other.SoulStone.String = ReadyCheckCustomFrame.Other.SoulStone:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+        ReadyCheckCustomFrame.Other.SoulStone.String:SetSize(ReadyCheckCustomFrame.Other.SoulStone:GetWidth() - 30, 50)
+        ReadyCheckCustomFrame.Other.SoulStone.String:SetPoint("LEFT", 30, -2)
+        ReadyCheckCustomFrame.Other.SoulStone.String:SetJustifyH("LEFT")
+    end
     ReadyCheckCustomFrame.Other.RoguePoisons = CreateFrame("Button", nil, ReadyCheckCustomFrame.Other, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.Other.RoguePoisons:SetSize((ReadyCheckCustomFrame.Other:GetWidth() -5) / 2, 20)
     ReadyCheckCustomFrame.Other.RoguePoisons:SetPoint("LEFT", ReadyCheckCustomFrame.Other.LootFrame, "RIGHT", 5, 0)
@@ -907,7 +952,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.Other.RoguePoisons.Texture:SetTexture(GetFileIDFromPath("Interface/ICONS/INV_ThrowingKnife_04"))
     ReadyCheckCustomFrame.Other.RoguePoisons.String = ReadyCheckCustomFrame.Other.RoguePoisons:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
     ReadyCheckCustomFrame.Other.RoguePoisons.String:SetSize(ReadyCheckCustomFrame.Other.RoguePoisons:GetWidth() - 30, 50)
-    ReadyCheckCustomFrame.Other.RoguePoisons.String:SetPoint("LEFT", 30, -2)
+    ReadyCheckCustomFrame.Other.RoguePoisons.String:SetPoint("LEFT", 30, -10)
     ReadyCheckCustomFrame.Other.RoguePoisons.String:SetJustifyH("CENTER")
     ReadyCheckCustomFrame.Other.RoguePoisons.String:SetText("Poisons Functionality\nComing Soon!")
 
