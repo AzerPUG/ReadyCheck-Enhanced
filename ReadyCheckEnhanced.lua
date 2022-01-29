@@ -565,6 +565,9 @@ function AZP.ReadyCheckEnhanced:CheckReadyData(inputFrame)
     local buffName, icon, _, _, _, expirationTimer, _, _, _, spellID = UnitBuff("player", i)
     local buffData = {Name = buffName, ID = spellID, Time = expirationTimer, Icon = icon}
     local matchedBuffNames = {"Repair", "OHWepMod", "MHWepMod", "ArmorKit"}     -- Pre assigned items are not player buffs.
+
+    local _, _, curClass = UnitClass("PLAYER")
+
     while buffName do
         i = i + 1;
         if AZP.ReadyCheckEnhanced.buffs.Flask[spellID] ~= nil then
@@ -582,6 +585,16 @@ function AZP.ReadyCheckEnhanced:CheckReadyData(inputFrame)
         elseif AZP.ReadyCheckEnhanced.buffs.RaidBuff[spellID] ~= nil then
             AZP.ReadyCheckEnhanced:CheckBuff(AZP.ReadyCheckEnhanced.buffs.RaidBuff[spellID], buffData)
             table.insert(matchedBuffNames, AZP.ReadyCheckEnhanced.buffs.RaidBuff[spellID])
+        elseif curClass == 4 then
+            if AZP.ReadyCheckEnhanced.buffs.Lethal[spellID] ~= nil then
+                AZP.ReadyCheckEnhanced:CheckBuff("Lethal", buffData)
+                table.insert(matchedBuffNames, "Lethal")
+                print("Lethal:", buffData.ID, buffData.Name)
+            elseif AZP.ReadyCheckEnhanced.buffs.NonLethal[spellID] ~= nil then
+                AZP.ReadyCheckEnhanced:CheckBuff("NonLethal", buffData)
+                table.insert(matchedBuffNames, "NonLethal")
+                print("NonLethal:", buffData.ID, buffData.Name)
+            end
         end
         buffName, icon, _, _, _, expirationTimer, _, _, _, spellID = UnitBuff("player", i)
         buffData = {Name = buffName, ID = spellID, Time = expirationTimer, Icon = icon}
@@ -918,7 +931,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     --BuffFrames.Loot = ReadyCheckCustomFrame.Other.LootFrame
 
     ReadyCheckCustomFrame.Other.HealthStones = CreateFrame("Button", nil, ReadyCheckCustomFrame.Other, "InsecureActionButtonTemplate")
-    ReadyCheckCustomFrame.Other.HealthStones:SetSize((ReadyCheckCustomFrame.Other:GetWidth() -5) / 2, 20)
+    ReadyCheckCustomFrame.Other.HealthStones:SetSize(((ReadyCheckCustomFrame.Other:GetWidth() -5) / 2), 20)
     ReadyCheckCustomFrame.Other.HealthStones:SetPoint("LEFT", ReadyCheckCustomFrame.Other.VantusFrame, "RIGHT", 5, 0)
     ReadyCheckCustomFrame.Other.HealthStones.Texture = ReadyCheckCustomFrame.Other.HealthStones:CreateTexture(nil, "BACKGROUND")
     ReadyCheckCustomFrame.Other.HealthStones.Texture:SetSize(20, 20)
@@ -932,7 +945,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     local _, _, curClass = UnitClass("PLAYER")
     if curClass == 9 then
         ReadyCheckCustomFrame.Other.SoulStone = CreateFrame("Button", nil, ReadyCheckCustomFrame.Other, "InsecureActionButtonTemplate")
-        ReadyCheckCustomFrame.Other.SoulStone:SetSize((ReadyCheckCustomFrame.Other:GetWidth() -5) / 2, 20)
+        ReadyCheckCustomFrame.Other.SoulStone:SetSize(((ReadyCheckCustomFrame.Other:GetWidth() -5) / 2), 20)
         ReadyCheckCustomFrame.Other.SoulStone:SetPoint("LEFT", ReadyCheckCustomFrame.Other.RepairFrame, "RIGHT", 5, 0)
         ReadyCheckCustomFrame.Other.SoulStone.Texture = ReadyCheckCustomFrame.Other.SoulStone:CreateTexture(nil, "BACKGROUND")
         ReadyCheckCustomFrame.Other.SoulStone.Texture:SetSize(20, 20)
@@ -943,18 +956,31 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
         ReadyCheckCustomFrame.Other.SoulStone.String:SetPoint("LEFT", 30, -2)
         ReadyCheckCustomFrame.Other.SoulStone.String:SetJustifyH("LEFT")
     end
-    ReadyCheckCustomFrame.Other.RoguePoisons = CreateFrame("Button", nil, ReadyCheckCustomFrame.Other, "InsecureActionButtonTemplate")
-    ReadyCheckCustomFrame.Other.RoguePoisons:SetSize((ReadyCheckCustomFrame.Other:GetWidth() -5) / 2, 20)
-    ReadyCheckCustomFrame.Other.RoguePoisons:SetPoint("LEFT", ReadyCheckCustomFrame.Other.LootFrame, "RIGHT", 5, 0)
-    ReadyCheckCustomFrame.Other.RoguePoisons.Texture = ReadyCheckCustomFrame.Other.RoguePoisons:CreateTexture(nil, "BACKGROUND")
-    ReadyCheckCustomFrame.Other.RoguePoisons.Texture:SetSize(20, 20)
-    ReadyCheckCustomFrame.Other.RoguePoisons.Texture:SetPoint("LEFT", 5, 0)
-    ReadyCheckCustomFrame.Other.RoguePoisons.Texture:SetTexture(GetFileIDFromPath("Interface/ICONS/INV_ThrowingKnife_04"))
-    ReadyCheckCustomFrame.Other.RoguePoisons.String = ReadyCheckCustomFrame.Other.RoguePoisons:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
-    ReadyCheckCustomFrame.Other.RoguePoisons.String:SetSize(ReadyCheckCustomFrame.Other.RoguePoisons:GetWidth() - 30, 50)
-    ReadyCheckCustomFrame.Other.RoguePoisons.String:SetPoint("LEFT", 30, -10)
-    ReadyCheckCustomFrame.Other.RoguePoisons.String:SetJustifyH("CENTER")
-    ReadyCheckCustomFrame.Other.RoguePoisons.String:SetText("Poisons Functionality\nComing Soon!")
+    if curClass == 4 then
+        ReadyCheckCustomFrame.Other.RoguePoison1 = CreateFrame("Button", nil, ReadyCheckCustomFrame.Other, "InsecureActionButtonTemplate")
+        ReadyCheckCustomFrame.Other.RoguePoison1:SetSize(((ReadyCheckCustomFrame.Other:GetWidth() -5) / 2), 20)
+        ReadyCheckCustomFrame.Other.RoguePoison1:SetPoint("LEFT", ReadyCheckCustomFrame.Other.RepairFrame, "RIGHT", 5, 0)
+        ReadyCheckCustomFrame.Other.RoguePoison1.Texture = ReadyCheckCustomFrame.Other.RoguePoison1:CreateTexture(nil, "BACKGROUND")
+        ReadyCheckCustomFrame.Other.RoguePoison1.Texture:SetSize(20, 20)
+        ReadyCheckCustomFrame.Other.RoguePoison1.Texture:SetPoint("LEFT", 5, 0)
+        ReadyCheckCustomFrame.Other.RoguePoison1.String = ReadyCheckCustomFrame.Other.RoguePoison1:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+        ReadyCheckCustomFrame.Other.RoguePoison1.String:SetSize(ReadyCheckCustomFrame.Other.RoguePoison1:GetWidth() - 30, 50)
+        ReadyCheckCustomFrame.Other.RoguePoison1.String:SetPoint("LEFT", 30, -2)
+        ReadyCheckCustomFrame.Other.RoguePoison1.String:SetJustifyH("LEFT")
+        BuffFrames.Lethal = ReadyCheckCustomFrame.Other.RoguePoison1
+
+        ReadyCheckCustomFrame.Other.RoguePoison2 = CreateFrame("Button", nil, ReadyCheckCustomFrame.Other, "InsecureActionButtonTemplate")
+        ReadyCheckCustomFrame.Other.RoguePoison2:SetSize(((ReadyCheckCustomFrame.Other:GetWidth() -5) / 2), 20)
+        ReadyCheckCustomFrame.Other.RoguePoison2:SetPoint("TOP", ReadyCheckCustomFrame.Other.RoguePoison1, "BOTTOM", 0, -5)
+        ReadyCheckCustomFrame.Other.RoguePoison2.Texture = ReadyCheckCustomFrame.Other.RoguePoison2:CreateTexture(nil, "BACKGROUND")
+        ReadyCheckCustomFrame.Other.RoguePoison2.Texture:SetSize(20, 20)
+        ReadyCheckCustomFrame.Other.RoguePoison2.Texture:SetPoint("LEFT", 5, 0)
+        ReadyCheckCustomFrame.Other.RoguePoison2.String = ReadyCheckCustomFrame.Other.RoguePoison2:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+        ReadyCheckCustomFrame.Other.RoguePoison2.String:SetSize(ReadyCheckCustomFrame.Other.RoguePoison2:GetWidth() - 30, 50)
+        ReadyCheckCustomFrame.Other.RoguePoison2.String:SetPoint("LEFT", 30, -2)
+        ReadyCheckCustomFrame.Other.RoguePoison2.String:SetJustifyH("LEFT")
+        BuffFrames.NonLethal = ReadyCheckCustomFrame.Other.RoguePoison2
+    end
 
     AZP.ReadyCheckEnhanced:SetBackDrop(ReadyCheckCustomFrame)
     AZP.ReadyCheckEnhanced:SetBackDrop(ReadyCheckCustomFrame.EachPull)

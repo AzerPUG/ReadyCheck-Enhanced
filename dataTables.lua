@@ -125,6 +125,17 @@ AZP.ReadyCheckEnhanced.buffs =
         [354392] = "09",        -- Kel'Thuzad
         [354393] = "10",        -- Sylvanas Windrunner
     },
+    Lethal =
+    {
+        [315584] = "Instant",
+        [2823] = "Deadly",
+        [8679] = "Wound",
+    },
+    NonLethal =
+    {
+        [3408] = "Crippling",
+        [5761] = "Numbing",
+    }
 }
 
 AZP.SpecInfo =
