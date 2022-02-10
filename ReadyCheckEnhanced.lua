@@ -589,11 +589,9 @@ function AZP.ReadyCheckEnhanced:CheckReadyData(inputFrame)
             if AZP.ReadyCheckEnhanced.buffs.Lethal[spellID] ~= nil then
                 AZP.ReadyCheckEnhanced:CheckBuff("Lethal", buffData)
                 table.insert(matchedBuffNames, "Lethal")
-                print("Lethal:", buffData.ID, buffData.Name)
             elseif AZP.ReadyCheckEnhanced.buffs.NonLethal[spellID] ~= nil then
                 AZP.ReadyCheckEnhanced:CheckBuff("NonLethal", buffData)
                 table.insert(matchedBuffNames, "NonLethal")
-                print("NonLethal:", buffData.ID, buffData.Name)
             end
         end
         buffName, icon, _, _, _, expirationTimer, _, _, _, spellID = UnitBuff("player", i)
