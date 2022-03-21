@@ -114,16 +114,17 @@ AZP.ReadyCheckEnhanced.buffs =
     },
     Vantus =
     {
-        [354384] = "01",        -- Terragrue
-        [354385] = "02",        -- Eye of the Jailer
-        [354386] = "03",        -- The Nine
-        [354387] = "04",        -- Remnant of Ner'Zhul
-        [354388] = "05",        -- Soulrender Dormazain
-        [354389] = "06",        -- Painsmith Reznal
-        [354390] = "07",        -- Guardian of the First Ones
-        [354391] = "08",        -- Fatescribe Roh-Kalo
-        [354392] = "09",        -- Kel'Thuzad
-        [354393] = "10",        -- Sylvanas Windrunner
+        [359893] = "01",        -- Vigilant Guardian // Progenitor Defense System, as it is called on WoW.Tools in DataTable?
+        [367121] = "02",        -- Skolex the Insatiable Ravener
+        [367124] = "03",        -- Artificer Xy'Mox
+        [367126] = "04",        -- DeSausage the Falled Oracle
+        [367128] = "05",        -- Prototype Pantheon
+        [367130] = "06",        -- Lihuvim, Principal Architect
+        [367132] = "07",        -- Halondrus the Reclaimer
+        [367134] = "08",        -- Anduin Wrynn
+        [367136] = "09",        -- Lords of Dread
+        [367140] = "10",        -- Rygelon
+        [367143] = "11",        -- The Jailer
     },
     Lethal =
     {
