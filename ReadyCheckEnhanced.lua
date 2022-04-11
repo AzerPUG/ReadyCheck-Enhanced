@@ -1,7 +1,7 @@
 if AZP == nil then AZP = {} end
 if AZP.VersionControl == nil then AZP.VersionControl = {} end
 
-AZP.VersionControl["ReadyCheck Enhanced"] = 50
+AZP.VersionControl["ReadyCheck Enhanced"] = 51
 if AZP.ReadyCheckEnhanced == nil then AZP.ReadyCheckEnhanced = {} end
 if AZP.ReadyCheckEnhanced.Events == nil then AZP.ReadyCheckEnhanced.Events = {} end
 
@@ -644,10 +644,20 @@ function AZP.ReadyCheckEnhanced:UseConsumable(Buff, AdditionalAttributes)
         for j = 0, 40 do
             local itemID = GetContainerItemID(i, j)
             if itemID ~= nil then
-                if AZP.ReadyCheckEnhanced.Consumables[Buff][itemID] ~= nil then
-                    local curItem = {ID = itemID, Bag = i, Slot = j}
-                    if AZP.ReadyCheckEnhanced:PresentConsumablesContains(presentConsumables, itemID) == false then
-                        presentConsumables[#presentConsumables + 1] = {ID = itemID, Bag = i, Slot = j}      -- XXX Why not use curItem?
+                if itemID == 190384 and Buff == "Rune" then
+                    BuffFrames[Buff]:SetAttribute("type", "item")
+                    BuffFrames[Buff]:SetAttribute("item", i .. " " .. j)
+                    if AdditionalAttributes ~= nil then
+                        for attr, value in pairs(AdditionalAttributes) do
+                            BuffFrames[Buff]:SetAttribute(attr, value)
+                        end
+                    end
+                    return
+                else
+                    if AZP.ReadyCheckEnhanced.Consumables[Buff][itemID] ~= nil then
+                        if AZP.ReadyCheckEnhanced:PresentConsumablesContains(presentConsumables, itemID) == false then
+                            presentConsumables[#presentConsumables + 1] = {ID = itemID, Bag = i, Slot = j}
+                        end
                     end
                 end
             end
@@ -665,7 +675,7 @@ function AZP.ReadyCheckEnhanced:UseConsumable(Buff, AdditionalAttributes)
         end
     else
         ChooseItemFrame:Show()
-        for _,f in ipairs(ChooseItemFrame.Choices) do
+        for _, f in ipairs(ChooseItemFrame.Choices) do
             f:Hide()
         end
         for i = 1, #presentConsumables do

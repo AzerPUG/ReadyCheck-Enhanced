@@ -47,7 +47,8 @@ AZP.ReadyCheckEnhanced.Consumables =
     },
     Rune =
     {
-        [181468] = "Veiled Augment Rune",
+        [181468] = "Veiled",
+        [190384] = "Eternal",
     },
     Vantus =
     {
@@ -87,6 +88,7 @@ AZP.ReadyCheckEnhanced.buffs =
     Rune =
     {
         [347901] = "Augment",
+        [367405] = "Augment",
     },
     RaidBuff =
     {
