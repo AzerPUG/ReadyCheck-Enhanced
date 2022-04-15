@@ -345,7 +345,10 @@ function AZP.ReadyCheckEnhanced:CheckBuff(curBuff, data)
     else
         if data.Time <= TrashHoldMinutes then color = "\124cFFFFFF00" else color = "\124cFF00FF00" end
         BuffFrames[curBuff].Texture:SetTexture(data.Icon)
-        BuffFrames[curBuff].String:SetText(string.format("%s%d minutes.%s", color, math.floor((data.Time - curTime) / 60), colorEnd))
+        if curBuff == "PalaAura" then BuffFrames[curBuff].String:SetText(data.Name)
+        else
+            BuffFrames[curBuff].String:SetText(string.format("%s%d minutes.%s", color, math.floor((data.Time - curTime) / 60), colorEnd))
+        end
     end
 end
 
@@ -593,6 +596,9 @@ function AZP.ReadyCheckEnhanced:CheckReadyData(inputFrame)
                 AZP.ReadyCheckEnhanced:CheckBuff("NonLethal", buffData)
                 table.insert(matchedBuffNames, "NonLethal")
             end
+        elseif curClass == 2 then
+            AZP.ReadyCheckEnhanced:CheckBuff("PalaAura", buffData)
+            table.insert(matchedBuffNames, "PalaAura")
         end
         buffName, icon, _, _, _, expirationTimer, _, _, _, spellID = UnitBuff("player", i)
         buffData = {Name = buffName, ID = spellID, Time = expirationTimer, Icon = icon}
@@ -988,6 +994,19 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
         ReadyCheckCustomFrame.Other.RoguePoison2.String:SetPoint("LEFT", 30, -2)
         ReadyCheckCustomFrame.Other.RoguePoison2.String:SetJustifyH("LEFT")
         BuffFrames.NonLethal = ReadyCheckCustomFrame.Other.RoguePoison2
+    end
+    if curClass == 2 then
+        ReadyCheckCustomFrame.Other.PalaAura = CreateFrame("Button", nil, ReadyCheckCustomFrame.Other, "InsecureActionButtonTemplate")
+        ReadyCheckCustomFrame.Other.PalaAura:SetSize(((ReadyCheckCustomFrame.Other:GetWidth() -5) / 2), 20)
+        ReadyCheckCustomFrame.Other.PalaAura:SetPoint("LEFT", ReadyCheckCustomFrame.Other.RepairFrame, "RIGHT", 5, 0)
+        ReadyCheckCustomFrame.Other.PalaAura.Texture = ReadyCheckCustomFrame.Other.PalaAura:CreateTexture(nil, "BACKGROUND")
+        ReadyCheckCustomFrame.Other.PalaAura.Texture:SetSize(20, 20)
+        ReadyCheckCustomFrame.Other.PalaAura.Texture:SetPoint("LEFT", 5, 0)
+        ReadyCheckCustomFrame.Other.PalaAura.String = ReadyCheckCustomFrame.Other.PalaAura:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+        ReadyCheckCustomFrame.Other.PalaAura.String:SetSize(ReadyCheckCustomFrame.Other.PalaAura:GetWidth() - 30, 50)
+        ReadyCheckCustomFrame.Other.PalaAura.String:SetPoint("LEFT", 30, -2)
+        ReadyCheckCustomFrame.Other.PalaAura.String:SetJustifyH("LEFT")
+        BuffFrames.PalaAura = ReadyCheckCustomFrame.Other.PalaAura
     end
 
     AZP.ReadyCheckEnhanced:SetBackDrop(ReadyCheckCustomFrame)

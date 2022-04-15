@@ -111,7 +111,7 @@ AZP.ReadyCheckEnhanced.buffs =
         [6188] = 171285,
         [6201] = 171439,
         [6200] = 171437,
-        [5401] = 33757,
+        [5401] =  33757,
         [5400] = 318038,
     },
     Vantus =
@@ -131,13 +131,21 @@ AZP.ReadyCheckEnhanced.buffs =
     Lethal =
     {
         [315584] = "Instant",
-        [2823] = "Deadly",
-        [8679] = "Wound",
+          [2823] =  "Deadly",
+          [8679] =   "Wound",
     },
     NonLethal =
     {
         [3408] = "Crippling",
-        [5761] = "Numbing",
+        [5761] =   "Numbing",
+    },
+    PalaAura =
+    {
+        [32223] =      "Crusader",
+          [465] =      "Devotion",
+       [183435] =   "Retribution",  -- Rank 1
+       [317906] =   "Retribution",  -- Rank 2
+       [317920] = "Concentration",
     }
 }
 
