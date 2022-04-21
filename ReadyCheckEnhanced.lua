@@ -1,7 +1,7 @@
 if AZP == nil then AZP = {} end
 if AZP.VersionControl == nil then AZP.VersionControl = {} end
 
-AZP.VersionControl["ReadyCheck Enhanced"] = 52
+AZP.VersionControl["ReadyCheck Enhanced"] = 53
 if AZP.ReadyCheckEnhanced == nil then AZP.ReadyCheckEnhanced = {} end
 if AZP.ReadyCheckEnhanced.Events == nil then AZP.ReadyCheckEnhanced.Events = {} end
 
@@ -334,7 +334,33 @@ function AZP.ReadyCheckEnhanced:ArmorKitScan()
     return nil
 end
 
+function AZP.ReadyCheckEnhanced:CheckRaidBuffsGroup(checkID)
+    local presentBuff, totalMembers = 0, 0
+    for i = 1, GetNumGroupMembers() do
+        totalMembers = i
+        if IsInRaid() then
+            for j = 1, 40 do
+                local _, _, _, _, _, _, _, _, _, spellID = UnitAura(string.format("raid%d", i), j)
+                if spellID == checkID then presentBuff = presentBuff + 1 end
+            end
+        else
+            for j = 1, 40 do
+                local _, _, _, _, _, _, _, _, _, spellID = UnitAura(string.format("party%d", i), j)
+                if spellID == checkID then presentBuff = presentBuff + 1 end
+            end
+        end
+    end
+    if IsInRaid() == false then
+        for j = 1, 40 do
+            local _, _, _, _, _, _, _, _, _, spellID = UnitAura("PLAYER", j)
+            if spellID == checkID then presentBuff = presentBuff + 1 end
+        end
+    end
+    return string.format("(%d/%d)", presentBuff, totalMembers)
+end
+
 function AZP.ReadyCheckEnhanced:CheckBuff(curBuff, data)
+    local _, _, curClass = UnitClass("PLAYER")
     local curTime = GetTime()
     local color = nil
     local colorEnd = "\124r"
@@ -346,6 +372,15 @@ function AZP.ReadyCheckEnhanced:CheckBuff(curBuff, data)
         if data.Time <= TrashHoldMinutes then color = "\124cFFFFFF00" else color = "\124cFF00FF00" end
         BuffFrames[curBuff].Texture:SetTexture(data.Icon)
         if curBuff == "PalaAura" then BuffFrames[curBuff].String:SetText(data.Name)
+        elseif data.ID == 1459 and curClass == 8 then
+            local presentBuffs = AZP.ReadyCheckEnhanced:CheckRaidBuffsGroup(1459)
+            BuffFrames[curBuff].String:SetText(string.format("%s%d minutes.%s %s", color, math.floor((data.Time - curTime) / 60), colorEnd, presentBuffs))
+        elseif data.ID == 21562 and curClass == 5 then
+            local presentBuffs = AZP.ReadyCheckEnhanced:CheckRaidBuffsGroup(21562)
+            BuffFrames[curBuff].String:SetText(string.format("%s%d minutes.%s %s", color, math.floor((data.Time - curTime) / 60), colorEnd, presentBuffs))
+        elseif data.ID == 6673 and curClass == 1 then
+            local presentBuffs = AZP.ReadyCheckEnhanced:CheckRaidBuffsGroup(6673)
+            BuffFrames[curBuff].String:SetText(string.format("%s%d minutes.%s %s", color, math.floor((data.Time - curTime) / 60), colorEnd, presentBuffs))
         else
             BuffFrames[curBuff].String:SetText(string.format("%s%d minutes.%s", color, math.floor((data.Time - curTime) / 60), colorEnd))
         end
