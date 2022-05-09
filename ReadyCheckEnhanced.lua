@@ -1,7 +1,7 @@
 if AZP == nil then AZP = {} end
 if AZP.VersionControl == nil then AZP.VersionControl = {} end
 
-AZP.VersionControl["ReadyCheck Enhanced"] = 53
+AZP.VersionControl["ReadyCheck Enhanced"] = 54
 if AZP.ReadyCheckEnhanced == nil then AZP.ReadyCheckEnhanced = {} end
 if AZP.ReadyCheckEnhanced.Events == nil then AZP.ReadyCheckEnhanced.Events = {} end
 
@@ -364,6 +364,7 @@ function AZP.ReadyCheckEnhanced:CheckBuff(curBuff, data)
     local curTime = GetTime()
     local color = nil
     local colorEnd = "\124r"
+    if curBuff == "HealthStones" then return end
     if data.Name == nil then
         color = "\124cFFFF0000"
         BuffFrames[curBuff].Texture:SetTexture(134400)
@@ -753,6 +754,11 @@ function AZP.ReadyCheckEnhanced:UseConsumable(Buff, AdditionalAttributes)
     end
 end
 
+function AZP.ReadyCheckEnhanced:UseSpell(Buff, SpellID)
+    BuffFrames[Buff]:SetAttribute("type", "spell")
+    BuffFrames[Buff]:SetAttribute("spell", SpellID)
+end
+
 function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
     ReadyCheckCustomFrame:SetPoint("CENTER")
@@ -979,9 +985,18 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.Other.LootFrame.String:SetJustifyH("LEFT")
     --BuffFrames.Loot = ReadyCheckCustomFrame.Other.LootFrame
 
+    local _, _, curClass = UnitClass("PLAYER")
     ReadyCheckCustomFrame.Other.HealthStones = CreateFrame("Button", nil, ReadyCheckCustomFrame.Other, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.Other.HealthStones:SetSize(((ReadyCheckCustomFrame.Other:GetWidth() -5) / 2), 20)
     ReadyCheckCustomFrame.Other.HealthStones:SetPoint("LEFT", ReadyCheckCustomFrame.Other.VantusFrame, "RIGHT", 5, 0)
+    ReadyCheckCustomFrame.Other.HealthStones:SetScript("OnMouseDown",
+    function()
+        if curClass == 9 then AZP.ReadyCheckEnhanced:UseSpell("HealthStones", 29893)    -- SpellID == Create SoulWell
+        else
+            local HSMsg = "Please, lovely Warlock, can I have HealthStones? <3"
+            if IsInRaid() then SendChatMessage(HSMsg ,"RAID") else SendChatMessage(HSMsg ,"PARTY") end
+        end
+    end)
     ReadyCheckCustomFrame.Other.HealthStones.Texture = ReadyCheckCustomFrame.Other.HealthStones:CreateTexture(nil, "BACKGROUND")
     ReadyCheckCustomFrame.Other.HealthStones.Texture:SetSize(20, 20)
     ReadyCheckCustomFrame.Other.HealthStones.Texture:SetPoint("LEFT", 5, 0)
@@ -990,8 +1005,8 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.Other.HealthStones.String:SetSize(ReadyCheckCustomFrame.Other.HealthStones:GetWidth() - 30, 50)
     ReadyCheckCustomFrame.Other.HealthStones.String:SetPoint("LEFT", 30, -2)
     ReadyCheckCustomFrame.Other.HealthStones.String:SetJustifyH("LEFT")
+    BuffFrames.HealthStones = ReadyCheckCustomFrame.Other.HealthStones
 
-    local _, _, curClass = UnitClass("PLAYER")
     if curClass == 9 then
         ReadyCheckCustomFrame.Other.SoulStone = CreateFrame("Button", nil, ReadyCheckCustomFrame.Other, "InsecureActionButtonTemplate")
         ReadyCheckCustomFrame.Other.SoulStone:SetSize(((ReadyCheckCustomFrame.Other:GetWidth() -5) / 2), 20)
