@@ -1,7 +1,7 @@
 if AZP == nil then AZP = {} end
 if AZP.VersionControl == nil then AZP.VersionControl = {} end
 
-AZP.VersionControl["ReadyCheck Enhanced"] = 54
+AZP.VersionControl["ReadyCheck Enhanced"] = 55
 if AZP.ReadyCheckEnhanced == nil then AZP.ReadyCheckEnhanced = {} end
 if AZP.ReadyCheckEnhanced.Events == nil then AZP.ReadyCheckEnhanced.Events = {} end
 
@@ -763,6 +763,12 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
     ReadyCheckCustomFrame:SetPoint("CENTER")
     ReadyCheckCustomFrame:SetSize(545, 350)
+
+    ReadyCheckCustomFrame:EnableMouse(true)
+    ReadyCheckCustomFrame:SetMovable(true)
+    ReadyCheckCustomFrame:RegisterForDrag("LeftButton")
+    ReadyCheckCustomFrame:SetScript("OnDragStart", ReadyCheckCustomFrame.StartMoving)
+    ReadyCheckCustomFrame:SetScript("OnDragStop", ReadyCheckCustomFrame.StopMovingOrSizing)
 
     ReadyCheckCustomFrame.EachPull = CreateFrame("Frame", nil, ReadyCheckCustomFrame, "BackdropTemplate")
     ReadyCheckCustomFrame.EachPull:SetSize(175, 125)
