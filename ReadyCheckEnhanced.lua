@@ -1,7 +1,7 @@
 if AZP == nil then AZP = {} end
 if AZP.VersionControl == nil then AZP.VersionControl = {} end
 
-AZP.VersionControl["ReadyCheck Enhanced"] = 56
+AZP.VersionControl["ReadyCheck Enhanced"] = 57
 if AZP.ReadyCheckEnhanced == nil then AZP.ReadyCheckEnhanced = {} end
 if AZP.ReadyCheckEnhanced.Events == nil then AZP.ReadyCheckEnhanced.Events = {} end
 
@@ -766,7 +766,8 @@ end
 
 function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
-    ReadyCheckCustomFrame:SetPoint(AZPRCELocation[1], AZPRCELocation[4], AZPRCELocation[5])
+    if AZPRCELocation == nil then ReadyCheckCustomFrame:SetPoint("CENTER", 0, 0)
+    else ReadyCheckCustomFrame:SetPoint(AZPRCELocation[1], AZPRCELocation[4], AZPRCELocation[5]) end
     ReadyCheckCustomFrame:SetSize(545, 350)
 
     ReadyCheckCustomFrame:EnableMouse(true)
