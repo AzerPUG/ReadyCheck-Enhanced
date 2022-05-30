@@ -1,7 +1,7 @@
 if AZP == nil then AZP = {} end
 if AZP.VersionControl == nil then AZP.VersionControl = {} end
 
-AZP.VersionControl["ReadyCheck Enhanced"] = 55
+AZP.VersionControl["ReadyCheck Enhanced"] = 56
 if AZP.ReadyCheckEnhanced == nil then AZP.ReadyCheckEnhanced = {} end
 if AZP.ReadyCheckEnhanced.Events == nil then AZP.ReadyCheckEnhanced.Events = {} end
 
@@ -759,16 +759,21 @@ function AZP.ReadyCheckEnhanced:UseSpell(Buff, SpellID)
     BuffFrames[Buff]:SetAttribute("spell", SpellID)
 end
 
+function AZP.ReadyCheckEnhanced:SaveLocation()
+    local v1, v2, v3, v4, v5 = ReadyCheckCustomFrame:GetPoint()
+    AZPRCELocation = {v1, v2, v3, v4, v5}
+end
+
 function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
-    ReadyCheckCustomFrame:SetPoint("CENTER")
+    ReadyCheckCustomFrame:SetPoint(AZPRCELocation[1], AZPRCELocation[4], AZPRCELocation[5])
     ReadyCheckCustomFrame:SetSize(545, 350)
 
     ReadyCheckCustomFrame:EnableMouse(true)
     ReadyCheckCustomFrame:SetMovable(true)
     ReadyCheckCustomFrame:RegisterForDrag("LeftButton")
     ReadyCheckCustomFrame:SetScript("OnDragStart", ReadyCheckCustomFrame.StartMoving)
-    ReadyCheckCustomFrame:SetScript("OnDragStop", ReadyCheckCustomFrame.StopMovingOrSizing)
+    ReadyCheckCustomFrame:SetScript("OnDragStop", function() AZP.ReadyCheckEnhanced:SaveLocation() ReadyCheckCustomFrame:StopMovingOrSizing() end)
 
     ReadyCheckCustomFrame.EachPull = CreateFrame("Frame", nil, ReadyCheckCustomFrame, "BackdropTemplate")
     ReadyCheckCustomFrame.EachPull:SetSize(175, 125)

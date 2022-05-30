@@ -4,7 +4,7 @@
 ## OptionalDeps: AzerPUGsCore
 ## Notes: Utility for Instances (Raids and Dungeons)!
 ## Version: SL 9.1 (For actual addon version, check ReadyCheckEnhanced.lua)
-## SavedVariablesPerCharacter: AIUCheckedData
+## SavedVariablesPerCharacter: AZPRCELocation
 
 dataTables.lua
 ReadyCheckEnhanced.lua
