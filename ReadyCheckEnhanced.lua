@@ -1,7 +1,7 @@
 if AZP == nil then AZP = {} end
 if AZP.VersionControl == nil then AZP.VersionControl = {} end
 
-AZP.VersionControl["ReadyCheck Enhanced"] = 58
+AZP.VersionControl["ReadyCheck Enhanced"] = 59
 if AZP.ReadyCheckEnhanced == nil then AZP.ReadyCheckEnhanced = {} end
 if AZP.ReadyCheckEnhanced.Events == nil then AZP.ReadyCheckEnhanced.Events = {} end
 
@@ -765,6 +765,7 @@ function AZP.ReadyCheckEnhanced:SaveLocation()
 end
 
 function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
+    local _, _, curClass = UnitClass("PLAYER")
     ReadyCheckCustomFrame = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
     if AZPRCELocation == nil then ReadyCheckCustomFrame:SetPoint("CENTER", 0, 0)
     else ReadyCheckCustomFrame:SetPoint(AZPRCELocation[1], AZPRCELocation[4], AZPRCELocation[5]) end
@@ -903,7 +904,14 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.RaidBuffs.IntellectFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.RaidBuffs, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.RaidBuffs.IntellectFrame:SetSize(ReadyCheckCustomFrame.RaidBuffs:GetWidth(), 20)
     ReadyCheckCustomFrame.RaidBuffs.IntellectFrame:SetPoint("TOP", 0, -16)
-    -- ReadyCheckCustomFrame.RaidBuffs.IntellectFrame:SetScript("OnMouseDown", function() AZP.ReadyCheckEnhanced:UseConsumable("Intellect") end)
+    ReadyCheckCustomFrame.RaidBuffs.IntellectFrame:SetScript("OnMouseDown",
+    function()
+        if curClass == 8 then AZP.ReadyCheckEnhanced:UseSpell("Intellect", 1459)    -- SpellID == Arcane Intellect
+        else
+            local HSMsg = "Please, lovely Mage, can I have Intellect? <3"
+            if IsInRaid() then SendChatMessage(HSMsg ,"RAID") else SendChatMessage(HSMsg ,"PARTY") end
+        end
+    end)
     ReadyCheckCustomFrame.RaidBuffs.IntellectFrame.Texture = ReadyCheckCustomFrame.RaidBuffs.IntellectFrame:CreateTexture(nil, "BACKGROUND")
     ReadyCheckCustomFrame.RaidBuffs.IntellectFrame.Texture:SetSize(20, 20)
     ReadyCheckCustomFrame.RaidBuffs.IntellectFrame.Texture:SetPoint("LEFT", 5, 0)
@@ -997,7 +1005,6 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.Other.LootFrame.String:SetJustifyH("LEFT")
     --BuffFrames.Loot = ReadyCheckCustomFrame.Other.LootFrame
 
-    local _, _, curClass = UnitClass("PLAYER")
     ReadyCheckCustomFrame.Other.HealthStones = CreateFrame("Button", nil, ReadyCheckCustomFrame.Other, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.Other.HealthStones:SetSize(((ReadyCheckCustomFrame.Other:GetWidth() -5) / 2), 20)
     ReadyCheckCustomFrame.Other.HealthStones:SetPoint("LEFT", ReadyCheckCustomFrame.Other.VantusFrame, "RIGHT", 5, 0)
