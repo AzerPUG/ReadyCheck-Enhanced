@@ -1,0 +1,10 @@
+## Interface: 30502
+## Title: |cFF00FFFFAzerPUG's|r |cFFFF00FFReadyCheck Enhanced|r
+## Author: Tex & AzerPUG Gaming Community (www.azerpug.com/discord)
+## OptionalDeps: AzerPUGsCore
+## Notes: Utility for Instances (Raids and Dungeons)!
+## Version: SL 9.2.5 (For actual addon version, check ReadyCheckEnhanced.lua)
+## SavedVariablesPerCharacter: AZPRCELocation
+
+datatables/TBCData.lua
+ReadyCheckEnhancedTBC.lua

@@ -6,5 +6,5 @@
 ## Version: SL 9.2.5 (For actual addon version, check ReadyCheckEnhanced.lua)
 ## SavedVariablesPerCharacter: AZPRCELocation
 
-dataTables.lua
+datatables/RetailData.lua
 ReadyCheckEnhanced.lua
