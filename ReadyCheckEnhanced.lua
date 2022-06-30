@@ -1,7 +1,7 @@
 if AZP == nil then AZP = {} end
 if AZP.VersionControl == nil then AZP.VersionControl = {} end
 
-AZP.VersionControl["ReadyCheck Enhanced"] = 60
+AZP.VersionControl["ReadyCheck Enhanced"] = 61
 if AZP.ReadyCheckEnhanced == nil then AZP.ReadyCheckEnhanced = {} end
 if AZP.ReadyCheckEnhanced.Events == nil then AZP.ReadyCheckEnhanced.Events = {} end
 
@@ -929,7 +929,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     function()
         if curClass == 5 then AZP.ReadyCheckEnhanced:UseSpell("Stamina", 21562)    -- SpellID == Power Word: Fortitude
         else
-            local HSMsg = "Please, lovely Priest, can I have Stamina/Fortitude? <3"
+            local HSMsg = "Please, lovely Priest, can I have Stamina / Fortitude? <3"
             if IsInRaid() then SendChatMessage(HSMsg ,"RAID") else SendChatMessage(HSMsg ,"PARTY") end
         end
     end)
@@ -946,7 +946,14 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.RaidBuffs, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame:SetSize(ReadyCheckCustomFrame.RaidBuffs:GetWidth(), 20)
     ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame:SetPoint("TOP", 0, -66)
-    -- ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame:SetScript("OnMouseDown", function() AZP.ReadyCheckEnhanced:UseConsumable("AttackPower") end)
+    ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame:SetScript("OnMouseDown",
+    function()
+        if curClass == 1 then AZP.ReadyCheckEnhanced:UseSpell("AttackPower", 6673)    -- SpellID == Power Word: Fortitude
+        else
+            local HSMsg = "Please, lovely Warrior, can I have Attack Power / Battle Shout? <3"
+            if IsInRaid() then SendChatMessage(HSMsg ,"RAID") else SendChatMessage(HSMsg ,"PARTY") end
+        end
+    end)
     ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame.Texture = ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame:CreateTexture(nil, "BACKGROUND")
     ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame.Texture:SetSize(20, 20)
     ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame.Texture:SetPoint("LEFT", 5, 0)
