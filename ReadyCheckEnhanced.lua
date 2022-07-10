@@ -13,29 +13,20 @@ local UpdateFrame = nil
 local AZPRCESelfOptionPanel = nil
 local HaveShowedUpdateNotification = false
 
+local AZPReadyNowButton = nil
+
 local BuffFrames = {}
 local TrashHoldMinutes = 10
 local ChooseItemFrame = nil
 
+local coreLoaded = true
+
+local addonLoaded, varsLoaded = false, false
+
 local optionHeader = "|cFF00FFFFReadyCheck Enhanced|r"
 
 function AZP.ReadyCheckEnhanced:OnLoadBoth()
-    AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
-
-    AZP.ReadyCheckEnhanced:DelayedExecution(10, function()
-        ReadyCheckFrameYesButton:SetParent(ReadyCheckCustomFrame)
-        ReadyCheckFrameYesButton:ClearAllPoints()
-        ReadyCheckFrameYesButton:SetPoint("BOTTOMLEFT", 25, 10)
-        ReadyCheckFrameNoButton:SetParent(ReadyCheckCustomFrame)
-        ReadyCheckFrameNoButton:ClearAllPoints()
-        ReadyCheckFrameNoButton:SetPoint("BOTTOMRIGHT", -25, 10)
-    end)
-
-    ReadyCheckCustomFrame.HeaderText = ReadyCheckCustomFrame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-    ReadyCheckCustomFrame.HeaderText:SetSize(ReadyCheckCustomFrame:GetWidth(), 25)
-    ReadyCheckCustomFrame.HeaderText:SetPoint("TOP", 0, 0)
-
-    local AZPReadyNowButton = CreateFrame("Button", "AZPReadyNowButton", UIParent, "UIPanelButtonTemplate")
+    AZPReadyNowButton = CreateFrame("Button", "AZPReadyNowButton", UIParent, "UIPanelButtonTemplate")
     AZPReadyNowButton.contentText = AZPReadyNowButton:CreateFontString(nil, "ARTWORK", "GameFontNormalHuge")
     AZPReadyNowButton.contentText:SetText("I AM READY NOW!")
     AZPReadyNowButton:SetSize(500, 250)
@@ -51,11 +42,21 @@ function AZP.ReadyCheckEnhanced:OnLoadBoth()
         AZPReadyNowButton:Hide()
     end )
     AZPReadyNowButton:Hide()
+
+    if varsLoaded == true then AZP.ReadyCheckEnhanced:VarsAndAddonLoaded() else addonLoaded = true end
+
+    AZP.ReadyCheckEnhanced:DelayedExecution(10, function()
+        ReadyCheckFrameYesButton:SetParent(ReadyCheckCustomFrame)
+        ReadyCheckFrameYesButton:ClearAllPoints()
+        ReadyCheckFrameYesButton:SetPoint("BOTTOMLEFT", 25, 10)
+        ReadyCheckFrameNoButton:SetParent(ReadyCheckCustomFrame)
+        ReadyCheckFrameNoButton:ClearAllPoints()
+        ReadyCheckFrameNoButton:SetPoint("BOTTOMRIGHT", -25, 10)
+    end)
 end
 
 function AZP.ReadyCheckEnhanced:OnLoadCore()
     AZP.Core:RegisterEvents("READY_CHECK", function(...) AZP.ReadyCheckEnhanced.Events:ReadyCheck(...) end)
-    AZP.Core:RegisterEvents("UNIT_AURA", function(...) AZP.ReadyCheckEnhanced.Events:UnitAura(...) end)
     AZP.Core:RegisterEvents("READY_CHECK_CONFIRM", function(...) AZP.ReadyCheckEnhanced.Events:ReadyCheckConfirm(...) end)
     AZP.Core:RegisterEvents("READY_CHECK_FINISHED", function(...) AZP.ReadyCheckEnhanced.Events:ReadyCheckFinished(...) end)
     AZP.Core:RegisterEvents("PLAYER_LOOT_SPEC_UPDATED", function(...) AZP.ReadyCheckEnhanced.Events:LootSpecChanged(...) end)
@@ -75,12 +76,13 @@ function AZP.ReadyCheckEnhanced:OnLoadSelf()
     local EventFrame = CreateFrame("FRAME", nil)
     EventFrame:RegisterEvent("CHAT_MSG_ADDON")
     EventFrame:RegisterEvent("READY_CHECK")
-    EventFrame:RegisterEvent("UNIT_AURA")
     EventFrame:RegisterEvent("READY_CHECK_CONFIRM")
     EventFrame:RegisterEvent("READY_CHECK_FINISHED")
     EventFrame:RegisterEvent("GROUP_ROSTER_UPDATE")
     EventFrame:RegisterEvent("PLAYER_LOOT_SPEC_UPDATED")
     EventFrame:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
+    EventFrame:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
+    EventFrame:RegisterEvent("VARIABLES_LOADED")
     EventFrame:SetScript("OnEvent", function(...) AZP.ReadyCheckEnhanced:OnEvent(...) end)
 
     UpdateFrame = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
@@ -206,6 +208,13 @@ function AZP.ReadyCheckEnhanced.Events:ChatMsgAddon(...)
 end
 
 function AZP.ReadyCheckEnhanced.Events:ReadyCheck(...)
+    if coreLoaded == true then
+        AZP.Core:RegisterEvents("UNIT_AURA", function(...) AZP.ReadyCheckEnhanced.Events:UnitAura(...) end)
+    elseif coreLoaded == false then
+        EventFrame:RegisterEvent("UNIT_AURA")
+        EventFrame:SetScript("OnEvent", function(...) AZP.ReadyCheckEnhanced:OnEvent(...) end)
+    end
+
     local player = ...
     ReadyCheckCustomFrame:Show()
     ReadyCheckFrame:Hide()
@@ -239,6 +248,15 @@ function AZP.ReadyCheckEnhanced.Events:ReadyCheckFinished(...)
     end
     ChooseItemFrame:Hide()
     ReadyCheckCustomFrame:Hide()
+    AZP.ReadyCheckEnhanced:UnregisterUnitAura()
+end
+
+function AZP.ReadyCheckEnhanced:UnregisterUnitAura()
+    if coreLoaded == true then
+        AZP.Core:UnRegisterEvents("UNIT_AURA", )
+    elseif coreLoaded == false then
+        EventFrame:UnregisterEvent("UNIT_AURA")
+    end
 end
 
 function AZP.ReadyCheckEnhanced.Events:LootSpecChanged(...)
@@ -247,6 +265,14 @@ end
 
 function AZP.ReadyCheckEnhanced.Events:EquipmentChanged(...)
     AZP.ReadyCheckEnhanced:CheckEquipement()
+end
+
+function AZP.ReadyCheckEnhanced.Events:VariablesLoaded(...)
+    if addonLoaded == true then AZP.ReadyCheckEnhanced:VarsAndAddonLoaded() else varsLoaded = true end
+end
+
+function AZP.ReadyCheckEnhanced:VarsAndAddonLoaded()
+    AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
 end
 
 function AZP.ReadyCheckEnhanced:OnEvent(self, event, ...)
@@ -266,6 +292,8 @@ function AZP.ReadyCheckEnhanced:OnEvent(self, event, ...)
         AZP.ReadyCheckEnhanced.Events:LootSpecChanged(...)
     elseif event == "PLAYER_EQUIPMENT_CHANGED" then
         AZP.ReadyCheckEnhanced.Events:EquipmentChanged(...)
+    elseif event == "VARIABLES_LOADED" then
+        AZP.ReadyCheckEnhanced.Events:VariablesLoaded(...)
     end
 end
 
@@ -767,15 +795,29 @@ end
 function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     local _, _, curClass = UnitClass("PLAYER")
     ReadyCheckCustomFrame = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
-    if AZPRCELocation == nil then ReadyCheckCustomFrame:SetPoint("CENTER", 0, 0)
-    else ReadyCheckCustomFrame:SetPoint(AZPRCELocation[1], AZPRCELocation[4], AZPRCELocation[5]) end
+    if AZPRCELocation == nil then
+        ReadyCheckCustomFrame:SetPoint("CENTER", 0, 0)
+        AZPReadyNowButton:SetPoint("CENTER", 0, 0)
+    else
+        ReadyCheckCustomFrame:SetPoint(AZPRCELocation[1], AZPRCELocation[4], AZPRCELocation[5])
+        AZPReadyNowButton:SetPoint(AZPRCELocation[1], AZPRCELocation[4], AZPRCELocation[5])
+    end
     ReadyCheckCustomFrame:SetSize(545, 350)
 
     ReadyCheckCustomFrame:EnableMouse(true)
     ReadyCheckCustomFrame:SetMovable(true)
     ReadyCheckCustomFrame:RegisterForDrag("LeftButton")
     ReadyCheckCustomFrame:SetScript("OnDragStart", ReadyCheckCustomFrame.StartMoving)
-    ReadyCheckCustomFrame:SetScript("OnDragStop", function() AZP.ReadyCheckEnhanced:SaveLocation() ReadyCheckCustomFrame:StopMovingOrSizing() end)
+    ReadyCheckCustomFrame:SetScript("OnDragStop",
+    function()
+        AZP.ReadyCheckEnhanced:SaveLocation()
+        AZPReadyNowButton:SetPoint(AZPRCELocation[1], AZPRCELocation[4], AZPRCELocation[5])
+        ReadyCheckCustomFrame:StopMovingOrSizing()
+    end)
+
+    ReadyCheckCustomFrame.HeaderText = ReadyCheckCustomFrame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+    ReadyCheckCustomFrame.HeaderText:SetSize(ReadyCheckCustomFrame:GetWidth(), 25)
+    ReadyCheckCustomFrame.HeaderText:SetPoint("TOP", 0, 0)
 
     ReadyCheckCustomFrame.EachPull = CreateFrame("Frame", nil, ReadyCheckCustomFrame, "BackdropTemplate")
     ReadyCheckCustomFrame.EachPull:SetSize(175, 125)
@@ -1161,5 +1203,8 @@ function AZP.ReadyCheckEnhanced:CovenantStuff()
 end
 
 if not IsAddOnLoaded("AzerPUGsCore") then
+    coreLoaded = false
     AZP.ReadyCheckEnhanced:OnLoadSelf()
+elseif IsAddOnLoaded("AzerPUGsCore") then
+    AZP.Core:RegisterEvents("VARIABLES_LOADED", function(...) AZP.ReadyCheckEnhanced.Events:VariablesLoaded(...) end)
 end
