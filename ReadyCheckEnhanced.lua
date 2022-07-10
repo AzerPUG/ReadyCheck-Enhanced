@@ -209,7 +209,7 @@ end
 
 function AZP.ReadyCheckEnhanced.Events:ReadyCheck(...)
     if coreLoaded == true then
-        AZP.Core:RegisterEvents("UNIT_AURA", function(...) AZP.ReadyCheckEnhanced.Events:UnitAura(...) end)
+        AZP.Core:RegisterEvents("UNIT_AURA", function(...) AZP.ReadyCheckEnhanced.Events:UnitAura(...) end, "RCE")
     elseif coreLoaded == false then
         EventFrame:RegisterEvent("UNIT_AURA")
         EventFrame:SetScript("OnEvent", function(...) AZP.ReadyCheckEnhanced:OnEvent(...) end)
@@ -253,7 +253,7 @@ end
 
 function AZP.ReadyCheckEnhanced:UnregisterUnitAura()
     if coreLoaded == true then
-        AZP.Core:UnRegisterEvents("UNIT_AURA", )
+        AZP.Core:UnRegisterEvents("UNIT_AURA", "RCE")
     elseif coreLoaded == false then
         EventFrame:UnregisterEvent("UNIT_AURA")
     end
