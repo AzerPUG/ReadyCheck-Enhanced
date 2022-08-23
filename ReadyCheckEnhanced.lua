@@ -12,6 +12,7 @@ local ReadyCheckCustomFrame = nil
 local UpdateFrame = nil
 local AZPRCESelfOptionPanel = nil
 local HaveShowedUpdateNotification = false
+local EventFrame = nil
 
 local AZPReadyNowButton = nil
 
@@ -73,7 +74,7 @@ end
 function AZP.ReadyCheckEnhanced:OnLoadSelf()
     C_ChatInfo.RegisterAddonMessagePrefix("AZPVERSIONS")
 
-    local EventFrame = CreateFrame("FRAME", nil)
+    EventFrame = CreateFrame("FRAME", nil)
     EventFrame:RegisterEvent("CHAT_MSG_ADDON")
     EventFrame:RegisterEvent("READY_CHECK")
     EventFrame:RegisterEvent("READY_CHECK_CONFIRM")
