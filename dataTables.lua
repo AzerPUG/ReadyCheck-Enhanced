@@ -63,11 +63,11 @@ AZP.ReadyCheckEnhanced.buffs =
     },
     RaidBuff =
     {
-           [1459] = "Intellect",
-         [136078] = "Versatility",
-          [21562] = "Stamina",
-           [6673] = "AttackPower",
-        [4622448] = "MovementSpeed",    -- 381748
+         [1459] = "Intellect",
+         [1126] = "Versatility",
+        [21562] = "Stamina",
+         [6673] = "AttackPower",
+        [381748] = "MovementSpeed",    -- 381748 / 4622448
     },
     Weapon =
     {

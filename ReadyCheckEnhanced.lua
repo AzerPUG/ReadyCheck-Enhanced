@@ -976,10 +976,10 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
 
     ReadyCheckCustomFrame.RaidBuffs.VersFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.RaidBuffs, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.RaidBuffs.VersFrame:SetSize(ReadyCheckCustomFrame.RaidBuffs:GetWidth(), 20)
-    ReadyCheckCustomFrame.RaidBuffs.VersFrame:SetPoint("TOP", 0, -16)
+    ReadyCheckCustomFrame.RaidBuffs.VersFrame:SetPoint("TOP", 0, -41)
     ReadyCheckCustomFrame.RaidBuffs.VersFrame:SetScript("OnMouseDown",
     function()
-        if curClass == 8 then AZP.ReadyCheckEnhanced:UseSpell("Versatility", 136078)    -- SpellID == Mark of the Wild
+        if curClass == 11 then AZP.ReadyCheckEnhanced:UseSpell("Versatility", 136078)    -- SpellID == Mark of the Wild
         else
             local HSMsg = "Please, lovely Druid, can I have Vers / Mark of the Wild, please? <3"
             if IsInRaid() then SendChatMessage(HSMsg ,"RAID") else SendChatMessage(HSMsg ,"PARTY") end
@@ -999,7 +999,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
 
     ReadyCheckCustomFrame.RaidBuffs.StaminaFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.RaidBuffs, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.RaidBuffs.StaminaFrame:SetSize(ReadyCheckCustomFrame.RaidBuffs:GetWidth(), 20)
-    ReadyCheckCustomFrame.RaidBuffs.StaminaFrame:SetPoint("TOP", 0, -41)
+    ReadyCheckCustomFrame.RaidBuffs.StaminaFrame:SetPoint("TOP", 0, -66)
     ReadyCheckCustomFrame.RaidBuffs.StaminaFrame:SetScript("OnMouseDown",
     function()
         if curClass == 5 then AZP.ReadyCheckEnhanced:UseSpell("Stamina", 21562)    -- SpellID == Power Word: Fortitude
@@ -1021,7 +1021,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
 
     ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.RaidBuffs, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame:SetSize(ReadyCheckCustomFrame.RaidBuffs:GetWidth(), 20)
-    ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame:SetPoint("TOP", 0, -66)
+    ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame:SetPoint("TOP", 0, -91)
     ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame:SetScript("OnMouseDown",
     function()
         if curClass == 1 then AZP.ReadyCheckEnhanced:UseSpell("AttackPower", 6673)    -- SpellID == Battle Shoud
@@ -1043,12 +1043,12 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
 
     ReadyCheckCustomFrame.RaidBuffs.SpeedFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.RaidBuffs, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.RaidBuffs.SpeedFrame:SetSize(ReadyCheckCustomFrame.RaidBuffs:GetWidth(), 20)
-    ReadyCheckCustomFrame.RaidBuffs.SpeedFrame:SetPoint("TOP", 0, -66)
+    ReadyCheckCustomFrame.RaidBuffs.SpeedFrame:SetPoint("TOP", 0, -116)
     ReadyCheckCustomFrame.RaidBuffs.SpeedFrame:SetScript("OnMouseDown",
     function()
-        if curClass == 1 then AZP.ReadyCheckEnhanced:UseSpell("MovementSpeed", 6673)    -- SpellID == Gift of the Bronze
+        if curClass == 13 then AZP.ReadyCheckEnhanced:UseSpell("MovementSpeed", 364342)    -- SpellID == Gift of the Bronze
         else
-            local HSMsg = "Please, lovely Warrior, can I have Attack Power / Battle Shout, please? <3"
+            local HSMsg = "Please, lovely Evoker, can I have Movement Speed / Blessing of the Bronze, please? <3"
             if IsInRaid() then SendChatMessage(HSMsg ,"RAID") else SendChatMessage(HSMsg ,"PARTY") end
         end
     end)
