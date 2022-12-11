@@ -1,35 +1,6 @@
 if AZP == nil then AZP = {} end
 if AZP.ReadyCheckEnhanced == nil then AZP.ReadyCheckEnhanced = {} end
 
-AZP.ReadyCheckEnhanced.CovenantIcons =
-{
-    Sigil =
-    {
-        NightFae  = {FilePath = "", },
-        Venthyr   = {FilePath = "", },
-        Necrolord = {FilePath = "", },
-        Kyrian    = {FilePath = "", },
-    },
-    Soulbind =
-    {
-        [1] = {Covenant =  "NightFae", Name =        "Niya", FilePath = "Interface\\Garrison\\Portraits\\FollowerPortrait_95232.blp"},
-        [2] = {Covenant =  "NightFae", Name = "Dreamweaver", FilePath = "Interface\\Garrison\\Portraits\\FollowerPortrait_94430.blp"},
-        [6] = {Covenant =  "NightFae", Name =      "Korayn", FilePath = "Interface\\Garrison\\Portraits\\FollowerPortrait_95248.blp"},
-
-        [6] = {Covenant =   "Venthyr", Name =      "Korayn", FilePath = "Interface\\Garrison\\Portraits\\FollowerPortrait_94430.blp"},
-        [6] = {Covenant =   "Venthyr", Name =      "Korayn", FilePath = "Interface\\Garrison\\Portraits\\FollowerPortrait_94430.blp"},
-        [6] = {Covenant =   "Venthyr", Name =      "Korayn", FilePath = "Interface\\Garrison\\Portraits\\FollowerPortrait_94430.blp"},
-
-        [6] = {Covenant = "Necrolord", Name =      "Korayn", FilePath = "Interface\\Garrison\\Portraits\\FollowerPortrait_94430.blp"},
-        [6] = {Covenant = "Necrolord", Name =      "Korayn", FilePath = "Interface\\Garrison\\Portraits\\FollowerPortrait_94430.blp"},
-        [6] = {Covenant = "Necrolord", Name =      "Korayn", FilePath = "Interface\\Garrison\\Portraits\\FollowerPortrait_94430.blp"},
-
-        [6] = {Covenant =    "Kyrian", Name =      "Korayn", FilePath = "Interface\\Garrison\\Portraits\\FollowerPortrait_94430.blp"},
-        [6] = {Covenant =    "Kyrian", Name =      "Korayn", FilePath = "Interface\\Garrison\\Portraits\\FollowerPortrait_94430.blp"},
-        [6] = {Covenant =    "Kyrian", Name =      "Korayn", FilePath = "Interface\\Garrison\\Portraits\\FollowerPortrait_94430.blp"},
-    }
-}
-
 AZP.ReadyCheckEnhanced.Consumables =
 {
     Flask =
@@ -92,9 +63,11 @@ AZP.ReadyCheckEnhanced.buffs =
     },
     RaidBuff =
     {
-         [1459] = "Intellect",
-        [21562] = "Stamina",
-         [6673] = "AttackPower",
+           [1459] = "Intellect",
+         [136078] = "Versatility",
+          [21562] = "Stamina",
+           [6673] = "AttackPower",
+        [4622448] = "MovementSpeed",    -- 381748
     },
     Weapon =
     {
@@ -198,6 +171,9 @@ AZP.SpecInfo =
 
     [577] = {Icon = 1247264, Name =        "Havoc",},
     [581] = {Icon = 1247265, Name =    "Vengeance",},
+
+    [0] = {Icon = 0000000, Name =    "Devestation",},
+    [1] = {Icon = 0000000, Name =   "Preservation",},
 }
 
 AZP.SpecsByClass =
@@ -322,36 +298,13 @@ AZP.SpecsByClass =
             [2] = {Name = "Vengeance", ID = 581,},
         }
     },
-}
-
-AZP.Covenants =
-{
-    NightFae =
+    [13] =
+    {
+        Name = "Evoker",
+        Specs =
         {
-              Sigil = "Interface\\Garrison\\OrderHallLandingButtonCovenants.blp",
-               Niya = "Interface\\Garrison\\Portraits\\FollowerPortrait_95232.blp",
-        Dreamweaver = "Interface\\Garrison\\Portraits\\FollowerPortrait_94430.blp",
-             Korayn = "Interface\\Garrison\\Portraits\\FollowerPortrait_95248.blp",
-        },
-        Venthyr =
-        {
-            Sigil = "Interface\\Garrison\\OrderHallLandingButtonCovenants.blp",
-               V1 = "Interface\\Garrison\\Portraits\\FollowerPortrait_94741.blp",
-               V2 = "Interface\\Garrison\\Portraits\\FollowerPortrait_93210.blp",
-               V3 = "Interface\\Garrison\\Portraits\\FollowerPortrait_93223.blp",
-        },
-        Necrolord =
-        {
-            Sigil = "Interface\\Garrison\\OrderHallLandingButtonCovenants.blp",
-               N1 = "Interface\\Garrison\\Portraits\\FollowerPortrait_93825.blp",
-               N2 = "Interface\\Garrison\\Portraits\\FollowerPortrait_96102.blp",
-               N3 = "Interface\\Garrison\\Portraits\\FollowerPortrait_94122.blp",
-        },
-        Kyrian =
-        {
-            Sigil = "Interface\\Garrison\\OrderHallLandingButtonCovenants.blp",
-               K1 = "Interface\\Garrison\\Portraits\\FollowerPortrait_94505.blp",
-               K2 = "Interface\\Garrison\\Portraits\\FollowerPortrait_93927.blp",
-               K3 = "Interface\\Garrison\\Portraits\\FollowerPortrait_97681.blp",
+            [1] = {Name =  "Devestation", ID = 0,},
+            [2] = {Name = "Preservation", ID = 1,},
+        }
     },
 }

@@ -1,7 +1,7 @@
 if AZP == nil then AZP = {} end
 if AZP.VersionControl == nil then AZP.VersionControl = {} end
 
-AZP.VersionControl["ReadyCheck Enhanced"] = 65
+AZP.VersionControl["ReadyCheck Enhanced"] = 66
 if AZP.ReadyCheckEnhanced == nil then AZP.ReadyCheckEnhanced = {} end
 if AZP.ReadyCheckEnhanced.Events == nil then AZP.ReadyCheckEnhanced.Events = {} end
 
@@ -958,7 +958,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     function()
         if curClass == 8 then AZP.ReadyCheckEnhanced:UseSpell("Intellect", 1459)    -- SpellID == Arcane Intellect
         else
-            local HSMsg = "Please, lovely Mage, can I have Intellect? <3"
+            local HSMsg = "Please, lovely Mage, can I have Intellect, please? <3"
             if IsInRaid() then SendChatMessage(HSMsg ,"RAID") else SendChatMessage(HSMsg ,"PARTY") end
         end
     end)
@@ -973,6 +973,30 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.RaidBuffs.IntellectFrame.String:SetJustifyH("LEFT")
     BuffFrames.Intellect = ReadyCheckCustomFrame.RaidBuffs.IntellectFrame
 
+
+    ReadyCheckCustomFrame.RaidBuffs.VersFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.RaidBuffs, "InsecureActionButtonTemplate")
+    ReadyCheckCustomFrame.RaidBuffs.VersFrame:SetSize(ReadyCheckCustomFrame.RaidBuffs:GetWidth(), 20)
+    ReadyCheckCustomFrame.RaidBuffs.VersFrame:SetPoint("TOP", 0, -16)
+    ReadyCheckCustomFrame.RaidBuffs.VersFrame:SetScript("OnMouseDown",
+    function()
+        if curClass == 8 then AZP.ReadyCheckEnhanced:UseSpell("Versatility", 136078)    -- SpellID == Mark of the Wild
+        else
+            local HSMsg = "Please, lovely Druid, can I have Vers / Mark of the Wild, please? <3"
+            if IsInRaid() then SendChatMessage(HSMsg ,"RAID") else SendChatMessage(HSMsg ,"PARTY") end
+        end
+    end)
+    ReadyCheckCustomFrame.RaidBuffs.VersFrame:RegisterForClicks("AnyUp", "AnyDown")
+    ReadyCheckCustomFrame.RaidBuffs.VersFrame.Texture = ReadyCheckCustomFrame.RaidBuffs.VersFrame:CreateTexture(nil, "BACKGROUND")
+    ReadyCheckCustomFrame.RaidBuffs.VersFrame.Texture:SetSize(20, 20)
+    ReadyCheckCustomFrame.RaidBuffs.VersFrame.Texture:SetPoint("LEFT", 5, 0)
+    ReadyCheckCustomFrame.RaidBuffs.VersFrame.Texture:SetTexture(134400)
+    ReadyCheckCustomFrame.RaidBuffs.VersFrame.String = ReadyCheckCustomFrame.RaidBuffs.VersFrame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+    ReadyCheckCustomFrame.RaidBuffs.VersFrame.String:SetSize(ReadyCheckCustomFrame.RaidBuffs:GetWidth() - 30, 20)
+    ReadyCheckCustomFrame.RaidBuffs.VersFrame.String:SetPoint("LEFT", 30, -2)
+    ReadyCheckCustomFrame.RaidBuffs.VersFrame.String:SetJustifyH("LEFT")
+    BuffFrames.Versatility = ReadyCheckCustomFrame.RaidBuffs.VersFrame
+
+
     ReadyCheckCustomFrame.RaidBuffs.StaminaFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.RaidBuffs, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.RaidBuffs.StaminaFrame:SetSize(ReadyCheckCustomFrame.RaidBuffs:GetWidth(), 20)
     ReadyCheckCustomFrame.RaidBuffs.StaminaFrame:SetPoint("TOP", 0, -41)
@@ -980,7 +1004,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     function()
         if curClass == 5 then AZP.ReadyCheckEnhanced:UseSpell("Stamina", 21562)    -- SpellID == Power Word: Fortitude
         else
-            local HSMsg = "Please, lovely Priest, can I have Stamina / Fortitude? <3"
+            local HSMsg = "Please, lovely Priest, can I have Stamina / Fortitude, please? <3"
             if IsInRaid() then SendChatMessage(HSMsg ,"RAID") else SendChatMessage(HSMsg ,"PARTY") end
         end
     end)
@@ -1000,9 +1024,9 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame:SetPoint("TOP", 0, -66)
     ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame:SetScript("OnMouseDown",
     function()
-        if curClass == 1 then AZP.ReadyCheckEnhanced:UseSpell("AttackPower", 6673)    -- SpellID == Power Word: Fortitude
+        if curClass == 1 then AZP.ReadyCheckEnhanced:UseSpell("AttackPower", 6673)    -- SpellID == Battle Shoud
         else
-            local HSMsg = "Please, lovely Warrior, can I have Attack Power / Battle Shout? <3"
+            local HSMsg = "Please, lovely Warrior, can I have Attack Power / Battle Shout, please? <3"
             if IsInRaid() then SendChatMessage(HSMsg ,"RAID") else SendChatMessage(HSMsg ,"PARTY") end
         end
     end)
@@ -1017,6 +1041,28 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame.String:SetJustifyH("LEFT")
     BuffFrames.AttackPower = ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame
 
+    ReadyCheckCustomFrame.RaidBuffs.SpeedFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.RaidBuffs, "InsecureActionButtonTemplate")
+    ReadyCheckCustomFrame.RaidBuffs.SpeedFrame:SetSize(ReadyCheckCustomFrame.RaidBuffs:GetWidth(), 20)
+    ReadyCheckCustomFrame.RaidBuffs.SpeedFrame:SetPoint("TOP", 0, -66)
+    ReadyCheckCustomFrame.RaidBuffs.SpeedFrame:SetScript("OnMouseDown",
+    function()
+        if curClass == 1 then AZP.ReadyCheckEnhanced:UseSpell("MovementSpeed", 6673)    -- SpellID == Gift of the Bronze
+        else
+            local HSMsg = "Please, lovely Warrior, can I have Attack Power / Battle Shout, please? <3"
+            if IsInRaid() then SendChatMessage(HSMsg ,"RAID") else SendChatMessage(HSMsg ,"PARTY") end
+        end
+    end)
+    ReadyCheckCustomFrame.RaidBuffs.SpeedFrame:RegisterForClicks("AnyUp", "AnyDown")
+    ReadyCheckCustomFrame.RaidBuffs.SpeedFrame.Texture = ReadyCheckCustomFrame.RaidBuffs.SpeedFrame:CreateTexture(nil, "BACKGROUND")
+    ReadyCheckCustomFrame.RaidBuffs.SpeedFrame.Texture:SetSize(20, 20)
+    ReadyCheckCustomFrame.RaidBuffs.SpeedFrame.Texture:SetPoint("LEFT", 5, 0)
+    ReadyCheckCustomFrame.RaidBuffs.SpeedFrame.Texture:SetTexture(134400)
+    ReadyCheckCustomFrame.RaidBuffs.SpeedFrame.String = ReadyCheckCustomFrame.RaidBuffs.SpeedFrame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+    ReadyCheckCustomFrame.RaidBuffs.SpeedFrame.String:SetSize(ReadyCheckCustomFrame.RaidBuffs:GetWidth() - 30, 20)
+    ReadyCheckCustomFrame.RaidBuffs.SpeedFrame.String:SetPoint("LEFT", 30, -2)
+    ReadyCheckCustomFrame.RaidBuffs.SpeedFrame.String:SetJustifyH("LEFT")
+    BuffFrames.MovementSpeed = ReadyCheckCustomFrame.RaidBuffs.SpeedFrame
+
     ReadyCheckCustomFrame.BuildInfo.EquipementFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.BuildInfo, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.BuildInfo.EquipementFrame:SetSize(ReadyCheckCustomFrame.BuildInfo:GetWidth(), 20)
     ReadyCheckCustomFrame.BuildInfo.EquipementFrame:SetPoint("TOP", 0, -16)
@@ -1030,8 +1076,6 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.BuildInfo.EquipementFrame.String:SetPoint("LEFT", 30, -2)
     ReadyCheckCustomFrame.BuildInfo.EquipementFrame.String:SetJustifyH("LEFT")
     --BuffFrames.Loot = ReadyCheckCustomFrame.BuildInfo.EquipementFrame
-
-    AZP.ReadyCheckEnhanced:CovenantStuff()
 
     ReadyCheckCustomFrame.Other.VantusFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.Other, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.Other.VantusFrame:SetSize(((ReadyCheckCustomFrame.Other:GetWidth() -5) /2), 20)
@@ -1186,40 +1230,6 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ChooseItemFrame.CloseButton:SetScript("OnClick", function() ChooseItemFrame:Hide() end )
 
     ChooseItemFrame:Hide()
-end
-
-function AZP.ReadyCheckEnhanced:CovenantStuff()
-    local Width, Height = 20, 20
-
-    ReadyCheckCustomFrame.BuildInfo.NFSigilFrame = ReadyCheckCustomFrame.BuildInfo:CreateTexture(nil, "ARTWORK")
-    ReadyCheckCustomFrame.BuildInfo.NFSigilFrame:SetSize(40, 40)
-    ReadyCheckCustomFrame.BuildInfo.NFSigilFrame:SetPoint("TOPLEFT", 25, -35)
-    ReadyCheckCustomFrame.BuildInfo.NFSigilFrame:SetTexture(GetFileIDFromPath(AZP.Covenants.NightFae.Sigil))
-    ReadyCheckCustomFrame.BuildInfo.NFSigilFrame:SetTexCoord(0.132812, 0.259766, 0.00390625, 0.257812)
-
-    ReadyCheckCustomFrame.BuildInfo.VSigilFrame = ReadyCheckCustomFrame.BuildInfo:CreateTexture(nil, "ARTWORK")
-    ReadyCheckCustomFrame.BuildInfo.VSigilFrame:SetSize(40, 40)
-    ReadyCheckCustomFrame.BuildInfo.VSigilFrame:SetPoint("LEFT", ReadyCheckCustomFrame.BuildInfo.NFSigilFrame, "RIGHT", -10, 0)
-    ReadyCheckCustomFrame.BuildInfo.VSigilFrame:SetTexture(GetFileIDFromPath(AZP.Covenants.Venthyr.Sigil))
-    ReadyCheckCustomFrame.BuildInfo.VSigilFrame:SetTexCoord(0.787109, 0.914062, 0.00390625, 0.257812)
-
-    ReadyCheckCustomFrame.BuildInfo.NSigilFrame = ReadyCheckCustomFrame.BuildInfo:CreateTexture(nil, "ARTWORK")
-    ReadyCheckCustomFrame.BuildInfo.NSigilFrame:SetSize(40, 40)
-    ReadyCheckCustomFrame.BuildInfo.NSigilFrame:SetPoint("LEFT", ReadyCheckCustomFrame.BuildInfo.VSigilFrame, "RIGHT", -10, 0)
-    ReadyCheckCustomFrame.BuildInfo.NSigilFrame:SetTexture(GetFileIDFromPath(AZP.Covenants.Necrolord.Sigil))
-    ReadyCheckCustomFrame.BuildInfo.NSigilFrame:SetTexCoord(0.394531, 0.521484, 0.527344, 0.78125)
-
-    ReadyCheckCustomFrame.BuildInfo.KSigilFrame = ReadyCheckCustomFrame.BuildInfo:CreateTexture(nil, "ARTWORK")
-    ReadyCheckCustomFrame.BuildInfo.KSigilFrame:SetSize(40, 40)
-    ReadyCheckCustomFrame.BuildInfo.KSigilFrame:SetPoint("LEFT", ReadyCheckCustomFrame.BuildInfo.NSigilFrame, "RIGHT", -10, 0)
-    ReadyCheckCustomFrame.BuildInfo.KSigilFrame:SetTexture(GetFileIDFromPath(AZP.Covenants.Kyrian.Sigil))
-    ReadyCheckCustomFrame.BuildInfo.KSigilFrame:SetTexCoord(0.263672, 0.390625, 0.265625, 0.519531)
-
-    ReadyCheckCustomFrame.BuildInfo.ComingSoon = ReadyCheckCustomFrame.BuildInfo:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
-    ReadyCheckCustomFrame.BuildInfo.ComingSoon:SetSize(ReadyCheckCustomFrame.BuildInfo:GetWidth(), 50)
-    ReadyCheckCustomFrame.BuildInfo.ComingSoon:SetPoint("TOP", 0, -65)
-    ReadyCheckCustomFrame.BuildInfo.ComingSoon:SetJustifyH("CENTER")
-    ReadyCheckCustomFrame.BuildInfo.ComingSoon:SetText("\124cFF00FFFFCovenant Functionality\nComing Soon!\124r")
 end
 
 if not IsAddOnLoaded("AzerPUGsCore") then
