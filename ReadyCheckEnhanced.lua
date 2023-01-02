@@ -922,7 +922,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.RaidBuffs.VersFrame:SetPoint("TOP", ReadyCheckCustomFrame.RaidBuffs.IntellectFrame, "BOTTOM", 0, -5)
     ReadyCheckCustomFrame.RaidBuffs.VersFrame:SetScript("OnMouseDown",
     function()
-        if curClass == 11 then AZP.ReadyCheckEnhanced:UseSpell("Versatility", 136078)    -- SpellID == Mark of the Wild
+        if curClass == 11 then AZP.ReadyCheckEnhanced:UseSpell("Versatility", 1126)    -- SpellID == Mark of the Wild
         else
             local HSMsg = "Please, lovely Druid, can I have Vers / Mark of the Wild, please? <3"
             if IsInRaid() then SendChatMessage(HSMsg ,"RAID") else SendChatMessage(HSMsg ,"PARTY") end
