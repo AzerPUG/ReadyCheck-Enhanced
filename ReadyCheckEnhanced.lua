@@ -331,38 +331,6 @@ function AZP.ReadyCheckEnhanced:CheckBuffTimer(consumable, missingText)
     end
 end
 
-function AZP.ReadyCheckEnhanced:ArmorKitScan()
-    local ScanningTooltip = CreateFrame("GameTooltip", "ScanningTooltipText", nil, "GameTooltipTemplate")
-    ScanningTooltip:SetOwner(UIParent, "ANCHOR_NONE")
-    ScanningTooltip:SetInventoryItem("player", 5)
-    local ttname = ScanningTooltip:GetName()
-
-    for i = 1, ScanningTooltip:NumLines() do
-        local left = _G[ttname .. "TextLeft" .. i]
-        local text = left:GetText()
-        if text and text ~= "" then
-            if text:find("%(+") then
-                local currentReinforceCheck = text:sub(text:find("%(+") + 1, text:find("%(+") + 3)
-                if currentReinforceCheck == "+32" then
-                    currentReinforceCheck = text:sub(text:find("%)%s%(") + 3, - 2)
-                    local num, unit = string.match(currentReinforceCheck, "(%d+) (%a+)")
-                    num = tonumber(num)
-                    local isMinutes = ITEM_ENCHANT_TIME_LEFT_MIN:find(unit) ~= nil
-                    local isHours =ITEM_ENCHANT_TIME_LEFT_HOURS:find(unit) ~= nil
-                    if isMinutes then
-                        return num
-                    end
-                    if isHours then
-                        return num * 60
-                    end
-                end
-            end
-        end
-    end
-    ScanningTooltip:ClearLines()
-    return nil
-end
-
 function AZP.ReadyCheckEnhanced:CheckRaidBuffsGroup(checkID)
     local presentBuff, totalMembers = 0, 0
     for i = 1, GetNumGroupMembers() do
@@ -495,19 +463,6 @@ function AZP.ReadyCheckEnhanced:CheckWeaponMods()
     end
 end
 
-function AZP.ReadyCheckEnhanced:CheckArmorBuff()
-    local expirationTimer = AZP.ReadyCheckEnhanced:ArmorKitScan()
-    if expirationTimer == nil then
-        BuffFrames.ArmorKit.Texture:SetTexture(134400)
-        BuffFrames.ArmorKit.String:SetText("\124cFFFF0000Missing Armor Kit!\124r")
-    else
-        local color = nil
-        if expirationTimer <= TrashHoldMinutes then color = "\124cFFFFFF00" else color = "\124cFF00FF00" end
-        BuffFrames.ArmorKit.Texture:SetTexture(3528447)
-        BuffFrames.ArmorKit.String:SetText(string.format("%s%d minutes.\124r", color, expirationTimer))
-    end
-end
-
 function AZP.ReadyCheckEnhanced:CheckDurability()
     local cur, max = 0, 0
     for eIndex = 1, 17 do
@@ -546,8 +501,8 @@ function AZP.ReadyCheckEnhanced:CheckLootSpec()
     LootSpecName = AZP.SpecInfo[LootSpecID].Name
     LootSpecIconID = AZP.SpecInfo[LootSpecID].Icon
     local color = "\124cFFFFFF00"
-    ReadyCheckCustomFrame.Other.LootFrame.Texture:SetTexture(LootSpecIconID)
-    ReadyCheckCustomFrame.Other.LootFrame.String:SetText(string.format("%sLoot: %s.\124r", color, LootSpecName))
+    ReadyCheckCustomFrame.BuildInfo.LootFrame.Texture:SetTexture(LootSpecIconID)
+    ReadyCheckCustomFrame.BuildInfo.LootFrame.String:SetText(string.format("%sLoot: %s.\124r", color, LootSpecName))
 end
 
 function AZP.ReadyCheckEnhanced:CheckHealthStones()
@@ -628,11 +583,11 @@ function AZP.ReadyCheckEnhanced:CheckReadyData(inputFrame)
         readyCheckDefaultText = "You initiated a ReadyCheck!"
     end
 
-    local i = 1;
+    local i = 1
 
     local buffName, icon, _, _, _, expirationTimer, _, _, _, spellID = UnitBuff("player", i)
     local buffData = {Name = buffName, ID = spellID, Time = expirationTimer, Icon = icon}
-    local matchedBuffNames = {"Repair", "OHWepMod", "MHWepMod", "ArmorKit"}     -- Pre assigned items are not player buffs.
+    local matchedBuffNames = {"Repair", "OHWepMod", "MHWepMod"}     -- Pre assigned items are not player buffs.
 
     local _, _, curClass = UnitClass("PLAYER")
 
@@ -673,7 +628,6 @@ function AZP.ReadyCheckEnhanced:CheckReadyData(inputFrame)
     AZP.ReadyCheckEnhanced:CheckLootSpec()
     AZP.ReadyCheckEnhanced:CheckDurability()
     AZP.ReadyCheckEnhanced:CheckWeaponMods()
-    AZP.ReadyCheckEnhanced:CheckArmorBuff()
     AZP.ReadyCheckEnhanced:CheckHealthStones()
 
     local _, _, curClass = UnitClass("player")
@@ -684,8 +638,6 @@ function AZP.ReadyCheckEnhanced:CheckReadyData(inputFrame)
             AZP.ReadyCheckEnhanced:CheckBuff(key, {})
         end
     end
-
-    local reinforceTime =  AZP.ReadyCheckEnhanced:ArmorKitScan()
 
     ReadyCheckCustomFrame.HeaderText:SetText(readyCheckDefaultText)
 end
@@ -715,20 +667,9 @@ function AZP.ReadyCheckEnhanced:UseConsumable(Buff, AdditionalAttributes)
         for j = 0, 40 do
             local itemID = C_Container.GetContainerItemID(i, j)
             if itemID ~= nil then
-                if itemID == 190384 and Buff == "Rune" then
-                    BuffFrames[Buff]:SetAttribute("type", "item")
-                    BuffFrames[Buff]:SetAttribute("item", i .. " " .. j)
-                    if AdditionalAttributes ~= nil then
-                        for attr, value in pairs(AdditionalAttributes) do
-                            BuffFrames[Buff]:SetAttribute(attr, value)
-                        end
-                    end
-                    return
-                else
-                    if AZP.ReadyCheckEnhanced.Consumables[Buff][itemID] ~= nil then
-                        if AZP.ReadyCheckEnhanced:PresentConsumablesContains(presentConsumables, itemID) == false then
-                            presentConsumables[#presentConsumables + 1] = {ID = itemID, Bag = i, Slot = j}
-                        end
+                if AZP.ReadyCheckEnhanced.Consumables[Buff][itemID] ~= nil then
+                    if AZP.ReadyCheckEnhanced:PresentConsumablesContains(presentConsumables, itemID) == false then
+                        presentConsumables[#presentConsumables + 1] = {ID = itemID, Bag = i, Slot = j}
                     end
                 end
             end
@@ -804,7 +745,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
         ReadyCheckCustomFrame:SetPoint(AZPRCELocation[1], AZPRCELocation[4], AZPRCELocation[5])
         AZPReadyNowButton:SetPoint(AZPRCELocation[1], AZPRCELocation[4], AZPRCELocation[5])
     end
-    ReadyCheckCustomFrame:SetSize(545, 350)
+    ReadyCheckCustomFrame:SetSize(545, 400)
 
     ReadyCheckCustomFrame:EnableMouse(true)
     ReadyCheckCustomFrame:SetMovable(true)
@@ -821,8 +762,11 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.HeaderText:SetSize(ReadyCheckCustomFrame:GetWidth(), 25)
     ReadyCheckCustomFrame.HeaderText:SetPoint("TOP", 0, 0)
 
+    local SubFrameHeight = 150
+    local TextureWidth, TextureHeight = 24, 24
+
     ReadyCheckCustomFrame.EachPull = CreateFrame("Frame", nil, ReadyCheckCustomFrame, "BackdropTemplate")
-    ReadyCheckCustomFrame.EachPull:SetSize(175, 125)
+    ReadyCheckCustomFrame.EachPull:SetSize(175, SubFrameHeight)
     ReadyCheckCustomFrame.EachPull:SetPoint("TOPLEFT", 5, -30)
     ReadyCheckCustomFrame.EachPull.Title = ReadyCheckCustomFrame.EachPull:CreateFontString(nil, "ARTWORK", "GameFontNormal")
     ReadyCheckCustomFrame.EachPull.Title:SetText("Each Pull")
@@ -830,7 +774,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.EachPull.Title:SetPoint("TOP", 0, -3)
 
     ReadyCheckCustomFrame.CrossPull = CreateFrame("Frame", nil, ReadyCheckCustomFrame, "BackdropTemplate")
-    ReadyCheckCustomFrame.CrossPull:SetSize(175, 125)
+    ReadyCheckCustomFrame.CrossPull:SetSize(175, SubFrameHeight)
     ReadyCheckCustomFrame.CrossPull:SetPoint("LEFT", ReadyCheckCustomFrame.EachPull, "RIGHT", 5, 0)
     ReadyCheckCustomFrame.CrossPull.Title = ReadyCheckCustomFrame.CrossPull:CreateFontString(nil, "ARTWORK", "GameFontNormal")
     ReadyCheckCustomFrame.CrossPull.Title:SetText("Cross Pull")
@@ -838,7 +782,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.CrossPull.Title:SetPoint("TOP", 0, -3)
 
     ReadyCheckCustomFrame.RaidBuffs = CreateFrame("Frame", nil, ReadyCheckCustomFrame, "BackdropTemplate")
-    ReadyCheckCustomFrame.RaidBuffs:SetSize(175, 125)
+    ReadyCheckCustomFrame.RaidBuffs:SetSize(175, SubFrameHeight)
     ReadyCheckCustomFrame.RaidBuffs:SetPoint("LEFT", ReadyCheckCustomFrame.CrossPull, "RIGHT", 5, 0)
     ReadyCheckCustomFrame.RaidBuffs.Title = ReadyCheckCustomFrame.RaidBuffs:CreateFontString(nil, "ARTWORK", "GameFontNormal")
     ReadyCheckCustomFrame.RaidBuffs.Title:SetText("Raid Buffs")
@@ -846,7 +790,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.RaidBuffs.Title:SetPoint("TOP", 0, -3)
 
     ReadyCheckCustomFrame.BuildInfo = CreateFrame("Frame", nil, ReadyCheckCustomFrame, "BackdropTemplate")
-    ReadyCheckCustomFrame.BuildInfo:SetSize(175, 125)
+    ReadyCheckCustomFrame.BuildInfo:SetSize(175, SubFrameHeight)
     ReadyCheckCustomFrame.BuildInfo:SetPoint("TOP", ReadyCheckCustomFrame.EachPull, "BOTTOM", 0, -5)
     ReadyCheckCustomFrame.BuildInfo.Title = ReadyCheckCustomFrame.BuildInfo:CreateFontString(nil, "ARTWORK", "GameFontNormal")
     ReadyCheckCustomFrame.BuildInfo.Title:SetText("Build Info")
@@ -854,7 +798,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.BuildInfo.Title:SetPoint("TOP", 0, -3)
 
     ReadyCheckCustomFrame.Other = CreateFrame("Frame", nil, ReadyCheckCustomFrame, "BackdropTemplate")
-    ReadyCheckCustomFrame.Other:SetSize(355, 125)
+    ReadyCheckCustomFrame.Other:SetSize(355, SubFrameHeight)
     ReadyCheckCustomFrame.Other:SetPoint("LEFT", ReadyCheckCustomFrame.BuildInfo, "RIGHT", 5, 0)
     ReadyCheckCustomFrame.Other.Title = ReadyCheckCustomFrame.Other:CreateFontString(nil, "ARTWORK", "GameFontNormal")
     ReadyCheckCustomFrame.Other.Title:SetText("Other")
@@ -867,7 +811,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.EachPull.FoodFrame:SetScript("OnMouseDown", function() AZP.ReadyCheckEnhanced:UseConsumable("Food") end)
     ReadyCheckCustomFrame.EachPull.FoodFrame:RegisterForClicks("AnyUp", "AnyDown")
     ReadyCheckCustomFrame.EachPull.FoodFrame.Texture = ReadyCheckCustomFrame.EachPull.FoodFrame:CreateTexture(nil, "BACKGROUND")
-    ReadyCheckCustomFrame.EachPull.FoodFrame.Texture:SetSize(20, 20)
+    ReadyCheckCustomFrame.EachPull.FoodFrame.Texture:SetSize(TextureWidth, TextureHeight)
     ReadyCheckCustomFrame.EachPull.FoodFrame.Texture:SetPoint("LEFT", 5, 0)
     ReadyCheckCustomFrame.EachPull.FoodFrame.Texture:SetTexture(134400)
     ReadyCheckCustomFrame.EachPull.FoodFrame.String = ReadyCheckCustomFrame.EachPull.FoodFrame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
@@ -878,11 +822,11 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
 
     ReadyCheckCustomFrame.EachPull.RuneFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.EachPull, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.EachPull.RuneFrame:SetSize(ReadyCheckCustomFrame.EachPull:GetWidth(), 20)
-    ReadyCheckCustomFrame.EachPull.RuneFrame:SetPoint("TOP", 0, -41)
+    ReadyCheckCustomFrame.EachPull.RuneFrame:SetPoint("TOP", ReadyCheckCustomFrame.EachPull.FoodFrame, "BOTTOM", 0, -5)
     ReadyCheckCustomFrame.EachPull.RuneFrame:SetScript("OnMouseDown", function() AZP.ReadyCheckEnhanced:UseConsumable("Rune") end)
     ReadyCheckCustomFrame.EachPull.RuneFrame:RegisterForClicks("AnyUp", "AnyDown")
     ReadyCheckCustomFrame.EachPull.RuneFrame.Texture = ReadyCheckCustomFrame.EachPull.RuneFrame:CreateTexture(nil, "BACKGROUND")
-    ReadyCheckCustomFrame.EachPull.RuneFrame.Texture:SetSize(20, 20)
+    ReadyCheckCustomFrame.EachPull.RuneFrame.Texture:SetSize(TextureWidth, TextureHeight)
     ReadyCheckCustomFrame.EachPull.RuneFrame.Texture:SetPoint("LEFT", 5, 0)
     ReadyCheckCustomFrame.EachPull.RuneFrame.Texture:SetTexture(134400)
     ReadyCheckCustomFrame.EachPull.RuneFrame.String = ReadyCheckCustomFrame.EachPull.RuneFrame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
@@ -891,28 +835,28 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.EachPull.RuneFrame.String:SetJustifyH("LEFT")
     BuffFrames.Rune = ReadyCheckCustomFrame.EachPull.RuneFrame
 
-    ReadyCheckCustomFrame.CrossPull.ArmorKitFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.CrossPull, "InsecureActionButtonTemplate")
-    ReadyCheckCustomFrame.CrossPull.ArmorKitFrame:SetSize(ReadyCheckCustomFrame.CrossPull:GetWidth(), 20)
-    ReadyCheckCustomFrame.CrossPull.ArmorKitFrame:SetPoint("TOP", 0, -16)
-    ReadyCheckCustomFrame.CrossPull.ArmorKitFrame:SetScript("OnMouseDown", function() AZP.ReadyCheckEnhanced:UseConsumable("ArmorKit", {["target-slot"] = "5"}) end)
-    ReadyCheckCustomFrame.CrossPull.ArmorKitFrame:RegisterForClicks("AnyUp", "AnyDown")
-    ReadyCheckCustomFrame.CrossPull.ArmorKitFrame.Texture = ReadyCheckCustomFrame.CrossPull.ArmorKitFrame:CreateTexture(nil, "BACKGROUND")
-    ReadyCheckCustomFrame.CrossPull.ArmorKitFrame.Texture:SetSize(20, 20)
-    ReadyCheckCustomFrame.CrossPull.ArmorKitFrame.Texture:SetPoint("LEFT", 5, 0)
-    ReadyCheckCustomFrame.CrossPull.ArmorKitFrame.Texture:SetTexture(134400)
-    ReadyCheckCustomFrame.CrossPull.ArmorKitFrame.String = ReadyCheckCustomFrame.CrossPull.ArmorKitFrame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-    ReadyCheckCustomFrame.CrossPull.ArmorKitFrame.String:SetSize(ReadyCheckCustomFrame.CrossPull:GetWidth() - 30, 20)
-    ReadyCheckCustomFrame.CrossPull.ArmorKitFrame.String:SetPoint("LEFT", 30, -2)
-    ReadyCheckCustomFrame.CrossPull.ArmorKitFrame.String:SetJustifyH("LEFT")
-    BuffFrames.ArmorKit = ReadyCheckCustomFrame.CrossPull.ArmorKitFrame
+    ReadyCheckCustomFrame.CrossPull.VantusFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.CrossPull, "InsecureActionButtonTemplate")
+    ReadyCheckCustomFrame.CrossPull.VantusFrame:SetSize(ReadyCheckCustomFrame.CrossPull:GetWidth(), 20)
+    ReadyCheckCustomFrame.CrossPull.VantusFrame:SetPoint("TOPLEFT", 0, -17.5)
+    ReadyCheckCustomFrame.CrossPull.VantusFrame:RegisterForClicks("AnyUp", "AnyDown")
+    --ReadyCheckCustomFrame.CrossPull.VantusFrame:SetScript("OnMouseDown", function() AZP.ReadyCheckEnhanced:UseConsumable("Vantus", {["target"] = "boss1"}) end)
+    ReadyCheckCustomFrame.CrossPull.VantusFrame.Texture = ReadyCheckCustomFrame.CrossPull.VantusFrame:CreateTexture(nil, "BACKGROUND")
+    ReadyCheckCustomFrame.CrossPull.VantusFrame.Texture:SetSize(TextureWidth, TextureHeight)
+    ReadyCheckCustomFrame.CrossPull.VantusFrame.Texture:SetPoint("LEFT", 5, 0)
+    ReadyCheckCustomFrame.CrossPull.VantusFrame.Texture:SetTexture(134400)
+    ReadyCheckCustomFrame.CrossPull.VantusFrame.String = ReadyCheckCustomFrame.CrossPull.VantusFrame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+    ReadyCheckCustomFrame.CrossPull.VantusFrame.String:SetSize(ReadyCheckCustomFrame.CrossPull.VantusFrame:GetWidth() - 30, 20)
+    ReadyCheckCustomFrame.CrossPull.VantusFrame.String:SetPoint("LEFT", 30, -2)
+    ReadyCheckCustomFrame.CrossPull.VantusFrame.String:SetJustifyH("LEFT")
+    BuffFrames.Vantus = ReadyCheckCustomFrame.CrossPull.VantusFrame
 
     ReadyCheckCustomFrame.CrossPull.FlaskFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.CrossPull, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.CrossPull.FlaskFrame:SetSize(ReadyCheckCustomFrame.CrossPull:GetWidth(), 20)
-    ReadyCheckCustomFrame.CrossPull.FlaskFrame:SetPoint("TOP", 0, -41)
+    ReadyCheckCustomFrame.CrossPull.FlaskFrame:SetPoint("TOP", ReadyCheckCustomFrame.CrossPull.VantusFrame, "BOTTOM", 0, -5)
     ReadyCheckCustomFrame.CrossPull.FlaskFrame:SetScript("OnMouseDown", function() AZP.ReadyCheckEnhanced:UseConsumable("Flask") end)
     ReadyCheckCustomFrame.CrossPull.FlaskFrame:RegisterForClicks("AnyUp", "AnyDown")
     ReadyCheckCustomFrame.CrossPull.FlaskFrame.Texture = ReadyCheckCustomFrame.CrossPull.FlaskFrame:CreateTexture(nil, "BACKGROUND")
-    ReadyCheckCustomFrame.CrossPull.FlaskFrame.Texture:SetSize(20, 20)
+    ReadyCheckCustomFrame.CrossPull.FlaskFrame.Texture:SetSize(TextureWidth, TextureHeight)
     ReadyCheckCustomFrame.CrossPull.FlaskFrame.Texture:SetPoint("LEFT", 5, 0)
     ReadyCheckCustomFrame.CrossPull.FlaskFrame.Texture:SetTexture(134400)
     ReadyCheckCustomFrame.CrossPull.FlaskFrame.String = ReadyCheckCustomFrame.CrossPull.FlaskFrame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
@@ -923,11 +867,11 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
 
     ReadyCheckCustomFrame.CrossPull.MHWepModFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.CrossPull, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.CrossPull.MHWepModFrame:SetSize(ReadyCheckCustomFrame.CrossPull:GetWidth(), 20)
-    ReadyCheckCustomFrame.CrossPull.MHWepModFrame:SetPoint("TOP", 0, -66)
+    ReadyCheckCustomFrame.CrossPull.MHWepModFrame:SetPoint("TOP", ReadyCheckCustomFrame.CrossPull.FlaskFrame, "BOTTOM", 0, -5)
     ReadyCheckCustomFrame.CrossPull.MHWepModFrame:SetScript("OnMouseDown", function() AZP.ReadyCheckEnhanced:UseConsumable("MHWepMod") end)
     ReadyCheckCustomFrame.CrossPull.MHWepModFrame:RegisterForClicks("AnyUp", "AnyDown")
     ReadyCheckCustomFrame.CrossPull.MHWepModFrame.Texture = ReadyCheckCustomFrame.CrossPull.MHWepModFrame:CreateTexture(nil, "BACKGROUND")
-    ReadyCheckCustomFrame.CrossPull.MHWepModFrame.Texture:SetSize(20, 20)
+    ReadyCheckCustomFrame.CrossPull.MHWepModFrame.Texture:SetSize(TextureWidth, TextureHeight)
     ReadyCheckCustomFrame.CrossPull.MHWepModFrame.Texture:SetPoint("LEFT", 5, 0)
     ReadyCheckCustomFrame.CrossPull.MHWepModFrame.Texture:SetTexture(134400)
     ReadyCheckCustomFrame.CrossPull.MHWepModFrame.String = ReadyCheckCustomFrame.CrossPull.MHWepModFrame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
@@ -938,11 +882,11 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
 
     ReadyCheckCustomFrame.CrossPull.OHWepModFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.CrossPull, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.CrossPull.OHWepModFrame:SetSize(ReadyCheckCustomFrame.CrossPull:GetWidth(), 20)
-    ReadyCheckCustomFrame.CrossPull.OHWepModFrame:SetPoint("TOP", 0, -91)
+    ReadyCheckCustomFrame.CrossPull.OHWepModFrame:SetPoint("TOP", ReadyCheckCustomFrame.CrossPull.MHWepModFrame, "BOTTOM", 0, -5)
     ReadyCheckCustomFrame.CrossPull.OHWepModFrame:SetScript("OnMouseDown", function() AZP.ReadyCheckEnhanced:UseConsumable("OHWepMod") end)
     ReadyCheckCustomFrame.CrossPull.OHWepModFrame:RegisterForClicks("AnyUp", "AnyDown")
     ReadyCheckCustomFrame.CrossPull.OHWepModFrame.Texture = ReadyCheckCustomFrame.CrossPull.OHWepModFrame:CreateTexture(nil, "BACKGROUND")
-    ReadyCheckCustomFrame.CrossPull.OHWepModFrame.Texture:SetSize(20, 20)
+    ReadyCheckCustomFrame.CrossPull.OHWepModFrame.Texture:SetSize(TextureWidth, TextureHeight)
     ReadyCheckCustomFrame.CrossPull.OHWepModFrame.Texture:SetPoint("LEFT", 5, 0)
     ReadyCheckCustomFrame.CrossPull.OHWepModFrame.Texture:SetTexture(134400)
     ReadyCheckCustomFrame.CrossPull.OHWepModFrame.String = ReadyCheckCustomFrame.CrossPull.OHWepModFrame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
@@ -964,7 +908,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     end)
     ReadyCheckCustomFrame.RaidBuffs.IntellectFrame:RegisterForClicks("AnyUp", "AnyDown")
     ReadyCheckCustomFrame.RaidBuffs.IntellectFrame.Texture = ReadyCheckCustomFrame.RaidBuffs.IntellectFrame:CreateTexture(nil, "BACKGROUND")
-    ReadyCheckCustomFrame.RaidBuffs.IntellectFrame.Texture:SetSize(20, 20)
+    ReadyCheckCustomFrame.RaidBuffs.IntellectFrame.Texture:SetSize(TextureWidth, TextureHeight)
     ReadyCheckCustomFrame.RaidBuffs.IntellectFrame.Texture:SetPoint("LEFT", 5, 0)
     ReadyCheckCustomFrame.RaidBuffs.IntellectFrame.Texture:SetTexture(134400)
     ReadyCheckCustomFrame.RaidBuffs.IntellectFrame.String = ReadyCheckCustomFrame.RaidBuffs.IntellectFrame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
@@ -973,10 +917,9 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.RaidBuffs.IntellectFrame.String:SetJustifyH("LEFT")
     BuffFrames.Intellect = ReadyCheckCustomFrame.RaidBuffs.IntellectFrame
 
-
     ReadyCheckCustomFrame.RaidBuffs.VersFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.RaidBuffs, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.RaidBuffs.VersFrame:SetSize(ReadyCheckCustomFrame.RaidBuffs:GetWidth(), 20)
-    ReadyCheckCustomFrame.RaidBuffs.VersFrame:SetPoint("TOP", 0, -41)
+    ReadyCheckCustomFrame.RaidBuffs.VersFrame:SetPoint("TOP", ReadyCheckCustomFrame.RaidBuffs.IntellectFrame, "BOTTOM", 0, -5)
     ReadyCheckCustomFrame.RaidBuffs.VersFrame:SetScript("OnMouseDown",
     function()
         if curClass == 11 then AZP.ReadyCheckEnhanced:UseSpell("Versatility", 136078)    -- SpellID == Mark of the Wild
@@ -987,7 +930,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     end)
     ReadyCheckCustomFrame.RaidBuffs.VersFrame:RegisterForClicks("AnyUp", "AnyDown")
     ReadyCheckCustomFrame.RaidBuffs.VersFrame.Texture = ReadyCheckCustomFrame.RaidBuffs.VersFrame:CreateTexture(nil, "BACKGROUND")
-    ReadyCheckCustomFrame.RaidBuffs.VersFrame.Texture:SetSize(20, 20)
+    ReadyCheckCustomFrame.RaidBuffs.VersFrame.Texture:SetSize(TextureWidth, TextureHeight)
     ReadyCheckCustomFrame.RaidBuffs.VersFrame.Texture:SetPoint("LEFT", 5, 0)
     ReadyCheckCustomFrame.RaidBuffs.VersFrame.Texture:SetTexture(134400)
     ReadyCheckCustomFrame.RaidBuffs.VersFrame.String = ReadyCheckCustomFrame.RaidBuffs.VersFrame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
@@ -996,10 +939,9 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.RaidBuffs.VersFrame.String:SetJustifyH("LEFT")
     BuffFrames.Versatility = ReadyCheckCustomFrame.RaidBuffs.VersFrame
 
-
     ReadyCheckCustomFrame.RaidBuffs.StaminaFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.RaidBuffs, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.RaidBuffs.StaminaFrame:SetSize(ReadyCheckCustomFrame.RaidBuffs:GetWidth(), 20)
-    ReadyCheckCustomFrame.RaidBuffs.StaminaFrame:SetPoint("TOP", 0, -66)
+    ReadyCheckCustomFrame.RaidBuffs.StaminaFrame:SetPoint("TOP", ReadyCheckCustomFrame.RaidBuffs.VersFrame, "BOTTOM", 0, -5)
     ReadyCheckCustomFrame.RaidBuffs.StaminaFrame:SetScript("OnMouseDown",
     function()
         if curClass == 5 then AZP.ReadyCheckEnhanced:UseSpell("Stamina", 21562)    -- SpellID == Power Word: Fortitude
@@ -1010,7 +952,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     end)
     ReadyCheckCustomFrame.RaidBuffs.StaminaFrame:RegisterForClicks("AnyUp", "AnyDown")
     ReadyCheckCustomFrame.RaidBuffs.StaminaFrame.Texture = ReadyCheckCustomFrame.RaidBuffs.StaminaFrame:CreateTexture(nil, "BACKGROUND")
-    ReadyCheckCustomFrame.RaidBuffs.StaminaFrame.Texture:SetSize(20, 20)
+    ReadyCheckCustomFrame.RaidBuffs.StaminaFrame.Texture:SetSize(TextureWidth, TextureHeight)
     ReadyCheckCustomFrame.RaidBuffs.StaminaFrame.Texture:SetPoint("LEFT", 5, 0)
     ReadyCheckCustomFrame.RaidBuffs.StaminaFrame.Texture:SetTexture(134400)
     ReadyCheckCustomFrame.RaidBuffs.StaminaFrame.String = ReadyCheckCustomFrame.RaidBuffs.StaminaFrame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
@@ -1021,7 +963,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
 
     ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.RaidBuffs, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame:SetSize(ReadyCheckCustomFrame.RaidBuffs:GetWidth(), 20)
-    ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame:SetPoint("TOP", 0, -91)
+    ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame:SetPoint("TOP", ReadyCheckCustomFrame.RaidBuffs.StaminaFrame, "BOTTOM", 0, -5)
     ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame:SetScript("OnMouseDown",
     function()
         if curClass == 1 then AZP.ReadyCheckEnhanced:UseSpell("AttackPower", 6673)    -- SpellID == Battle Shoud
@@ -1032,7 +974,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     end)
     ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame:RegisterForClicks("AnyUp", "AnyDown")
     ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame.Texture = ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame:CreateTexture(nil, "BACKGROUND")
-    ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame.Texture:SetSize(20, 20)
+    ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame.Texture:SetSize(TextureWidth, TextureHeight)
     ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame.Texture:SetPoint("LEFT", 5, 0)
     ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame.Texture:SetTexture(134400)
     ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame.String = ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
@@ -1043,10 +985,10 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
 
     ReadyCheckCustomFrame.RaidBuffs.SpeedFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.RaidBuffs, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.RaidBuffs.SpeedFrame:SetSize(ReadyCheckCustomFrame.RaidBuffs:GetWidth(), 20)
-    ReadyCheckCustomFrame.RaidBuffs.SpeedFrame:SetPoint("TOP", 0, -116)
+    ReadyCheckCustomFrame.RaidBuffs.SpeedFrame:SetPoint("TOP", ReadyCheckCustomFrame.RaidBuffs.AttackPowerFrame, "BOTTOM", 0, -5)
     ReadyCheckCustomFrame.RaidBuffs.SpeedFrame:SetScript("OnMouseDown",
     function()
-        if curClass == 13 then AZP.ReadyCheckEnhanced:UseSpell("MovementSpeed", 364342)    -- SpellID == Gift of the Bronze
+        if curClass == 13 then AZP.ReadyCheckEnhanced:UseSpell("Speed", 364342)    -- SpellID == Gift of the Bronze
         else
             local HSMsg = "Please, lovely Evoker, can I have Movement Speed / Blessing of the Bronze, please? <3"
             if IsInRaid() then SendChatMessage(HSMsg ,"RAID") else SendChatMessage(HSMsg ,"PARTY") end
@@ -1054,21 +996,21 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     end)
     ReadyCheckCustomFrame.RaidBuffs.SpeedFrame:RegisterForClicks("AnyUp", "AnyDown")
     ReadyCheckCustomFrame.RaidBuffs.SpeedFrame.Texture = ReadyCheckCustomFrame.RaidBuffs.SpeedFrame:CreateTexture(nil, "BACKGROUND")
-    ReadyCheckCustomFrame.RaidBuffs.SpeedFrame.Texture:SetSize(20, 20)
+    ReadyCheckCustomFrame.RaidBuffs.SpeedFrame.Texture:SetSize(TextureWidth, TextureHeight)
     ReadyCheckCustomFrame.RaidBuffs.SpeedFrame.Texture:SetPoint("LEFT", 5, 0)
     ReadyCheckCustomFrame.RaidBuffs.SpeedFrame.Texture:SetTexture(134400)
     ReadyCheckCustomFrame.RaidBuffs.SpeedFrame.String = ReadyCheckCustomFrame.RaidBuffs.SpeedFrame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
     ReadyCheckCustomFrame.RaidBuffs.SpeedFrame.String:SetSize(ReadyCheckCustomFrame.RaidBuffs:GetWidth() - 30, 20)
     ReadyCheckCustomFrame.RaidBuffs.SpeedFrame.String:SetPoint("LEFT", 30, -2)
     ReadyCheckCustomFrame.RaidBuffs.SpeedFrame.String:SetJustifyH("LEFT")
-    BuffFrames.MovementSpeed = ReadyCheckCustomFrame.RaidBuffs.SpeedFrame
+    BuffFrames.Speed = ReadyCheckCustomFrame.RaidBuffs.SpeedFrame
 
     ReadyCheckCustomFrame.BuildInfo.EquipementFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.BuildInfo, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.BuildInfo.EquipementFrame:SetSize(ReadyCheckCustomFrame.BuildInfo:GetWidth(), 20)
     ReadyCheckCustomFrame.BuildInfo.EquipementFrame:SetPoint("TOP", 0, -16)
     ReadyCheckCustomFrame.BuildInfo.EquipementFrame:RegisterForClicks("AnyUp", "AnyDown")
     ReadyCheckCustomFrame.BuildInfo.EquipementFrame.Texture = ReadyCheckCustomFrame.BuildInfo.EquipementFrame:CreateTexture(nil, "BACKGROUND")
-    ReadyCheckCustomFrame.BuildInfo.EquipementFrame.Texture:SetSize(20, 20)
+    ReadyCheckCustomFrame.BuildInfo.EquipementFrame.Texture:SetSize(TextureWidth, TextureHeight)
     ReadyCheckCustomFrame.BuildInfo.EquipementFrame.Texture:SetPoint("LEFT", 5, 0)
     ReadyCheckCustomFrame.BuildInfo.EquipementFrame.Texture:SetTexture(134400)
     ReadyCheckCustomFrame.BuildInfo.EquipementFrame.String = ReadyCheckCustomFrame.BuildInfo.EquipementFrame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
@@ -1077,27 +1019,26 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.BuildInfo.EquipementFrame.String:SetJustifyH("LEFT")
     --BuffFrames.Loot = ReadyCheckCustomFrame.BuildInfo.EquipementFrame
 
-    ReadyCheckCustomFrame.Other.VantusFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.Other, "InsecureActionButtonTemplate")
-    ReadyCheckCustomFrame.Other.VantusFrame:SetSize(((ReadyCheckCustomFrame.Other:GetWidth() -5) /2), 20)
-    ReadyCheckCustomFrame.Other.VantusFrame:SetPoint("TOPLEFT", 0, -17.5)
-    ReadyCheckCustomFrame.Other.VantusFrame:RegisterForClicks("AnyUp", "AnyDown")
-    --ReadyCheckCustomFrame.Other.VantusFrame:SetScript("OnMouseDown", function() AZP.ReadyCheckEnhanced:UseConsumable("Vantus", {["target"] = "boss1"}) end)
-    ReadyCheckCustomFrame.Other.VantusFrame.Texture = ReadyCheckCustomFrame.Other.VantusFrame:CreateTexture(nil, "BACKGROUND")
-    ReadyCheckCustomFrame.Other.VantusFrame.Texture:SetSize(20, 20)
-    ReadyCheckCustomFrame.Other.VantusFrame.Texture:SetPoint("LEFT", 5, 0)
-    ReadyCheckCustomFrame.Other.VantusFrame.Texture:SetTexture(134400)
-    ReadyCheckCustomFrame.Other.VantusFrame.String = ReadyCheckCustomFrame.Other.VantusFrame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-    ReadyCheckCustomFrame.Other.VantusFrame.String:SetSize(ReadyCheckCustomFrame.Other.VantusFrame:GetWidth() - 30, 20)
-    ReadyCheckCustomFrame.Other.VantusFrame.String:SetPoint("LEFT", 30, -2)
-    ReadyCheckCustomFrame.Other.VantusFrame.String:SetJustifyH("LEFT")
-    BuffFrames.Vantus = ReadyCheckCustomFrame.Other.VantusFrame
+    ReadyCheckCustomFrame.BuildInfo.LootFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.Other, "InsecureActionButtonTemplate")
+    ReadyCheckCustomFrame.BuildInfo.LootFrame:SetSize(ReadyCheckCustomFrame.BuildInfo:GetWidth(), 20)
+    ReadyCheckCustomFrame.BuildInfo.LootFrame:SetPoint("TOP", ReadyCheckCustomFrame.BuildInfo.EquipementFrame, "BOTTOM", 0, -5)
+    ReadyCheckCustomFrame.BuildInfo.LootFrame:RegisterForClicks("AnyUp", "AnyDown")
+    ReadyCheckCustomFrame.BuildInfo.LootFrame.Texture = ReadyCheckCustomFrame.BuildInfo.LootFrame:CreateTexture(nil, "BACKGROUND")
+    ReadyCheckCustomFrame.BuildInfo.LootFrame.Texture:SetSize(TextureWidth, TextureHeight)
+    ReadyCheckCustomFrame.BuildInfo.LootFrame.Texture:SetPoint("LEFT", 5, 0)
+    ReadyCheckCustomFrame.BuildInfo.LootFrame.Texture:SetTexture(134400)
+    ReadyCheckCustomFrame.BuildInfo.LootFrame.String = ReadyCheckCustomFrame.BuildInfo.LootFrame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+    ReadyCheckCustomFrame.BuildInfo.LootFrame.String:SetSize(ReadyCheckCustomFrame.BuildInfo.LootFrame:GetWidth() - 30, 20)
+    ReadyCheckCustomFrame.BuildInfo.LootFrame.String:SetPoint("LEFT", 30, -2)
+    ReadyCheckCustomFrame.BuildInfo.LootFrame.String:SetJustifyH("LEFT")
+    --BuffFrames.Loot = ReadyCheckCustomFrame.BuildInfo.LootFrame
 
     ReadyCheckCustomFrame.Other.RepairFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.Other, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.Other.RepairFrame:SetSize(((ReadyCheckCustomFrame.Other:GetWidth() -5) /2), 20)
-    ReadyCheckCustomFrame.Other.RepairFrame:SetPoint("TOP", ReadyCheckCustomFrame.Other.VantusFrame, "BOTTOM", 0, -5)
+    ReadyCheckCustomFrame.Other.RepairFrame:SetPoint("TOPLEFT", 0, -17.5)
     ReadyCheckCustomFrame.Other.RepairFrame:RegisterForClicks("AnyUp", "AnyDown")
     ReadyCheckCustomFrame.Other.RepairFrame.Texture = ReadyCheckCustomFrame.Other.RepairFrame:CreateTexture(nil, "BACKGROUND")
-    ReadyCheckCustomFrame.Other.RepairFrame.Texture:SetSize(20, 20)
+    ReadyCheckCustomFrame.Other.RepairFrame.Texture:SetSize(TextureWidth, TextureHeight)
     ReadyCheckCustomFrame.Other.RepairFrame.Texture:SetPoint("LEFT", 5, 0)
     ReadyCheckCustomFrame.Other.RepairFrame.Texture:SetTexture(134400)
     ReadyCheckCustomFrame.Other.RepairFrame.String = ReadyCheckCustomFrame.Other.RepairFrame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
@@ -1106,23 +1047,9 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     ReadyCheckCustomFrame.Other.RepairFrame.String:SetJustifyH("LEFT")
     BuffFrames.Repair = ReadyCheckCustomFrame.Other.RepairFrame
 
-    ReadyCheckCustomFrame.Other.LootFrame = CreateFrame("Button", nil, ReadyCheckCustomFrame.Other, "InsecureActionButtonTemplate")
-    ReadyCheckCustomFrame.Other.LootFrame:SetSize(((ReadyCheckCustomFrame.Other:GetWidth() -5) /2), 20)
-    ReadyCheckCustomFrame.Other.LootFrame:SetPoint("TOP", ReadyCheckCustomFrame.Other.RepairFrame, "BOTTOM", 0, -5)
-    ReadyCheckCustomFrame.Other.LootFrame:RegisterForClicks("AnyUp", "AnyDown")
-    ReadyCheckCustomFrame.Other.LootFrame.Texture = ReadyCheckCustomFrame.Other.LootFrame:CreateTexture(nil, "BACKGROUND")
-    ReadyCheckCustomFrame.Other.LootFrame.Texture:SetSize(20, 20)
-    ReadyCheckCustomFrame.Other.LootFrame.Texture:SetPoint("LEFT", 5, 0)
-    ReadyCheckCustomFrame.Other.LootFrame.Texture:SetTexture(134400)
-    ReadyCheckCustomFrame.Other.LootFrame.String = ReadyCheckCustomFrame.Other.LootFrame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-    ReadyCheckCustomFrame.Other.LootFrame.String:SetSize(ReadyCheckCustomFrame.Other.LootFrame:GetWidth() - 30, 20)
-    ReadyCheckCustomFrame.Other.LootFrame.String:SetPoint("LEFT", 30, -2)
-    ReadyCheckCustomFrame.Other.LootFrame.String:SetJustifyH("LEFT")
-    --BuffFrames.Loot = ReadyCheckCustomFrame.Other.LootFrame
-
     ReadyCheckCustomFrame.Other.HealthStones = CreateFrame("Button", nil, ReadyCheckCustomFrame.Other, "InsecureActionButtonTemplate")
     ReadyCheckCustomFrame.Other.HealthStones:SetSize(((ReadyCheckCustomFrame.Other:GetWidth() -5) / 2), 20)
-    ReadyCheckCustomFrame.Other.HealthStones:SetPoint("LEFT", ReadyCheckCustomFrame.Other.VantusFrame, "RIGHT", 5, 0)
+    ReadyCheckCustomFrame.Other.HealthStones:SetPoint("LEFT", ReadyCheckCustomFrame.Other.RepairFrame, "RIGHT", 5, 0)
     ReadyCheckCustomFrame.Other.HealthStones:SetScript("OnMouseDown",
     function()
         if curClass == 9 then AZP.ReadyCheckEnhanced:UseSpell("HealthStones", 29893)    -- SpellID == Create SoulWell
@@ -1133,7 +1060,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     end)
     ReadyCheckCustomFrame.Other.HealthStones:RegisterForClicks("AnyUp", "AnyDown")
     ReadyCheckCustomFrame.Other.HealthStones.Texture = ReadyCheckCustomFrame.Other.HealthStones:CreateTexture(nil, "BACKGROUND")
-    ReadyCheckCustomFrame.Other.HealthStones.Texture:SetSize(20, 20)
+    ReadyCheckCustomFrame.Other.HealthStones.Texture:SetSize(TextureWidth, TextureHeight)
     ReadyCheckCustomFrame.Other.HealthStones.Texture:SetPoint("LEFT", 5, 0)
     ReadyCheckCustomFrame.Other.HealthStones.Texture:SetTexture(GetFileIDFromPath("Interface/ICONS/Warlock_ Healthstone"))
     ReadyCheckCustomFrame.Other.HealthStones.String = ReadyCheckCustomFrame.Other.HealthStones:CreateFontString(nil, "ARTWORK", "GameFontNormal")
@@ -1148,7 +1075,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
         ReadyCheckCustomFrame.Other.SoulStone:SetPoint("LEFT", ReadyCheckCustomFrame.Other.RepairFrame, "RIGHT", 5, 0)
         ReadyCheckCustomFrame.Other.SoulStone:RegisterForClicks("AnyUp", "AnyDown")
         ReadyCheckCustomFrame.Other.SoulStone.Texture = ReadyCheckCustomFrame.Other.SoulStone:CreateTexture(nil, "BACKGROUND")
-        ReadyCheckCustomFrame.Other.SoulStone.Texture:SetSize(20, 20)
+        ReadyCheckCustomFrame.Other.SoulStone.Texture:SetSize(TextureWidth, TextureHeight)
         ReadyCheckCustomFrame.Other.SoulStone.Texture:SetPoint("LEFT", 5, 0)
         ReadyCheckCustomFrame.Other.SoulStone.Texture:SetTexture(GetFileIDFromPath("Interface/ICONS/Spell_Shadow_SoulGem"))
         ReadyCheckCustomFrame.Other.SoulStone.String = ReadyCheckCustomFrame.Other.SoulStone:CreateFontString(nil, "ARTWORK", "GameFontNormal")
@@ -1162,7 +1089,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
         ReadyCheckCustomFrame.Other.RoguePoison1:SetPoint("LEFT", ReadyCheckCustomFrame.Other.RepairFrame, "RIGHT", 5, 0)
         ReadyCheckCustomFrame.Other.RoguePoison1:RegisterForClicks("AnyUp", "AnyDown")
         ReadyCheckCustomFrame.Other.RoguePoison1.Texture = ReadyCheckCustomFrame.Other.RoguePoison1:CreateTexture(nil, "BACKGROUND")
-        ReadyCheckCustomFrame.Other.RoguePoison1.Texture:SetSize(20, 20)
+        ReadyCheckCustomFrame.Other.RoguePoison1.Texture:SetSize(TextureWidth, TextureHeight)
         ReadyCheckCustomFrame.Other.RoguePoison1.Texture:SetPoint("LEFT", 5, 0)
         ReadyCheckCustomFrame.Other.RoguePoison1.String = ReadyCheckCustomFrame.Other.RoguePoison1:CreateFontString(nil, "ARTWORK", "GameFontNormal")
         ReadyCheckCustomFrame.Other.RoguePoison1.String:SetSize(ReadyCheckCustomFrame.Other.RoguePoison1:GetWidth() - 30, 50)
@@ -1175,7 +1102,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
         ReadyCheckCustomFrame.Other.RoguePoison2:SetPoint("TOP", ReadyCheckCustomFrame.Other.RoguePoison1, "BOTTOM", 0, -5)
         ReadyCheckCustomFrame.Other.RoguePoison2:RegisterForClicks("AnyUp", "AnyDown")
         ReadyCheckCustomFrame.Other.RoguePoison2.Texture = ReadyCheckCustomFrame.Other.RoguePoison2:CreateTexture(nil, "BACKGROUND")
-        ReadyCheckCustomFrame.Other.RoguePoison2.Texture:SetSize(20, 20)
+        ReadyCheckCustomFrame.Other.RoguePoison2.Texture:SetSize(TextureWidth, TextureHeight)
         ReadyCheckCustomFrame.Other.RoguePoison2.Texture:SetPoint("LEFT", 5, 0)
         ReadyCheckCustomFrame.Other.RoguePoison2.String = ReadyCheckCustomFrame.Other.RoguePoison2:CreateFontString(nil, "ARTWORK", "GameFontNormal")
         ReadyCheckCustomFrame.Other.RoguePoison2.String:SetSize(ReadyCheckCustomFrame.Other.RoguePoison2:GetWidth() - 30, 50)

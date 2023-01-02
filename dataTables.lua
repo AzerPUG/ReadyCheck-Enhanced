@@ -1,6 +1,16 @@
 if AZP == nil then AZP = {} end
 if AZP.ReadyCheckEnhanced == nil then AZP.ReadyCheckEnhanced = {} end
 
+local iconWidth, iconHeight = 20, 20
+AZP.ReadyCheckEnhanced.ChatIcons =
+{
+    [1] = string.format("|A:Professions-ChatIcon-Quality-Tier1:%d:%d|a", iconWidth, iconHeight),
+    [2] = string.format("|A:Professions-ChatIcon-Quality-Tier2:%d:%d|a", iconWidth, iconHeight),
+    [3] = string.format("|A:Professions-ChatIcon-Quality-Tier3:%d:%d|a", iconWidth, iconHeight),
+    [4] = string.format("|A:Professions-ChatIcon-Quality-Tier4:%d:%d|a", iconWidth, iconHeight),
+    [5] = string.format("|A:Professions-ChatIcon-Quality-Tier5:%d:%d|a", iconWidth, iconHeight),
+}
+
 AZP.ReadyCheckEnhanced.Consumables =
 {
     Flask =
@@ -8,6 +18,7 @@ AZP.ReadyCheckEnhanced.Consumables =
         [171276] = "Power",
         [171278] = "Stamina",
     },
+
     Food =
     {
         [172051] = "Vers",
@@ -16,22 +27,42 @@ AZP.ReadyCheckEnhanced.Consumables =
         [172041] = "Crit",
         [172069] = "Stamina",
     },
+
     Rune =
     {
-        [181468] = "Veiled",
-        [190384] = "Eternal",
+        [201325] = "Draconic Augment Rune",
     },
+
     Vantus =
     {
-        [186662] = "Vantus Rune: Sanctum of Domination",
+        [0] = "Vantus Rune: Vaul of the Incarnates 1",
+        [1] = "Vantus Rune: Vaul of the Incarnates 2",
+        [198493] = "Vantus Rune: Vaul of the Incarnates 3",
     },
+
     MHWepMod =
     {
-        [171285] = "Shadowcore",
-        [171286] = "Embalmers",
-        [171437] = "Sharpening",
-        [171439] = "Weightstone",
+        [194824] = "Chirping Rune 1",
+        [194825] = "Chirping Rune 2",
+        [194826] = "Chirping Rune 3",
+
+        [194821] = "Buzzing Rune 1",
+        [194822] = "Buzzing Rune 2",
+        [194823] = "Buzzing Rune 3",
+
+        [194817] = "Howling Rune 1",
+        [194819] = "Howling Rune 2",
+        [194820] = "Howling Rune 3",
+
+        [191933] = "Primal Whetstone 1",
+        [191939] = "Primal Whetstone 2",
+        [191940] = "Primal Whetstone 3",
+
+        [191943] = "Primal Weightstone 1",
+        [191944] = "Primal Weightstone 2",
+        [191945] = "Primal Weightstone 3",
     },
+
     ArmorKit =
     {
         [172347] = "Armor Kit"
@@ -46,47 +77,89 @@ AZP.ReadyCheckEnhanced.buffs =
         [307185] = "PrimStat",
         [307166] = "PrimStat",
         [307187] = "Stamina",
+        [371172] = "Vers",
+
+        --Phial of Tepid Versatility 4497572 0 nil 1800 1609277.223 player false false 371172
+        --[Phial of Tepid Versatility |A:Professions-ChatIcon-Quality-Tier3:17:18::1|a] 191341
+
     },
+
     Food =
     {
-        [308514] = "Versatility",
-        [308488] = "Haste",
-        [308506] = "Mastery",
-        [308434] = "Critical Strike",
-        [327707] = "Stamina",
-        [308525] = "Stamina",
+        [396092] = "Feast",
     },
+
     Rune =
     {
-        [347901] = "Augment",
-        [367405] = "Augment",
+        [393438] = "Augment",
     },
+
     RaidBuff =
     {
-         [1459] = "Intellect",
-         [1126] = "Versatility",
-        [21562] = "Stamina",
-         [6673] = "AttackPower",
-        [381748] = "MovementSpeed",    -- 381748 / 4622448
+          [1459] = "Intellect",
+          [1126] = "Versatility",
+         [21562] = "Stamina",
+          [6673] = "AttackPower",
+        [381746] = "Speed",         -- 381748 / 4622448      -- 381746
     },
+
     Weapon =
     {
+        [6515] = "Chirping Rune 1",
+        [6694] = "Chirping Rune 2",
+        [6695] = "Chirping Rune 3",
+
+        [6512] = "Buzzing Rune 1",
+        [6513] = "Buzzing Rune 2",
+        [6514] = "Buzzing Rune 3",
+
+        [6516] = "Howling Rune 1",
+        [6517] = "Howling Rune 2",
+        [6518] = "Howling Rune 3",
+
+        [6379] = "Sharpened 1",
+        [6380] = "Sharpened 2",
+        [6381] = "Sharpened 3",
+
+        [6696] = "Weighted 1",
+        [6697] = "Weighted 2",
+        [6698] = "Weighted 3",
+
         [6190] = "Embalmer's",
         [6188] = "Shadowcore",
         [6201] = "Weighted",
         [6200] = "Sharpened",
+
         [5401] = "Windfury MH",
         [5400] = "Flametongue OH",
     },
+
     WeaponIDs =
     {
-        [6190] = 171286,
-        [6188] = 171285,
-        [6201] = 171439,
-        [6200] = 171437,
-        [5401] =  33757,
         [5400] = 318038,
+        [5401] =  33757,
+
+        [6515] = 194824,
+        [6694] = 194825,
+        [6695] = 194826,
+
+        [6512] = 194821,
+        [6513] = 194822,
+        [6514] = 194823,
+
+        [6516] = 194817,
+        [6517] = 194819,
+        [6518] = 194820,
+
+        [6379] = 191933,
+        [6380] = 191939,
+        [6381] = 191940,
+
+        [6696] = 191943,
+        [6697] = 191944,
+        [6698] = 191945,
     },
+
     Vantus =
     {
         [359893] = "01",        -- Vigilant Guardian // Progenitor Defense System, as it is called on WoW.Tools in DataTable?
@@ -101,17 +174,20 @@ AZP.ReadyCheckEnhanced.buffs =
         [367140] = "10",        -- Rygelon
         [367143] = "11",        -- The Jailer
     },
+
     Lethal =
     {
         [315584] = "Instant",
           [2823] =  "Deadly",
           [8679] =   "Wound",
     },
+
     NonLethal =
     {
         [3408] = "Crippling",
         [5761] =   "Numbing",
     },
+
     PalaAura =
     {
         [32223] =      "Crusader",
