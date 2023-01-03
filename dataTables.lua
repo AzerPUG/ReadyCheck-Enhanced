@@ -15,8 +15,7 @@ AZP.ReadyCheckEnhanced.Consumables =
 {
     Flask =
     {
-        [171276] = "Power",
-        [171278] = "Stamina",
+        [191341] = "Vers 3",
     },
 
     Food =
@@ -62,11 +61,6 @@ AZP.ReadyCheckEnhanced.Consumables =
         [191944] = "Primal Weightstone 2",
         [191945] = "Primal Weightstone 3",
     },
-
-    ArmorKit =
-    {
-        [172347] = "Armor Kit"
-    }
 }
 AZP.ReadyCheckEnhanced.Consumables.OHWepMod = AZP.ReadyCheckEnhanced.Consumables.MHWepMod
 
@@ -74,14 +68,7 @@ AZP.ReadyCheckEnhanced.buffs =
 {
     Flask =
     {
-        [307185] = "PrimStat",
-        [307166] = "PrimStat",
-        [307187] = "Stamina",
-        [371172] = "Vers",
-
-        --Phial of Tepid Versatility 4497572 0 nil 1800 1609277.223 player false false 371172
-        --[Phial of Tepid Versatility |A:Professions-ChatIcon-Quality-Tier3:17:18::1|a] 191341
-
+        [371172] = "Vers 3",
     },
 
     Food =
@@ -100,7 +87,20 @@ AZP.ReadyCheckEnhanced.buffs =
           [1126] = "Versatility",
          [21562] = "Stamina",
           [6673] = "AttackPower",
-        [381746] = "Speed",         -- 381748 / 4622448      -- 381746
+
+        [381732] = "Speed",           -- Death Knight
+        [381741] = "Speed",           -- Demon Hunter
+        [381746] = "Speed",           -- Druid
+        [381748] = "Speed",           -- Evoker
+        [381749] = "Speed",           -- Hunter
+        [381750] = "Speed",           -- Mage
+        [381751] = "Speed",           -- Monk
+        [381752] = "Speed",           -- Paladin
+        [381753] = "Speed",           -- Priest
+        [381754] = "Speed",           -- Rogue
+        [381756] = "Speed",           -- Shaman
+        [381757] = "Speed",           -- Warlock
+        [381758] = "Speed",           -- Warrior
     },
 
     Weapon =
