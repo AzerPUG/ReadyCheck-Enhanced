@@ -15,6 +15,8 @@ AZP.ReadyCheckEnhanced.Consumables =
 {
     Flask =
     {
+        [191339] = "Vers 1",
+        [191340] = "Vers 2",
         [191341] = "Vers 3",
     },
 
@@ -68,7 +70,9 @@ AZP.ReadyCheckEnhanced.buffs =
 {
     Flask =
     {
-        [371172] = "Vers 3",
+        [371172] = "Tepid Versatility",
+        [371339] = "Elemental Chaos",
+        [373257] = "Glacial Fury",
     },
 
     Food =
@@ -162,17 +166,14 @@ AZP.ReadyCheckEnhanced.buffs =
 
     Vantus =
     {
-        [359893] = "01",        -- Vigilant Guardian // Progenitor Defense System, as it is called on WoW.Tools in DataTable?
-        [367121] = "02",        -- Skolex the Insatiable Ravener
-        [367124] = "03",        -- Artificer Xy'Mox
-        [367126] = "04",        -- DeSausage the Falled Oracle
-        [367128] = "05",        -- Prototype Pantheon
-        [367130] = "06",        -- Lihuvim, Principal Architect
-        [367132] = "07",        -- Halondrus the Reclaimer
-        [367134] = "08",        -- Anduin Wrynn
-        [367136] = "09",        -- Lords of Dread
-        [367140] = "10",        -- Rygelon
-        [367143] = "11",        -- The Jailer
+        [359893] = "01",        -- 
+        [367121] = "02",        -- 
+        [367124] = "03",        -- 
+        [367126] = "04",        -- 
+        [367128] = "05",        -- 
+        [367130] = "06",        -- 
+        [367132] = "07",        -- 
+        [384247] = "08",        -- Raszageth
     },
 
     Lethal =
@@ -200,56 +201,56 @@ AZP.ReadyCheckEnhanced.buffs =
 
 AZP.SpecInfo =
 {
-     [62] = {Icon =  135932, Name =       "Arcane",},
-     [63] = {Icon =  135810, Name =         "Fire",},
-     [64] = {Icon =  135846, Name =        "Frost",},
+     [62]  = {Icon =  135932, Name =       "Arcane",},
+     [63]  = {Icon =  135810, Name =         "Fire",},
+     [64]  = {Icon =  135846, Name =        "Frost",},
 
-     [65] = {Icon =  135920, Name =         "Holy",},
-     [66] = {Icon =  236264, Name =   "Protection",},
-     [70] = {Icon =  135873, Name =  "Retribution",},
+     [65]  = {Icon =  135920, Name =         "Holy",},
+     [66]  = {Icon =  236264, Name =   "Protection",},
+     [70]  = {Icon =  135873, Name =  "Retribution",},
 
-     [71] = {Icon =  132355, Name =         "Arms",},
-     [72] = {Icon =  132347, Name =         "Fury",},
-     [73] = {Icon =  132341, Name =   "Protection",},
+     [71]  = {Icon =  132355, Name =         "Arms",},
+     [72]  = {Icon =  132347, Name =         "Fury",},
+     [73]  = {Icon =  132341, Name =   "Protection",},
 
-    [102] = {Icon =  136096, Name =      "Balance",},
-    [103] = {Icon =  132115, Name =        "Feral",},
-    [104] = {Icon =  132276, Name =     "Guardian",},
-    [105] = {Icon =  136041, Name =  "Restoration",},
+    [102]  = {Icon =  136096, Name =      "Balance",},
+    [103]  = {Icon =  132115, Name =        "Feral",},
+    [104]  = {Icon =  132276, Name =     "Guardian",},
+    [105]  = {Icon =  136041, Name =  "Restoration",},
 
-    [250] = {Icon =  135770, Name =        "Blood",},
-    [251] = {Icon =  135773, Name =        "Frost",},
-    [252] = {Icon =  135775, Name =       "Unholy",},
+    [250]  = {Icon =  135770, Name =        "Blood",},
+    [251]  = {Icon =  135773, Name =        "Frost",},
+    [252]  = {Icon =  135775, Name =       "Unholy",},
 
-    [253] = {Icon =  461112, Name ="Beast Mastery",},
-    [254] = {Icon =  236179, Name = "Marksmanship",},
-    [255] = {Icon =  461113, Name =     "Survival",},
+    [253]  = {Icon =  461112, Name ="Beast Mastery",},
+    [254]  = {Icon =  236179, Name = "Marksmanship",},
+    [255]  = {Icon =  461113, Name =     "Survival",},
 
-    [256] = {Icon =  135940, Name =   "Discipline",},
-    [257] = {Icon =  237542, Name =         "Holy",},
-    [258] = {Icon =  136207, Name =       "Shadow",},
+    [256]  = {Icon =  135940, Name =   "Discipline",},
+    [257]  = {Icon =  237542, Name =         "Holy",},
+    [258]  = {Icon =  136207, Name =       "Shadow",},
 
-    [259] = {Icon =  236270, Name ="Assassination",},
-    [260] = {Icon =  236286, Name =       "Outlaw",},
-    [261] = {Icon =  132320, Name =     "Subtlety",},
+    [259]  = {Icon =  236270, Name ="Assassination",},
+    [260]  = {Icon =  236286, Name =       "Outlaw",},
+    [261]  = {Icon =  132320, Name =     "Subtlety",},
 
-    [262] = {Icon =  136048, Name =    "Elemental",},
-    [263] = {Icon =  237581, Name =  "Enhancement",},
-    [264] = {Icon =  136052, Name =  "Restoration",},
+    [262]  = {Icon =  136048, Name =    "Elemental",},
+    [263]  = {Icon =  237581, Name =  "Enhancement",},
+    [264]  = {Icon =  136052, Name =  "Restoration",},
 
-    [265] = {Icon =  136145, Name =   "Affliction",},
-    [266] = {Icon =  136172, Name =   "Demonology",},
-    [267] = {Icon =  136186, Name =  "Destruction",},
+    [265]  = {Icon =  136145, Name =   "Affliction",},
+    [266]  = {Icon =  136172, Name =   "Demonology",},
+    [267]  = {Icon =  136186, Name =  "Destruction",},
 
-    [268] = {Icon =  608951, Name =   "Brewmaster",},
-    [270] = {Icon =  608953, Name =   "Mistweaver",},
-    [269] = {Icon =  608952, Name =   "Windwalker",},
+    [268]  = {Icon =  608951, Name =   "Brewmaster",},
+    [270]  = {Icon =  608953, Name =   "Mistweaver",},
+    [269]  = {Icon =  608952, Name =   "Windwalker",},
 
-    [577] = {Icon = 1247264, Name =        "Havoc",},
-    [581] = {Icon = 1247265, Name =    "Vengeance",},
+    [577]  = {Icon = 1247264, Name =        "Havoc",},
+    [581]  = {Icon = 1247265, Name =    "Vengeance",},
 
-    [0] = {Icon = 0000000, Name =    "Devestation",},
-    [1] = {Icon = 0000000, Name =   "Preservation",},
+    [1467] = {Icon = 4511811, Name =  "Devestation",},
+    [1468] = {Icon = 4511812, Name = "Preservation",},
 }
 
 AZP.SpecsByClass =
@@ -379,8 +380,8 @@ AZP.SpecsByClass =
         Name = "Evoker",
         Specs =
         {
-            [1] = {Name =  "Devestation", ID = 0,},
-            [2] = {Name = "Preservation", ID = 1,},
+            [1] = {Name =  "Devestation", ID = 1467,},
+            [2] = {Name = "Preservation", ID = 1468,},
         }
     },
 }
