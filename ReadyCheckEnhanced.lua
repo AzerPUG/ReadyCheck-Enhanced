@@ -1,7 +1,7 @@
 if AZP == nil then AZP = {} end
 if AZP.VersionControl == nil then AZP.VersionControl = {} end
 
-AZP.VersionControl["ReadyCheck Enhanced"] = 68
+AZP.VersionControl["ReadyCheck Enhanced"] = 69
 if AZP.ReadyCheckEnhanced == nil then AZP.ReadyCheckEnhanced = {} end
 if AZP.ReadyCheckEnhanced.Events == nil then AZP.ReadyCheckEnhanced.Events = {} end
 
@@ -1072,7 +1072,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     if curClass == 9 then
         ReadyCheckCustomFrame.Other.SoulStone = CreateFrame("Button", nil, ReadyCheckCustomFrame.Other, "InsecureActionButtonTemplate")
         ReadyCheckCustomFrame.Other.SoulStone:SetSize(((ReadyCheckCustomFrame.Other:GetWidth() -5) / 2), 20)
-        ReadyCheckCustomFrame.Other.SoulStone:SetPoint("LEFT", ReadyCheckCustomFrame.Other.RepairFrame, "RIGHT", 5, 0)
+        ReadyCheckCustomFrame.Other.SoulStone:SetPoint("TOP", ReadyCheckCustomFrame.Other.HealthStones, "BOTTOM", 5, 0)
         ReadyCheckCustomFrame.Other.SoulStone:RegisterForClicks("AnyUp", "AnyDown")
         ReadyCheckCustomFrame.Other.SoulStone.Texture = ReadyCheckCustomFrame.Other.SoulStone:CreateTexture(nil, "BACKGROUND")
         ReadyCheckCustomFrame.Other.SoulStone.Texture:SetSize(TextureWidth, TextureHeight)
@@ -1086,7 +1086,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     if curClass == 4 then
         ReadyCheckCustomFrame.Other.RoguePoison1 = CreateFrame("Button", nil, ReadyCheckCustomFrame.Other, "InsecureActionButtonTemplate")
         ReadyCheckCustomFrame.Other.RoguePoison1:SetSize(((ReadyCheckCustomFrame.Other:GetWidth() -5) / 2), 20)
-        ReadyCheckCustomFrame.Other.RoguePoison1:SetPoint("LEFT", ReadyCheckCustomFrame.Other.RepairFrame, "RIGHT", 5, 0)
+        ReadyCheckCustomFrame.Other.RoguePoison1:SetPoint("TOP", ReadyCheckCustomFrame.Other.HealthStones, "BOTTOM", 5, 0)
         ReadyCheckCustomFrame.Other.RoguePoison1:RegisterForClicks("AnyUp", "AnyDown")
         ReadyCheckCustomFrame.Other.RoguePoison1.Texture = ReadyCheckCustomFrame.Other.RoguePoison1:CreateTexture(nil, "BACKGROUND")
         ReadyCheckCustomFrame.Other.RoguePoison1.Texture:SetSize(TextureWidth, TextureHeight)
@@ -1113,7 +1113,7 @@ function AZP.ReadyCheckEnhanced:BuildReadyCheckFrame()
     if curClass == 2 then
         ReadyCheckCustomFrame.Other.PalaAura = CreateFrame("Button", nil, ReadyCheckCustomFrame.Other, "InsecureActionButtonTemplate")
         ReadyCheckCustomFrame.Other.PalaAura:SetSize(((ReadyCheckCustomFrame.Other:GetWidth() -5) / 2), 20)
-        ReadyCheckCustomFrame.Other.PalaAura:SetPoint("LEFT", ReadyCheckCustomFrame.Other.RepairFrame, "RIGHT", 5, 0)
+        ReadyCheckCustomFrame.Other.PalaAura:SetPoint("TOP", ReadyCheckCustomFrame.Other.HealthStones, "BOTTOM", 5, 0)
         ReadyCheckCustomFrame.Other.PalaAura:RegisterForClicks("AnyUp", "AnyDown")
         ReadyCheckCustomFrame.Other.PalaAura.Texture = ReadyCheckCustomFrame.Other.PalaAura:CreateTexture(nil, "BACKGROUND")
         ReadyCheckCustomFrame.Other.PalaAura.Texture:SetSize(20, 20)
