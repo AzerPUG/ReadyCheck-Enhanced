@@ -1,7 +1,7 @@
 if AZP == nil then AZP = {} end
 if AZP.VersionControl == nil then AZP.VersionControl = {} end
 
-AZP.VersionControl["ReadyCheck Enhanced"] = 69
+AZP.VersionControl["ReadyCheck Enhanced"] = 70
 if AZP.ReadyCheckEnhanced == nil then AZP.ReadyCheckEnhanced = {} end
 if AZP.ReadyCheckEnhanced.Events == nil then AZP.ReadyCheckEnhanced.Events = {} end
 
@@ -392,7 +392,9 @@ function AZP.ReadyCheckEnhanced:CheckVantusBuff(curBuff, data)
         BuffFrames[curBuff].String:SetText(string.format("\124cFFFF0000Missing %s!\124r", curBuff))
     else
         BuffFrames[curBuff].Texture:SetTexture(data.Icon)
-        BuffFrames[curBuff].String:SetText(string.format("\124cFF00FF00%d days.\124r", math.ceil((data.Time - curTime) / 86400)))
+        print("curBuff", curBuff)
+        DevTools_Dump(data)
+        BuffFrames[curBuff].String:SetText(string.format("\124cFF00FF00%d days. (%s)\124r", math.ceil((data.Time - curTime) / 86400), AZP.ReadyCheckEnhanced.buffs[curBuff][data.ID]))
     end
 end
 
