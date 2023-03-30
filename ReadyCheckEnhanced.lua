@@ -1,7 +1,7 @@
 if AZP == nil then AZP = {} end
 if AZP.VersionControl == nil then AZP.VersionControl = {} end
 
-AZP.VersionControl["ReadyCheck Enhanced"] = 71
+AZP.VersionControl["ReadyCheck Enhanced"] = 72
 if AZP.ReadyCheckEnhanced == nil then AZP.ReadyCheckEnhanced = {} end
 if AZP.ReadyCheckEnhanced.Events == nil then AZP.ReadyCheckEnhanced.Events = {} end
 
@@ -409,7 +409,7 @@ function AZP.ReadyCheckEnhanced:CheckWeaponMods()
                 itemNameFromSpellID = AZP.ReadyCheckEnhanced.buffs.Weapon[mainHandEnchantID]
 
                 local curIcon = nil
-                    if mainHandEnchantID == 5400 or mainHandEnchantID == 5401 then curIcon = GetSpellTexture(itemIDFromSpellID)
+                    if mainHandEnchantID == 5400 or mainHandEnchantID == 5401 or mainHandEnchantID == 6498 then curIcon = GetSpellTexture(itemIDFromSpellID)
                     else curIcon = GetItemIcon(itemIDFromSpellID) end
                 local expirationTimer = floor(mainHandExpiration / 1000 / 60)
                 currentMHWepMod = {Name = itemNameFromSpellID, ID = offHandEnchantId, Time = expirationTimer, Icon = curIcon}
@@ -428,7 +428,7 @@ function AZP.ReadyCheckEnhanced:CheckWeaponMods()
                     itemNameFromSpellID = AZP.ReadyCheckEnhanced.buffs.Weapon[offHandEnchantId]
 
                     local curIcon = nil
-                    if offHandEnchantId == 5400 or offHandEnchantId == 5401 then curIcon = GetSpellTexture(itemIDFromSpellID)
+                    if offHandEnchantId == 5400 or offHandEnchantId == 5401 or mainHandEnchantID == 6498 then curIcon = GetSpellTexture(itemIDFromSpellID)
                     else curIcon = GetItemIcon(itemIDFromSpellID) end
                     local expirationTimer = floor(offHandExpiration / 1000 / 60)
                     currentOHWepMod = {Name = itemNameFromSpellID, ID = offHandEnchantId, Time = expirationTimer, Icon = curIcon}

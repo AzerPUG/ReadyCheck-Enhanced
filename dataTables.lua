@@ -136,12 +136,14 @@ AZP.ReadyCheckEnhanced.buffs =
 
         [5401] = "Windfury MH",
         [5400] = "Flametongue OH",
+        [6498] = "Earthliving",
     },
 
     WeaponIDs =
     {
         [5400] = 318038,
         [5401] =  33757,
+        [6498] = 382021,ssssssssssssssssssssssssssssssss
 
         [6515] = 194824,
         [6694] = 194825,
