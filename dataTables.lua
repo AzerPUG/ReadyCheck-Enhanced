@@ -143,7 +143,7 @@ AZP.ReadyCheckEnhanced.buffs =
     {
         [5400] = 318038,
         [5401] =  33757,
-        [6498] = 382021,ssssssssssssssssssssssssssssssss
+        [6498] = 382021,
 
         [6515] = 194824,
         [6694] = 194825,
