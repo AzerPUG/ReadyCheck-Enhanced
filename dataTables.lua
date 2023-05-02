@@ -180,9 +180,10 @@ AZP.ReadyCheckEnhanced.buffs =
 
     Lethal =
     {
-        [315584] = "Instant",
-          [2823] =  "Deadly",
-          [8679] =   "Wound",
+        [315584] =    "Instant",
+          [2823] =     "Deadly",
+          [8679] =      "Wound",
+        [381664] = "Amplifying",
     },
 
     NonLethal =
