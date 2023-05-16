@@ -188,8 +188,9 @@ AZP.ReadyCheckEnhanced.buffs =
 
     NonLethal =
     {
-        [3408] = "Crippling",
-        [5761] =   "Numbing",
+          [3408] = "Crippling",
+          [5761] =   "Numbing",
+        [381637] =  "Atrophic",
     },
 
     PalaAura =
