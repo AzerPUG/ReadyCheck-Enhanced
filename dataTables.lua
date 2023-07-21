@@ -255,6 +255,7 @@ AZP.SpecInfo =
 
     [1467] = {Icon = 4511811, Name =  "Devestation",},
     [1468] = {Icon = 4511812, Name = "Preservation",},
+    [1473] = {Icon = 5198700, Name = "Augmentation",},
 }
 
 AZP.SpecsByClass =
@@ -386,6 +387,7 @@ AZP.SpecsByClass =
         {
             [1] = {Name =  "Devestation", ID = 1467,},
             [2] = {Name = "Preservation", ID = 1468,},
+            [3] = {Name = "Augmentation", ID = 1473,},
         }
     },
 }
