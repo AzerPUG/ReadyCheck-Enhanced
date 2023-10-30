@@ -7,7 +7,7 @@
 [![](https://github.com/AzerPUG/AZP-Files/raw/main/Panels/GitHub%20Panel%20Small.png "")](http://www.azerpug.com/github "") 
 [![](https://github.com/AzerPUG/AZP-Files/raw/main/Panels/Fiverr%20Panel%20Small.png "")](http://www.azerpug.com/fiverr "")  
 
-[![](https://github.com/AzerPUG/AZP-Files/raw/main/Panels/Merch%20Panel%20Small.png "")](http://www.azerpug.com/merch "") 
+[![](https://github.com/AzerPUG/AZP-Files/raw/main/OldPanels/Merch%20Panel%20Small.png "")](http://www.azerpug.com/merch "") 
 [![](https://github.com/AzerPUG/AZP-Files/raw/main/Panels/Patreon%20Panel%20Small.png "")](http://www.azerpug.com/patreon "") 
 [![](https://github.com/AzerPUG/AZP-Files/raw/main/Panels/PayPal%20Panel%20Small.png "")](http://www.azerpug.com/paypal "")  
 
