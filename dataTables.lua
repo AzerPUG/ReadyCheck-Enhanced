@@ -31,6 +31,7 @@ AZP.ReadyCheckEnhanced.Consumables =
 
     Rune =
     {
+        [211495] = "Dreambound Augment Rune",
         [201325] = "Draconic Augment Rune",
     },
 
@@ -54,6 +55,10 @@ AZP.ReadyCheckEnhanced.Consumables =
         [194817] = "Howling Rune 1",
         [194819] = "Howling Rune 2",
         [194820] = "Howling Rune 3",
+
+        [204971] = "Hissing Rune 1",
+        [204972] = "Hissing Rune 2",
+        [204973] = "Hissing Rune 3",
 
         [191933] = "Primal Whetstone 1",
         [191939] = "Primal Whetstone 2",
@@ -82,6 +87,7 @@ AZP.ReadyCheckEnhanced.buffs =
 
     Rune =
     {
+        [211495] = "Dreambound",
         [393438] = "Augment",
     },
 
@@ -120,6 +126,10 @@ AZP.ReadyCheckEnhanced.buffs =
         [6516] = "Howling Rune 1",
         [6517] = "Howling Rune 2",
         [6518] = "Howling Rune 3",
+
+        [6837] = "Hissing Rune 1",
+        [6838] = "Hissing Rune 2",
+        [6839] = "Hissing Rune 3",
 
         [6379] = "Sharpened 1",
         [6380] = "Sharpened 2",
@@ -164,18 +174,23 @@ AZP.ReadyCheckEnhanced.buffs =
         [6696] = 191943,
         [6697] = 191944,
         [6698] = 191945,
+
+        [6837] = 204971,
+        [6838] = 204972,
+        [6839] = 204973,
     },
 
     Vantus =
     {
-        [01] = "01",        -- 
-        [02] = "02",        -- 
-        [03] = "03",        -- 
-        [04] = "04",        -- 
-        [05] = "05",        -- 
-        [06] = "06",        -- 
-        [384235] = "Diurna",
-        [384247] = "Raszageth",
+        [01] = "01",
+        [02] = "02",
+        [03] = "03",
+        [04] = "04",
+        [05] = "05",
+        [06] = "06",
+        [07] = "07",
+        [08] = "08",
+        [09] = "09",
     },
 
     Lethal =
